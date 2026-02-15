@@ -1,0 +1,261 @@
+/* ============================================
+   RISK PROFILE PAGE
+   ============================================ */
+
+.rp-page {
+    padding: 1.5rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.rp-header {
+    margin-bottom: 1.5rem;
+}
+
+.rp-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.rp-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Progress */
+.rp-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.rp-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.rp-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.rp-progress-text {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Question Card */
+.rp-question-card {
+    padding: 2rem;
+}
+
+.rp-question {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.rp-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.rp-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: left;
+}
+
+.rp-option:hover {
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rp-option.selected {
+    border-color: var(--primary);
+    background: rgba(108, 92, 231, 0.1);
+    color: var(--text-primary);
+}
+
+.rp-opt-radio {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+}
+
+.rp-option.selected .rp-opt-radio {
+    border-color: var(--primary);
+}
+
+.rp-option.selected .rp-opt-radio::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    background: var(--primary);
+    border-radius: 50%;
+}
+
+.rp-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Result View */
+.rp-result {
+    padding: 2rem;
+}
+
+.rp-result-main {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.rp-risk-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rp-risk-level {
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.rp-risk-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rp-risk-info h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.rp-risk-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Risk Meter */
+.rp-meter {
+    margin-bottom: 2rem;
+}
+
+.rp-meter-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.rp-meter-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+.rp-meter-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+/* Recommendations */
+.rp-recommendations {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+}
+
+.rp-rec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.rp-rec-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.rp-rec-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rp-rec-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+}
+
+.rp-rec-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-light);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .rp-result-main {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .rp-rec-grid {
+        grid-template-columns: 1fr;
+    }
+}

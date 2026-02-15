@@ -1,0 +1,422 @@
+/* ============================================
+   PAPER TRADING PAGE
+   ============================================ */
+
+.pt-page {
+    padding: 1.5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pt-header {
+    margin-bottom: 1.5rem;
+}
+
+.pt-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pt-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.pt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.pt-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Balance Display */
+.balance-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(108, 92, 231, 0.08);
+    border: 1px solid rgba(108, 92, 231, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.25rem;
+}
+
+.bal-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.bal-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-light);
+}
+
+/* Order Fields */
+.order-field {
+    margin-bottom: 1.25rem;
+}
+
+.order-field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.stock-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.stock-pill {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.stock-pill:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+}
+
+.stock-pill.active {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    color: var(--primary-light);
+}
+
+/* Selected Stock Info */
+.selected-stock-info {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ssi-name {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.ssi-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ssi-change {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.ssi-change.positive {
+    color: var(--accent-green);
+}
+
+.ssi-change.negative {
+    color: var(--accent-red);
+}
+
+/* Order Type Toggle */
+.order-type-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.ot-btn {
+    padding: 0.65rem;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.ot-btn.active.buy {
+    background: var(--accent-green-glow);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.ot-btn.active.sell {
+    background: var(--accent-red-glow);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+/* Quantity Input */
+.qty-input {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.qty-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.qty-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.qty-input input {
+    flex: 1;
+    text-align: center;
+    padding: 0.6rem;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+}
+
+/* Order Summary */
+.order-summary {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.os-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.os-row.total {
+    border-top: 1px solid var(--border);
+    margin-top: 0.4rem;
+    padding-top: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+/* Order Message */
+.order-msg {
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+}
+
+.order-msg.success {
+    background: var(--accent-green-glow);
+    border: 1px solid rgba(0, 184, 148, 0.3);
+    color: var(--accent-green);
+}
+
+.order-msg.error {
+    background: var(--accent-red-glow);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    color: var(--accent-red);
+}
+
+/* Execute Button */
+.order-execute-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.order-execute-btn.buy {
+    background: linear-gradient(135deg, var(--accent-green) 0%, #00a884 100%);
+}
+
+.order-execute-btn.sell {
+    background: linear-gradient(135deg, var(--accent-red) 0%, #e74c3c 100%);
+}
+
+.order-execute-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.order-execute-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Holdings */
+.holdings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.holding-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.holding-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.hi-symbol {
+    font-weight: 700;
+    color: var(--primary-light);
+    font-size: 0.9rem;
+}
+
+.hi-qty {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.hi-right {
+    text-align: right;
+}
+
+.hi-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.hi-pl {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.hi-pl.positive {
+    color: var(--accent-green);
+}
+
+.hi-pl.negative {
+    color: var(--accent-red);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.empty-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+/* Transactions */
+.tx-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.tx-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+}
+
+.tx-type {
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.tx-type.buy {
+    background: var(--accent-green-glow);
+    color: var(--accent-green);
+}
+
+.tx-type.sell {
+    background: var(--accent-red-glow);
+    color: var(--accent-red);
+}
+
+.tx-symbol {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.tx-detail {
+    flex: 1;
+    color: var(--text-muted);
+}
+
+.tx-total {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .pt-grid {
+        grid-template-columns: 1fr;
+    }
+}

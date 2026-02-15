@@ -1,0 +1,129 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Sidebar from './components/Sidebar';
+import TopNavbar from './components/TopNavbar';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Pages
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import PaperTrading from './pages/PaperTrading';
+import RiskProfile from './pages/RiskProfile';
+import ChatAdvisor from './pages/ChatAdvisor';
+
+import './App.css';
+
+/**
+ * Layout wrapper for authenticated pages — sidebar + top navbar
+ */
+const DashboardLayout = ({ children }) => (
+    <div className="app-layout">
+        <Sidebar />
+        <div className="app-main">
+            <TopNavbar />
+            <main className="app-content">
+                {children}
+            </main>
+            {/* Footer Risk Warning */}
+            <footer className="risk-warning">
+                <span>⚠️</span> This is an AI-powered advisory system. Not financial advice. Invest at your own risk.
+            </footer>
+        </div>
+    </div>
+);
+
+function AppRoutes() {
+    const { isAuthenticated } = useAuth();
+
+    return (
+        <Routes>
+            {/* Public routes — no sidebar */}
+            <Route
+                path="/"
+                element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />}
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected routes — with sidebar layout */}
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <Dashboard />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/paper-trading"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <PaperTrading />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/risk-profile"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <RiskProfile />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/chat-advisor"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <ChatAdvisor />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/portfolio"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <Dashboard />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/settings"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <div style={{ padding: '2rem' }}>
+                                <h1 style={{ color: 'var(--text-primary)' }}>Settings</h1>
+                                <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Coming soon</p>
+                            </div>
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+        </Routes>
+    );
+}
+
+function App() {
+    return (
+        <Router>
+            <AuthProvider>
+                <AppRoutes />
+            </AuthProvider>
+        </Router>
+    );
+}
+
+export default App;

@@ -35,6 +35,48 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 1000000, // ₹10,00,000 default virtual balance
     },
+    profilePhoto: {
+        type: String,
+        default: '',
+    },
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    investmentHorizon: {
+        type: String,
+        enum: ['Short-term', 'Mid-term', 'Long-term'],
+        default: 'Mid-term',
+    },
+    notifications: {
+        email: { type: Boolean, default: true },
+        priceAlert: { type: Boolean, default: true },
+        newsAlert: { type: Boolean, default: true },
+        aiRecommendation: { type: Boolean, default: true },
+    },
+    aiSettings: {
+        confidenceThreshold: { type: Number, default: 70, min: 0, max: 100 },
+        sentimentWeight: { type: Number, default: 30, min: 0, max: 100 },
+        autoRefreshTime: { type: Number, default: 60, enum: [30, 60, 300] },
+    },
+    simulationMode: {
+        type: Boolean,
+        default: true,
+    },
+    theme: {
+        type: String,
+        enum: ['dark', 'light'],
+        default: 'dark',
+    },
+    currency: {
+        type: String,
+        enum: ['₹', '$'],
+        default: '₹',
+    },
+    language: {
+        type: String,
+        default: 'en',
+    },
     createdAt: {
         type: Date,
         default: Date.now,

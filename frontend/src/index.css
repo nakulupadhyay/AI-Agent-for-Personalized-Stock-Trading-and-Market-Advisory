@@ -67,6 +67,48 @@
 }
 
 /* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+[data-theme="light"] {
+    /* Primary Colors — keep brand consistent */
+    --primary: #6c5ce7;
+    --primary-light: #7c6ef0;
+    --primary-dark: #5541d7;
+    --primary-glow: rgba(108, 92, 231, 0.15);
+
+    /* Background Colors (Light) */
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-card-hover: rgba(245, 245, 250, 0.95);
+    --bg-sidebar: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.6);
+    --bg-input: rgba(0, 0, 0, 0.04);
+
+    /* Text Colors */
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --text-accent: #6c5ce7;
+
+    /* Border Colors */
+    --border: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.15);
+    --border-active: rgba(108, 92, 231, 0.5);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --glass-blur: 20px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 30px var(--primary-glow);
+}
+
+/* ============================================
    RESET & BASE STYLES
    ============================================ */
 
@@ -90,6 +132,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {

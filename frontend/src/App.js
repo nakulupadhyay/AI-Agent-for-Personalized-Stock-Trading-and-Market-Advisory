@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Sidebar from './components/Sidebar';
 import TopNavbar from './components/TopNavbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -13,6 +14,8 @@ import Dashboard from './pages/Dashboard';
 import PaperTrading from './pages/PaperTrading';
 import RiskProfile from './pages/RiskProfile';
 import ChatAdvisor from './pages/ChatAdvisor';
+import Settings from './pages/Settings';
+import Portfolio from './pages/Portfolio';
 
 import './App.css';
 
@@ -94,7 +97,7 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <DashboardLayout>
-                            <Dashboard />
+                            <Portfolio />
                         </DashboardLayout>
                     </ProtectedRoute>
                 }
@@ -104,10 +107,7 @@ function AppRoutes() {
                 element={
                     <ProtectedRoute>
                         <DashboardLayout>
-                            <div style={{ padding: '2rem' }}>
-                                <h1 style={{ color: 'var(--text-primary)' }}>Settings</h1>
-                                <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Coming soon</p>
-                            </div>
+                            <Settings />
                         </DashboardLayout>
                     </ProtectedRoute>
                 }
@@ -118,11 +118,13 @@ function AppRoutes() {
 
 function App() {
     return (
-        <Router>
-            <AuthProvider>
-                <AppRoutes />
-            </AuthProvider>
-        </Router>
+        <ThemeProvider>
+            <Router>
+                <AuthProvider>
+                    <AppRoutes />
+                </AuthProvider>
+            </Router>
+        </ThemeProvider>
     );
 }
 

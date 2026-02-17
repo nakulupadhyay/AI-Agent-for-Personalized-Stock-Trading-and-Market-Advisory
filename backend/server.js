@@ -29,6 +29,7 @@ app.use('/api/stocks', require('./routes/stocks'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/trading', require('./routes/trading'));
 app.use('/api/risk-profile', require('./routes/riskProfile'));
+app.use('/api/settings', require('./routes/settings'));
 
 // Welcome route
 app.get('/', (req, res) => {

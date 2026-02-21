@@ -31,7 +31,7 @@ const getRecommendation = async (req, res) => {
         // Simple rule-based logic (replace with actual ML model)
         const combinedScore = (priceChange > 0 ? 0.6 : 0.4) + sentimentScore * 0.4;
 
-        if (combinedScore > 0.65) {
+        if (combinedScore > 0.79) {
             recommendation = 'BUY';
             confidence = Math.min(75 + Math.random() * 20, 95);
             reasoning = 'Strong upward trend detected with positive market sentiment';

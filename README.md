@@ -162,14 +162,5 @@ This project is suitable for final-year AI/Computer Science project presentation
 - RESTful API design
 - Database modeling
 
-## 📝 License
-
-MIT License - Free to use for educational purposes
-
-## 🤝 Contributing
-
-This is an educational project. Feel free to fork and enhance!
-
----
 
 **Developed for AI Agent for Personalized Stock Trading and Market Advisory**

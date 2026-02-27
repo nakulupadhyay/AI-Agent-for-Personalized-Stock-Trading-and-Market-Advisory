@@ -1,5 +1,5 @@
 /* ============================================
-   PAPER TRADING PAGE — Premium Dark Fintech
+   PAPER TRADING PAGE — Simple Student Theme
    ============================================ */
 
 .pt-page {
@@ -26,10 +26,7 @@
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
 }
 
 .section-title {
@@ -46,10 +43,10 @@
     gap: 12px;
     padding: 14px 24px;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, rgba(255, 217, 61, 0.12), rgba(255, 165, 0, 0.08));
-    border: 1px solid rgba(255, 217, 61, 0.25);
+    background: #fff8e1;
+    border: 1px solid #ffe082;
     border-radius: var(--radius-md);
-    color: var(--accent-yellow);
+    color: #e65100;
     font-size: 0.9rem;
 }
 
@@ -58,7 +55,7 @@
 }
 
 .sim-banner strong {
-    color: #ffd93d;
+    color: #e65100;
 }
 
 /* ============================================
@@ -81,8 +78,8 @@
 }
 
 .bal-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .bal-card::before {
@@ -92,7 +89,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     opacity: 0;
     transition: opacity var(--transition);
 }
@@ -182,7 +179,7 @@
     align-items: center;
     gap: 2px;
     padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 20px;
     color: var(--text-secondary);
@@ -294,7 +291,7 @@
 .ot-btn {
     padding: 0.65rem;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-input);
     color: var(--text-muted);
     font-weight: 700;
     font-size: 0.85rem;
@@ -308,15 +305,15 @@
 }
 
 .ot-btn.active.buy {
-    background: var(--accent-green-glow);
+    background: #e8f5e9;
     color: var(--accent-green);
-    border-color: rgba(0, 184, 148, 0.4);
+    border-color: #a5d6a7;
 }
 
 .ot-btn.active.sell {
-    background: var(--accent-red-glow);
+    background: #fce4ec;
     color: var(--accent-red);
-    border-color: rgba(255, 107, 107, 0.4);
+    border-color: #ef9a9a;
 }
 
 /* Quantity Input */
@@ -329,7 +326,7 @@
 
 .qty-btn {
     padding: 0.6rem 1rem;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-input);
     border: none;
     color: var(--text-primary);
     font-size: 1.1rem;
@@ -338,7 +335,7 @@
 }
 
 .qty-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-primary);
 }
 
 .qty-input input {
@@ -356,7 +353,7 @@
 /* Order Summary */
 .order-summary {
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-primary);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
@@ -388,15 +385,15 @@
 }
 
 .order-msg.success {
-    background: var(--accent-green-glow);
-    color: var(--accent-green);
-    border: 1px solid rgba(0, 184, 148, 0.3);
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
 }
 
 .order-msg.error {
-    background: var(--accent-red-glow);
-    color: var(--accent-red);
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    background: #fce4ec;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
 }
 
 /* Execute Button */
@@ -417,11 +414,11 @@
 }
 
 .order-execute-btn.buy {
-    background: linear-gradient(135deg, var(--accent-green) 0%, #00a884 100%);
+    background: var(--accent-green);
 }
 
 .order-execute-btn.sell {
-    background: linear-gradient(135deg, var(--accent-red) 0%, #e74c3c 100%);
+    background: var(--accent-red);
 }
 
 .order-execute-btn:hover:not(:disabled) {
@@ -470,20 +467,20 @@
 
 .ais-action.badge-buy {
     color: var(--accent-green);
-    background: var(--accent-green-glow);
-    border: 1px solid rgba(0, 184, 148, 0.3);
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
 }
 
 .ais-action.badge-sell {
     color: var(--accent-red);
-    background: var(--accent-red-glow);
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    background: #fce4ec;
+    border: 1px solid #ef9a9a;
 }
 
 .ais-action.badge-hold {
     color: var(--accent-yellow);
-    background: var(--accent-yellow-glow);
-    border: 1px solid rgba(255, 217, 61, 0.3);
+    background: #fff8e1;
+    border: 1px solid #ffe082;
 }
 
 .ais-symbol {
@@ -518,22 +515,21 @@
 .ais-conf-track {
     width: 100%;
     height: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #e8ecf1;
     border-radius: 4px;
     overflow: hidden;
 }
 
 .ais-conf-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     border-radius: 4px;
     transition: width 0.8s ease;
-    box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .ais-reason {
     padding: 10px 14px;
-    background: rgba(108, 92, 231, 0.08);
+    background: #e8f0fe;
     border-left: 3px solid var(--primary);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     font-size: 0.85rem;
@@ -547,7 +543,7 @@
     padding: 12px;
     border: none;
     border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     color: #fff;
     font-weight: 700;
     font-size: 0.88rem;
@@ -557,7 +553,7 @@
 
 .ais-execute-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px var(--primary-glow);
+    box-shadow: var(--shadow-md);
 }
 
 .ais-execute-btn:disabled {
@@ -631,14 +627,14 @@
 .rf-bar {
     width: 80px;
     height: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: #e8ecf1;
     border-radius: 3px;
     overflow: hidden;
 }
 
 .rf-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
+    background: var(--accent-green);
     border-radius: 3px;
     transition: width 1s ease;
 }
@@ -654,8 +650,8 @@
     align-items: flex-start;
     gap: 10px;
     padding: 12px 16px;
-    background: rgba(108, 92, 231, 0.08);
-    border: 1px solid rgba(108, 92, 231, 0.15);
+    background: #e8f0fe;
+    border: 1px solid #c5d9f2;
     border-radius: var(--radius-sm);
     font-size: 0.85rem;
     color: var(--text-secondary);
@@ -762,7 +758,7 @@ td.negative {
 
 .sl-input.triggered {
     border-color: var(--accent-red);
-    background: var(--accent-red-glow);
+    background: #fce4ec;
 }
 
 .sl-alert {
@@ -807,7 +803,7 @@ tr.sl-triggered td {
     border-radius: 12px;
     font-size: 0.7rem;
     font-weight: 600;
-    background: rgba(0, 184, 148, 0.1);
+    background: #e8f5e9;
     color: var(--accent-green);
 }
 
@@ -906,7 +902,7 @@ tr.sl-triggered td {
 
 .adv-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
@@ -950,7 +946,7 @@ tr.sl-triggered td {
 }
 
 .adv-btn.danger {
-    background: linear-gradient(135deg, var(--accent-red), #e74c3c);
+    background: var(--accent-red);
     color: #fff;
 }
 
@@ -1011,7 +1007,7 @@ tr.sl-triggered td {
     display: inline-block;
     padding: 4px 14px;
     border-radius: 20px;
-    background: rgba(108, 92, 231, 0.1);
+    background: #e8f0fe;
     color: var(--primary-light);
     font-size: 0.72rem;
     font-weight: 700;
@@ -1027,8 +1023,7 @@ tr.sl-triggered td {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1082,7 +1077,7 @@ tr.sl-triggered td {
 }
 
 .modal-btn.confirm {
-    background: linear-gradient(135deg, var(--accent-red), #e74c3c);
+    background: var(--accent-red);
     color: #fff;
 }
 

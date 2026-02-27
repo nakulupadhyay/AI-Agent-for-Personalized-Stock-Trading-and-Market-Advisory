@@ -11,7 +11,7 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
     const [theme, setThemeState] = useState(() => {
         // Load from localStorage on init (instant, no flash)
-        return localStorage.getItem('theme') || 'dark';
+        return localStorage.getItem('theme') || 'light';
     });
 
     // Apply theme to DOM whenever it changes

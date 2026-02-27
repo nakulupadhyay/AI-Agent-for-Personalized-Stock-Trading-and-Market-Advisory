@@ -9,6 +9,7 @@ const TABS = [
     { id: 'risk', icon: '🎯', label: 'Risk Preferences' },
     { id: 'notifications', icon: '🔔', label: 'Notifications' },
     { id: 'ai', icon: '🤖', label: 'AI Customization' },
+    { id: 'models', icon: '🧠', label: 'Models' },
     { id: 'paper', icon: '📈', label: 'Paper Trading' },
     { id: 'privacy', icon: '🔒', label: 'Data & Privacy' },
     { id: 'theme', icon: '🎨', label: 'Theme' },
@@ -31,6 +32,16 @@ const Settings = () => {
     const [paperForm, setPaperForm] = useState({ initialCapital: 1000000, simulationMode: true });
     const [themeForm, setThemeForm] = useState({ theme: 'dark', currency: '₹', language: 'en' });
     const [twoFactor, setTwoFactor] = useState(false);
+
+    // Model management state
+    const [mlStatus, setMlStatus] = useState({ available: false });
+    const [localModels, setLocalModels] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searching, setSearching] = useState(false);
+    const [downloadingModels, setDownloadingModels] = useState({});
+    const [fineTuneConfig, setFineTuneConfig] = useState({ base_model: 'finbert', epochs: 3, batch_size: 16, learning_rate: 0.00002 });
+    const [fineTuning, setFineTuning] = useState(false);
 
     const showMessage = (type, text) => {
         setMessage({ type, text });
@@ -56,9 +67,29 @@ const Settings = () => {
         }
     }, []);
 
+    const fetchMLStatus = useCallback(async () => {
+        try {
+            const res = await api.get('/ai/ml-status');
+            setMlStatus(res.data.data);
+        } catch { setMlStatus({ available: false }); }
+    }, []);
+
+    const fetchLocalModels = useCallback(async () => {
+        try {
+            const res = await api.get('/ai/ml-status');
+            if (res.data.data.available) {
+                const modelsRes = await fetch('http://localhost:5001/models/list');
+                const data = await modelsRes.json();
+                if (data.success) setLocalModels(data.data);
+            }
+        } catch { /* ML service not available */ }
+    }, []);
+
     useEffect(() => {
         fetchSettings();
-    }, [fetchSettings]);
+        fetchMLStatus();
+        fetchLocalModels();
+    }, [fetchSettings, fetchMLStatus, fetchLocalModels]);
 
     // ── SAVE HANDLERS ──────────────────────────────
 
@@ -197,6 +228,82 @@ const Settings = () => {
         } catch (err) {
             showMessage('error', 'Failed to delete account');
         }
+    };
+
+    // ── MODEL MANAGEMENT HANDLERS ─────────────────────
+
+    const searchModels = async () => {
+        if (!searchQuery.trim()) return;
+        setSearching(true);
+        try {
+            const res = await fetch(`http://localhost:5001/models/search?q=${encodeURIComponent(searchQuery)}&limit=8`);
+            const data = await res.json();
+            if (data.success) setSearchResults(data.data);
+        } catch {
+            showMessage('error', 'ML service not available. Start the Python service first.');
+        } finally { setSearching(false); }
+    };
+
+    const downloadModel = async (repoId, modelType = 'sequence-classification') => {
+        const modelKey = repoId.replace(/\//g, '_');
+        setDownloadingModels(prev => ({ ...prev, [modelKey]: { status: 'downloading', progress: 0 } }));
+        try {
+            await fetch('http://localhost:5001/models/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ repo_id: repoId, model_key: modelKey, model_type: modelType }),
+            });
+            // Poll progress
+            const poll = setInterval(async () => {
+                try {
+                    const res = await fetch(`http://localhost:5001/models/download/progress/${modelKey}`);
+                    const data = await res.json();
+                    if (data.data.status === 'complete') {
+                        clearInterval(poll);
+                        setDownloadingModels(prev => { const n = { ...prev }; delete n[modelKey]; return n; });
+                        fetchLocalModels();
+                        showMessage('success', `Model ${repoId} downloaded!`);
+                    } else if (data.data.status === 'error') {
+                        clearInterval(poll);
+                        setDownloadingModels(prev => { const n = { ...prev }; delete n[modelKey]; return n; });
+                        showMessage('error', `Download failed: ${data.data.error}`);
+                    } else {
+                        setDownloadingModels(prev => ({ ...prev, [modelKey]: data.data }));
+                    }
+                } catch { clearInterval(poll); }
+            }, 2000);
+        } catch {
+            setDownloadingModels(prev => { const n = { ...prev }; delete n[repoId.replace(/\//g, '_')]; return n; });
+            showMessage('error', 'Failed to start download');
+        }
+    };
+
+    const deleteLocalModel = async (modelKey) => {
+        if (!window.confirm(`Delete model "${modelKey}"?`)) return;
+        try {
+            await fetch(`http://localhost:5001/models/local/${modelKey}`, { method: 'DELETE' });
+            fetchLocalModels();
+            showMessage('success', 'Model deleted');
+        } catch {
+            showMessage('error', 'Failed to delete model');
+        }
+    };
+
+    const startFineTune = async () => {
+        setFineTuning(true);
+        try {
+            const res = await fetch('http://localhost:5001/models/fine-tune', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fineTuneConfig),
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage('success', 'Fine-tuning started! Check terminal for progress.');
+            }
+        } catch {
+            showMessage('error', 'Failed to start fine-tuning. Is the ML service running?');
+        } finally { setFineTuning(false); }
     };
 
     // ── RENDER SECTIONS ──────────────────────────────
@@ -506,6 +613,180 @@ const Settings = () => {
         </div>
     );
 
+    const renderModels = () => (
+        <div className="settings-section animate-fadeInUp">
+            <div className="section-header">
+                <h2>Model Management</h2>
+                <p className="section-desc">Download, fine-tune, and manage HuggingFace AI models</p>
+            </div>
+
+            {/* ML Service Status */}
+            <div className="settings-card glass-card">
+                <h3 className="card-title">🔌 ML Service Status</h3>
+                <div className="ml-status-row">
+                    <div className={`ml-status-badge ${mlStatus.available ? 'status-online' : 'status-offline'}`}>
+                        <span className="status-dot"></span>
+                        {mlStatus.available ? 'Online' : 'Offline'}
+                    </div>
+                    {mlStatus.available && (
+                        <div className="ml-status-info">
+                            <span>Device: {mlStatus.device || 'CPU'}</span>
+                            {mlStatus.gpu_name && <span>GPU: {mlStatus.gpu_name}</span>}
+                            <span>Models loaded: {mlStatus.loaded_models?.length || 0}</span>
+                        </div>
+                    )}
+                    {!mlStatus.available && (
+                        <p className="ml-offline-hint">
+                            Start the Python service: <code>cd ai_models → python model_service.py</code>
+                        </p>
+                    )}
+                    <button className="btn btn-outline btn-sm" onClick={fetchMLStatus}>🔄 Refresh</button>
+                </div>
+            </div>
+
+            {/* Downloaded Models */}
+            <div className="settings-card glass-card">
+                <h3 className="card-title">📦 Downloaded Models</h3>
+                {localModels.length > 0 ? (
+                    <div className="model-list">
+                        {localModels.map((m) => (
+                            <div key={m.key} className="model-item">
+                                <div className="model-item-info">
+                                    <span className="model-item-name">
+                                        {m.type === 'fine_tuned' ? '🔧' : '📦'} {m.key}
+                                    </span>
+                                    <span className="model-item-size">{m.size_mb} MB</span>
+                                    <span className={`model-item-status ${m.is_loaded ? 'loaded' : ''}`}>
+                                        {m.is_loaded ? '🟢 Loaded' : '⚪ Not loaded'}
+                                    </span>
+                                </div>
+                                <button className="btn btn-danger btn-sm" onClick={() => deleteLocalModel(m.key)}>🗑️</button>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="card-desc">No models downloaded yet. Search and download below.</p>
+                )}
+            </div>
+
+            {/* Search HuggingFace Hub */}
+            <div className="settings-card glass-card">
+                <h3 className="card-title">🔍 Search HuggingFace Hub</h3>
+                <div className="model-search-bar">
+                    <input
+                        type="text"
+                        placeholder="Search models (e.g. 'financial sentiment', 'stock prediction')..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && searchModels()}
+                        className="settings-input"
+                    />
+                    <button className="btn btn-primary" onClick={searchModels} disabled={searching}>
+                        {searching ? '⏳ Searching...' : '🔍 Search'}
+                    </button>
+                </div>
+                {searchResults.length > 0 && (
+                    <div className="model-search-results">
+                        {searchResults.map((m) => {
+                            const modelKey = m.id.replace(/\//g, '_');
+                            const isDownloading = !!downloadingModels[modelKey];
+                            const isDownloaded = localModels.some(lm => lm.key === modelKey);
+                            return (
+                                <div key={m.id} className="model-result-card">
+                                    <div className="model-result-header">
+                                        <span className="model-result-name">{m.id}</span>
+                                        {m.pipeline_tag && <span className="model-tag">{m.pipeline_tag}</span>}
+                                    </div>
+                                    <div className="model-result-stats">
+                                        <span>⬇️ {(m.downloads || 0).toLocaleString()}</span>
+                                        <span>❤️ {m.likes || 0}</span>
+                                    </div>
+                                    {m.tags && m.tags.length > 0 && (
+                                        <div className="model-result-tags">
+                                            {m.tags.slice(0, 5).map(t => <span key={t} className="model-tag-sm">{t}</span>)}
+                                        </div>
+                                    )}
+                                    {isDownloading ? (
+                                        <div className="model-download-progress">
+                                            <div className="progress-bar">
+                                                <div className="progress-fill" style={{ width: `${downloadingModels[modelKey]?.progress || 0}%` }}></div>
+                                            </div>
+                                            <span>{downloadingModels[modelKey]?.progress || 0}%</span>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className={`btn btn-sm ${isDownloaded ? 'btn-outline' : 'btn-primary'}`}
+                                            onClick={() => !isDownloaded && downloadModel(m.id)}
+                                            disabled={isDownloaded}
+                                        >
+                                            {isDownloaded ? '✅ Downloaded' : '⬇️ Download'}
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* Fine-Tuning */}
+            <div className="settings-card glass-card">
+                <h3 className="card-title">🔧 Fine-Tune Model</h3>
+                <p className="card-desc">Train a model on financial sentiment data for better stock market predictions</p>
+                <div className="form-grid">
+                    <div className="form-group">
+                        <label>Base Model</label>
+                        <select
+                            value={fineTuneConfig.base_model}
+                            onChange={(e) => setFineTuneConfig({ ...fineTuneConfig, base_model: e.target.value })}
+                            className="settings-select"
+                        >
+                            {localModels.filter(m => m.type === 'base').map(m => (
+                                <option key={m.key} value={m.key}>{m.key}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Epochs</label>
+                        <input
+                            type="number" min="1" max="20"
+                            value={fineTuneConfig.epochs}
+                            onChange={(e) => setFineTuneConfig({ ...fineTuneConfig, epochs: Number(e.target.value) })}
+                            className="settings-input"
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Batch Size</label>
+                        <select
+                            value={fineTuneConfig.batch_size}
+                            onChange={(e) => setFineTuneConfig({ ...fineTuneConfig, batch_size: Number(e.target.value) })}
+                            className="settings-select"
+                        >
+                            {[4, 8, 16, 32].map(v => <option key={v} value={v}>{v}</option>)}
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Learning Rate</label>
+                        <select
+                            value={fineTuneConfig.learning_rate}
+                            onChange={(e) => setFineTuneConfig({ ...fineTuneConfig, learning_rate: Number(e.target.value) })}
+                            className="settings-select"
+                        >
+                            <option value={0.00001}>1e-5</option>
+                            <option value={0.00002}>2e-5 (default)</option>
+                            <option value={0.00003}>3e-5</option>
+                            <option value={0.00005}>5e-5</option>
+                        </select>
+                    </div>
+                </div>
+                <button className="btn btn-primary save-btn" onClick={startFineTune} disabled={fineTuning || !mlStatus.available}>
+                    {fineTuning ? '⏳ Fine-tuning...' : '🚀 Start Fine-Tuning'}
+                </button>
+                {!mlStatus.available && <p className="card-desc" style={{ color: '#ef4444', marginTop: 8 }}>⚠️ ML service must be running to fine-tune</p>}
+            </div>
+        </div>
+    );
+
     const renderPaperTrading = () => (
         <div className="settings-section animate-fadeInUp">
             <div className="section-header">
@@ -735,6 +1016,7 @@ const Settings = () => {
         risk: renderRisk,
         notifications: renderNotifications,
         ai: renderAI,
+        models: renderModels,
         paper: renderPaperTrading,
         privacy: renderPrivacy,
         theme: renderTheme,

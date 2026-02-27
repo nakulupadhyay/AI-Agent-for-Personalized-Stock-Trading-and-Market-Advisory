@@ -30,8 +30,8 @@ const Sidebar = () => {
                         <path d="M8 22L14 14L18 18L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                         <defs>
                             <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
-                                <stop stopColor="#6c5ce7" />
-                                <stop offset="1" stopColor="#a29bfe" />
+                                <stop stopColor="#4A90D9" />
+                                <stop offset="1" stopColor="#6BA3E0" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -71,12 +71,6 @@ const Sidebar = () => {
                     <span className="link-icon">🚪</span>
                     <span className="link-text">Logout</span>
                 </button>
-
-                {/* Upcoming Features Card */}
-                <div className="upcoming-card">
-                    <div className="upcoming-badge">Coming Soon</div>
-                    <p className="upcoming-text">Auto Portfolio Rebalancing & Multi-Agent AI Strategy</p>
-                </div>
             </div>
         </aside>
     );

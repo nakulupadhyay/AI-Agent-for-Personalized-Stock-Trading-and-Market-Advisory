@@ -144,18 +144,18 @@ const PaperTrading = () => {
             datasets: [{
                 label: 'Portfolio Value',
                 data: vals,
-                borderColor: '#6c5ce7',
+                borderColor: '#4A90D9',
                 borderWidth: 2,
                 tension: 0.4,
                 pointRadius: 3,
-                pointBackgroundColor: '#6c5ce7',
+                pointBackgroundColor: '#4A90D9',
                 pointHoverRadius: 6,
                 fill: true,
                 backgroundColor: (ctx) => {
                     const c = ctx.chart.ctx;
                     const g = c.createLinearGradient(0, 0, 0, 250);
-                    g.addColorStop(0, 'rgba(108,92,231,0.25)');
-                    g.addColorStop(1, 'rgba(108,92,231,0.0)');
+                    g.addColorStop(0, 'rgba(74,144,217,0.2)');
+                    g.addColorStop(1, 'rgba(74,144,217,0.0)');
                     return g;
                 },
             }],
@@ -167,14 +167,14 @@ const PaperTrading = () => {
         plugins: {
             legend: { display: false },
             tooltip: {
-                backgroundColor: 'rgba(17,24,39,0.95)', borderColor: 'rgba(108,92,231,0.3)', borderWidth: 1,
-                titleColor: '#f1f5f9', bodyColor: '#a29bfe', cornerRadius: 8, padding: 12, displayColors: false,
+                backgroundColor: '#fff', borderColor: '#e1e5eb', borderWidth: 1,
+                titleColor: '#2c3e50', bodyColor: '#4A90D9', cornerRadius: 6, padding: 10, displayColors: false,
                 callbacks: { label: (ctx) => `₹${ctx.parsed.y.toLocaleString('en-IN')}` },
             },
         },
         scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#64748b', font: { size: 11 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { color: '#64748b', font: { size: 11 }, callback: (v) => `₹${(v / 100000).toFixed(1)}L` } },
+            x: { grid: { color: '#e8ecf1', drawBorder: false }, ticks: { color: '#8895a7', font: { size: 11 } } },
+            y: { grid: { color: '#e8ecf1', drawBorder: false }, ticks: { color: '#8895a7', font: { size: 11 }, callback: (v) => `₹${(v / 100000).toFixed(1)}L` } },
         },
         interaction: { intersect: false, mode: 'index' },
     };
@@ -221,7 +221,7 @@ const PaperTrading = () => {
         <div className="pt-page">
             {/* ── HEADER ── */}
             <div className="pt-header animate-fadeInUp">
-                <h1 className="pt-title">Paper Trading <span className="text-gradient">Simulator</span></h1>
+                <h1 className="pt-title">Paper Trading Simulator</h1>
                 <p className="pt-subtitle">Practice trading with virtual capital — zero real risk</p>
             </div>
 
@@ -623,14 +623,6 @@ const PaperTrading = () => {
                             <div className="dr-row"><span>Win Rate</span><span className="dr-val positive">67%</span></div>
                             <div className="dr-row"><span>Best Trade</span><span className="dr-val positive">+₹1,250</span></div>
                         </div>
-                    </div>
-
-                    {/* Leaderboard (Future Scope) */}
-                    <div className="adv-card glass-card future-card">
-                        <span className="adv-icon">🏆</span>
-                        <h3>Leaderboard</h3>
-                        <p>Compare your paper trading performance with others.</p>
-                        <span className="coming-soon">Coming Soon</span>
                     </div>
                 </div>
             </div>

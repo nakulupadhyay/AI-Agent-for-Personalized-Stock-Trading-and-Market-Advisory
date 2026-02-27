@@ -143,33 +143,5 @@ Application will open on http://localhost:3000
 5. **AI Chat** - Ask questions to the AI advisor
 6. **Track Portfolio** - Monitor your investments and performance
 
-## 🔄 Future Enhancements
-
-- Integration with real stock market APIs (Alpha Vantage, Yahoo Finance)
-- Real ML models for predictions instead of mock logic
-- Advanced charting with historical data
-- Real-time WebSocket updates
-- Mobile responsive improvements
-- Multi-language support
-
-## 👥 For Presentation
-
-This project is suitable for final-year AI/Computer Science project presentations showcasing:
-- Full-stack development skills
-- AI/ML integration concepts
-- Modern web development practices
-- Authentication and security
-- RESTful API design
-- Database modeling
-
-## 📝 License
-
-MIT License - Free to use for educational purposes
-
-## 🤝 Contributing
-
-This is an educational project. Feel free to fork and enhance!
-
----
 
 **Developed for AI Agent for Personalized Stock Trading and Market Advisory**

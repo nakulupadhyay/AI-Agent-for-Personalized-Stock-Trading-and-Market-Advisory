@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+
+# Model cache (large files)
+models_cache/
+
+# HuggingFace cache
+.hf_cache/
+
+# Datasets
+datasets/
+
+# Logs
+logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env

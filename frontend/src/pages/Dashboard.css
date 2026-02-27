@@ -1,5 +1,5 @@
 /* ============================================
-   PREMIUM DASHBOARD STYLES — All 8 Sections
+   DASHBOARD STYLES — Simple Student Theme
    ============================================ */
 
 .dashboard {
@@ -21,10 +21,7 @@
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
 }
 
 .dashboard-subtitle {
@@ -61,8 +58,8 @@
 }
 
 .market-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .market-card::before {
@@ -72,7 +69,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     opacity: 0;
     transition: opacity var(--transition);
 }
@@ -105,12 +102,12 @@
 
 .mc-change.positive {
     color: var(--accent-green);
-    background: var(--accent-green-glow);
+    background: #e8f5e9;
 }
 
 .mc-change.negative {
     color: var(--accent-red);
-    background: var(--accent-red-glow);
+    background: #fce4ec;
 }
 
 .mc-value {
@@ -137,13 +134,10 @@
 
 .status-dot.green {
     background: var(--accent-green);
-    box-shadow: 0 0 8px var(--accent-green);
-    animation: pulse-green 2s ease infinite;
 }
 
 .status-dot.red {
     background: var(--accent-red);
-    box-shadow: 0 0 8px var(--accent-red);
 }
 
 @keyframes pulse-green {
@@ -286,12 +280,12 @@
 }
 
 .sr-change.positive {
-    background: var(--accent-green-glow);
+    background: #e8f5e9;
     color: var(--accent-green);
 }
 
 .sr-change.negative {
-    background: var(--accent-red-glow);
+    background: #fce4ec;
     color: var(--accent-red);
 }
 
@@ -333,20 +327,20 @@
 
 .ai-action.badge-buy {
     color: var(--accent-green);
-    background: var(--accent-green-glow);
-    border: 1px solid rgba(0, 184, 148, 0.3);
+    background: #e8f5e9;
+    border: 1px solid #a5d6a7;
 }
 
 .ai-action.badge-sell {
     color: var(--accent-red);
-    background: var(--accent-red-glow);
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    background: #fce4ec;
+    border: 1px solid #ef9a9a;
 }
 
 .ai-action.badge-hold {
     color: var(--accent-yellow);
-    background: var(--accent-yellow-glow);
-    border: 1px solid rgba(255, 217, 61, 0.3);
+    background: #fff8e1;
+    border: 1px solid #ffe082;
 }
 
 .ai-symbol {
@@ -376,23 +370,22 @@
 .confidence-track {
     width: 100%;
     height: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: #e8ecf1;
     border-radius: 4px;
     overflow: hidden;
 }
 
 .confidence-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    background: var(--primary);
     border-radius: 4px;
     transition: width 0.8s ease;
-    box-shadow: 0 0 10px var(--primary-glow);
 }
 
 /* Short explanation line */
 .ai-short-explain {
     padding: 10px 14px;
-    background: rgba(108, 92, 231, 0.08);
+    background: #e8f0fe;
     border-left: 3px solid var(--primary);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     font-size: 0.85rem;
@@ -430,8 +423,8 @@
     width: 100%;
     padding: 0.7rem;
     margin-top: 1rem;
-    background: rgba(108, 92, 231, 0.08);
-    border: 1px solid rgba(108, 92, 231, 0.2);
+    background: #e8f0fe;
+    border: 1px solid #c5d9f2;
     border-radius: var(--radius-sm);
     color: var(--primary-light);
     font-size: 0.8rem;
@@ -441,15 +434,15 @@
 }
 
 .ai-explain-btn:hover {
-    background: rgba(108, 92, 231, 0.15);
+    background: #dce4f7;
 }
 
 /* AI Explanation Dropdown */
 .ai-explanation {
     margin-top: 0.75rem;
     padding: 1rem;
-    background: rgba(108, 92, 231, 0.05);
-    border: 1px solid rgba(108, 92, 231, 0.15);
+    background: #e8f0fe;
+    border: 1px solid #c5d9f2;
     border-radius: var(--radius-sm);
 }
 
@@ -549,7 +542,7 @@
 .timeframe-buttons {
     display: flex;
     gap: 4px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-input);
     padding: 3px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
@@ -574,7 +567,7 @@
 .tf-btn.active {
     background: var(--primary);
     color: white;
-    box-shadow: 0 2px 8px var(--primary-glow);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Stock selector pills */
@@ -637,20 +630,18 @@
 }
 
 .sentiment-circle.positive {
-    background: var(--accent-green-glow);
-    border: 2px solid rgba(0, 184, 148, 0.4);
-    box-shadow: 0 0 20px var(--accent-green-glow);
+    background: #e8f5e9;
+    border: 2px solid #a5d6a7;
 }
 
 .sentiment-circle.negative {
-    background: var(--accent-red-glow);
-    border: 2px solid rgba(255, 107, 107, 0.4);
-    box-shadow: 0 0 20px var(--accent-red-glow);
+    background: #fce4ec;
+    border: 2px solid #ef9a9a;
 }
 
 .sentiment-circle.neutral {
-    background: var(--accent-yellow-glow);
-    border: 2px solid rgba(255, 217, 61, 0.4);
+    background: #fff8e1;
+    border: 2px solid #ffe082;
 }
 
 .sentiment-score {
@@ -675,17 +666,17 @@
 }
 
 .badge-buy {
-    background: var(--accent-green-glow);
+    background: #e8f5e9;
     color: var(--accent-green);
 }
 
 .badge-sell {
-    background: var(--accent-red-glow);
+    background: #fce4ec;
     color: var(--accent-red);
 }
 
 .badge-hold {
-    background: var(--accent-yellow-glow);
+    background: #fff8e1;
     color: var(--accent-yellow);
 }
 
@@ -708,7 +699,7 @@
     display: flex;
     gap: 0.75rem;
     padding: 0.6rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border);
     align-items: flex-start;
 }
 
@@ -794,7 +785,7 @@
 .pq-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: var(--primary);
     border: none;
     border-radius: var(--radius-sm);
     color: #fff;
@@ -806,7 +797,7 @@
 
 .pq-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px var(--primary-glow);
+    box-shadow: var(--shadow-md);
 }
 
 /* ============================================
@@ -926,7 +917,7 @@
 .ms-bar {
     width: 100%;
     height: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: #e8ecf1;
     border-radius: 3px;
     overflow: hidden;
     margin-top: 8px;
@@ -934,7 +925,7 @@
 
 .ms-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-green), var(--primary));
+    background: var(--accent-green);
     border-radius: 3px;
     transition: width 1s ease;
 }
@@ -956,8 +947,6 @@
     height: 8px;
     border-radius: 50%;
     background: var(--accent-green);
-    box-shadow: 0 0 6px var(--accent-green);
-    animation: pulse-green 2s ease infinite;
 }
 
 /* ============================================
@@ -987,8 +976,6 @@
     height: 8px;
     border-radius: 50%;
     background: var(--accent-green);
-    box-shadow: 0 0 6px var(--accent-green);
-    animation: pulse-green 2s ease infinite;
 }
 
 .stocks-table-wrap {
@@ -1013,7 +1000,7 @@
 
 .stocks-table td {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--border);
     font-size: 0.85rem;
 }
 
@@ -1022,7 +1009,7 @@
 }
 
 .stocks-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-input);
 }
 
 .stock-symbol {

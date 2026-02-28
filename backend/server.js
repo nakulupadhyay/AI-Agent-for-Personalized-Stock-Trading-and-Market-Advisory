@@ -30,6 +30,7 @@ app.use('/api/ai', require('./routes/ai'));
 app.use('/api/trading', require('./routes/trading'));
 app.use('/api/risk-profile', require('./routes/riskProfile'));
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/risk-analysis', require('./routes/riskAnalysis'));
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -42,6 +43,7 @@ app.get('/', (req, res) => {
             ai: '/api/ai',
             trading: '/api/trading',
             riskProfile: '/api/risk-profile',
+            riskAnalysis: '/api/risk-analysis',
         },
     });
 });

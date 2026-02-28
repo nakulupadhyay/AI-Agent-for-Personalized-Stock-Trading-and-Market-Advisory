@@ -13,6 +13,7 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import PaperTrading from './pages/PaperTrading';
 import RiskProfile from './pages/RiskProfile';
+import RiskAnalysis from './pages/RiskAnalysis';
 import ChatAdvisor from './pages/ChatAdvisor';
 import Settings from './pages/Settings';
 import Portfolio from './pages/Portfolio';
@@ -78,6 +79,16 @@ function AppRoutes() {
                     <ProtectedRoute>
                         <DashboardLayout>
                             <RiskProfile />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/risk-analysis"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <RiskAnalysis />
                         </DashboardLayout>
                     </ProtectedRoute>
                 }

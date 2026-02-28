@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Portfolio = require('../models/Portfolio');
 const Transaction = require('../models/Transaction');
+const riskEngine = require('../utils/riskEngine');
 
 /**
  * @route   POST /api/trading/buy
@@ -382,46 +383,34 @@ const getPortfolioAnalysis = async (req, res) => {
             percent: currentValue > 0 ? ((value / currentValue) * 100) : 0,
         })).sort((a, b) => b.percent - a.percent);
 
-        // ── RISK ANALYSIS ────────────────────────────
-        const holdingCount = enrichedHoldings.length;
-        const returns = enrichedHoldings.map(h => h.returnPercent);
-        const avgReturn = returns.reduce((s, r) => s + r, 0) / (returns.length || 1);
-        const variance = returns.reduce((s, r) => s + Math.pow(r - avgReturn, 2), 0) / (returns.length || 1);
-        const volatility = Math.sqrt(variance);
-        const riskFreeRate = 6; // India 10Y gov bond ~6%
-        const sharpeRatio = volatility > 0 ? ((avgReturn - riskFreeRate) / volatility) : 0;
+        // ── RISK ANALYSIS (using quantitative engine) ─
+        const enrichedWithSector = enrichedHoldings.map(h => ({
+            ...h,
+            sector: h.sector,
+            quantity: h.quantity,
+            currentPrice: h.currentPrice,
+            averagePrice: h.avgBuyPrice,
+        }));
 
-        // Diversification: more stocks + more sectors = higher score
+        const riskAnalysisResult = riskEngine.runFullAnalysis({
+            holdings: enrichedWithSector,
+            transactions: transactions,
+        });
+
+        const { riskScore, riskCategory, metrics: riskMetrics } = riskAnalysisResult;
+        const volatility = riskMetrics.volatility;
+        const sharpeRatio = riskMetrics.sharpeRatio;
+        const holdingCount = enrichedHoldings.length;
+
+        // Diversification score (keep backward compatible)
         const uniqueSectors = new Set(enrichedHoldings.map(h => h.sector)).size;
         const maxAllocation = Math.max(...enrichedHoldings.map(h => h.totalValue / currentValue * 100), 0);
         const diversificationScore = Math.min(100, Math.round(
             (holdingCount * 10) + (uniqueSectors * 15) + (100 - maxAllocation) * 0.5
         ));
 
-        // Risk Score
-        let riskScore = 'Medium';
-        if (volatility > 20 || maxAllocation > 60) riskScore = 'High';
-        else if (volatility < 8 && diversificationScore > 60) riskScore = 'Low';
-
-        // ── AI INSIGHTS ──────────────────────────────
-        const aiInsights = [];
-        if (holdingCount === 1) aiInsights.push('⚠️ Your portfolio has only 1 stock. Diversification is key to managing risk.');
-        else if (holdingCount <= 3) aiInsights.push('📊 Consider adding more stocks to improve diversification.');
-        if (diversificationScore > 70) aiInsights.push('✅ Your portfolio is well diversified across multiple sectors.');
-        else aiInsights.push('⚠️ Your portfolio is moderately diversified. Consider spreading across more sectors.');
-
-        const topSector = sectorBreakdown[0];
-        if (topSector && topSector.percent > 50) {
-            aiInsights.push(`🏭 ${topSector.name} sector exposure is high (${topSector.percent.toFixed(0)}%). Consider reducing concentration.`);
-        }
-
-        if (volatility > 15) aiInsights.push('📈 Portfolio volatility is high. Consider adding low-beta stocks to reduce risk.');
-        if (totalPL > 0) aiInsights.push(`💰 Great performance! Your portfolio is up ${returnPercent.toFixed(1)}% overall.`);
-        else aiInsights.push(`📉 Your portfolio is down ${Math.abs(returnPercent).toFixed(1)}%. Market cycles are normal — stay invested.`);
-
-        if (sharpeRatio > 1) aiInsights.push('🏆 Excellent risk-adjusted returns (Sharpe Ratio > 1).');
-        else if (sharpeRatio > 0) aiInsights.push('📊 Moderate risk-adjusted returns. Review underperforming holdings.');
-        else aiInsights.push('⚠️ Negative risk-adjusted returns. Consider rebalancing your portfolio.');
+        // ── AI INSIGHTS (using risk engine explanations) ────
+        const aiInsights = riskAnalysisResult.explanations.slice(0, 6);
 
         // ── REBALANCING SUGGESTIONS ──────────────────
         const idealAllocation = 100 / holdingCount;
@@ -503,10 +492,15 @@ const getPortfolioAnalysis = async (req, res) => {
                 },
                 holdings: enrichedHoldings,
                 riskAnalysis: {
-                    riskScore,
-                    volatility: volatility.toFixed(2),
-                    sharpeRatio: sharpeRatio.toFixed(2),
+                    riskScore: riskAnalysisResult.riskScore,
+                    riskCategory: riskAnalysisResult.riskCategory,
+                    volatility: riskMetrics.volatility.toFixed(2),
+                    sharpeRatio: riskMetrics.sharpeRatio.toFixed(2),
+                    beta: riskMetrics.beta.toFixed(2),
+                    varDaily: riskMetrics.varDaily.toFixed(2),
+                    varAmount: riskMetrics.varAmount,
                     diversificationScore,
+                    scoreBreakdown: riskAnalysisResult.scoreBreakdown,
                 },
                 aiInsights,
                 sectorBreakdown,

@@ -16,6 +16,7 @@ const Sidebar = () => {
         { path: '/dashboard', icon: '📊', label: 'Dashboard' },
         { path: '/portfolio', icon: '💼', label: 'Portfolio' },
         { path: '/risk-profile', icon: '🎯', label: 'Risk Profile' },
+        { path: '/risk-analysis', icon: '🛡️', label: 'Risk Analysis' },
         { path: '/paper-trading', icon: '📈', label: 'Paper Trading' },
         { path: '/chat-advisor', icon: '🤖', label: 'AI Chat' },
     ];

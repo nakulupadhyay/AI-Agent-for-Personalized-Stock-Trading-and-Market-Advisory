@@ -17,6 +17,9 @@ import RiskAnalysis from './pages/RiskAnalysis';
 import ChatAdvisor from './pages/ChatAdvisor';
 import Settings from './pages/Settings';
 import Portfolio from './pages/Portfolio';
+import BrokerIntegration from './pages/BrokerIntegration';
+import SocialTrading from './pages/SocialTrading';
+import Education from './pages/Education';
 
 import './App.css';
 
@@ -119,6 +122,36 @@ function AppRoutes() {
                     <ProtectedRoute>
                         <DashboardLayout>
                             <Settings />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/broker-integration"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <BrokerIntegration />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/social-trading"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <SocialTrading />
+                        </DashboardLayout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/education"
+                element={
+                    <ProtectedRoute>
+                        <DashboardLayout>
+                            <Education />
                         </DashboardLayout>
                     </ProtectedRoute>
                 }

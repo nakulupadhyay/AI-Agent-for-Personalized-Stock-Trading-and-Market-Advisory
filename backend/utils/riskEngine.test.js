@@ -108,7 +108,53 @@ assert('Analysis has riskScore', typeof analysis.riskScore === 'number');
 assert('Analysis has riskCategory', typeof analysis.riskCategory === 'string');
 assert('Analysis has metrics', analysis.metrics !== undefined);
 assert('Analysis has explanations', Array.isArray(analysis.explanations));
+assert('Analysis has stressTest', Array.isArray(analysis.stressTest));
+assert('Analysis has sectorBreakdown', Array.isArray(analysis.sectorBreakdown));
+assert('Analysis has sortinoRatio', typeof analysis.metrics.sortinoRatio === 'number');
 console.log(`    Full analysis score: ${analysis.riskScore}/100 (${analysis.riskCategory})`);
+
+// 10. Sortino Ratio
+console.log('\n10. computeSortinoRatio');
+const sortino = riskEngine.computeSortinoRatio(testReturns);
+assert('Sortino is a number', typeof sortino === 'number');
+assert('Sortino is finite', isFinite(sortino));
+const allPositive = [0.01, 0.02, 0.015, 0.005];
+assert('All positive returns → max Sortino (3.0)', riskEngine.computeSortinoRatio(allPositive) === 3.0);
+console.log(`    Computed Sortino Ratio: ${sortino.toFixed(4)}`);
+
+// 11. Stress Test
+console.log('\n11. computeStressTest');
+const stressResults = riskEngine.computeStressTest(
+    holdings.map(h => ({ ...h, sector: 'Information Technology' })),
+    1.0
+);
+assert('Returns 4 scenarios', stressResults.length === 4);
+assert('First scenario is Mild Correction', stressResults[0].scenario === 'Mild Correction');
+assert('All losses are negative', stressResults.every(s => s.portfolioLoss < 0));
+assert('Severe crash loss > mild correction loss', stressResults[2].portfolioLoss < stressResults[0].portfolioLoss);
+console.log(`    Mild: ${stressResults[0].portfolioDropPercent}% | Severe: ${stressResults[2].portfolioDropPercent}%`);
+
+// 12. Sector Breakdown
+console.log('\n12. buildSectorBreakdown');
+const sectors = riskEngine.buildSectorBreakdown(holdings);
+assert('Returns array of sectors', Array.isArray(sectors));
+assert('At least 1 sector', sectors.length >= 1);
+assert('Each sector has percent', sectors.every(s => typeof s.percent === 'number'));
+assert('Percentages sum to ~100', Math.abs(sectors.reduce((s, x) => s + x.percent, 0) - 100) < 0.5);
+assert('Each sector has color', sectors.every(s => s.color && s.color.startsWith('#')));
+console.log(`    Sectors: ${sectors.map(s => `${s.sector}(${s.percent}%)`).join(', ')}`);
+
+// 13. What-If Analysis
+console.log('\n13. computeWhatIf');
+const whatIf = riskEngine.computeWhatIf(
+    holdings.map(h => ({ ...h, averagePrice: h.currentPrice * 0.95 })),
+    { action: 'ADD', symbol: 'SUNPHARMA', sector: 'Pharmaceuticals', quantity: 10, price: 1200 }
+);
+assert('Has before/after/impact', whatIf.before && whatIf.after && whatIf.impact);
+assert('Before has riskScore', typeof whatIf.before.riskScore === 'number');
+assert('After has riskScore', typeof whatIf.after.riskScore === 'number');
+assert('Has recommendation', typeof whatIf.impact.recommendation === 'string');
+console.log(`    Before: ${whatIf.before.riskScore} → After: ${whatIf.after.riskScore} (Δ${whatIf.impact.riskScoreChange})`);
 
 // Summary
 console.log('\n═══════════════════════════════════════');

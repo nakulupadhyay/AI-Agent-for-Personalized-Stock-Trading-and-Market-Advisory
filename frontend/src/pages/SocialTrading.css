@@ -1,0 +1,419 @@
+.social-page {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* My Stats Card */
+.my-stats-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    background: var(--card-bg, white);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary, #1a1a2e);
+}
+
+.stat-value.positive {
+    color: #10b981;
+}
+
+.stat-value.negative {
+    color: #ef4444;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--card-bg, #f1f5f9);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab.active {
+    background: white;
+    color: var(--text-primary, #1a1a2e);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Leaderboard */
+.leaderboard-table {
+    background: var(--card-bg, white);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 12px;
+    overflow-x: auto;
+}
+
+.leaderboard-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--card-bg, #f8fafc);
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.leaderboard-table td {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border, #f1f5f9);
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-table tr.top-trader {
+    background: #fefce8;
+}
+
+.rank-badge {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.trader-link {
+    background: none;
+    border: none;
+    color: #4A90D9;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.trader-link:hover {
+    text-decoration: underline;
+}
+
+.positive {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.negative {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.btn-follow,
+.btn-unfollow {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-follow {
+    background: #4A90D9;
+    color: white;
+}
+
+.btn-follow:hover {
+    background: #3b78c0;
+}
+
+.btn-unfollow {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-unfollow:hover {
+    background: #e2e8f0;
+}
+
+/* Following Grid */
+.following-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.following-card {
+    background: var(--card-bg, white);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.fc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.fc-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.fc-rank {
+    color: var(--text-secondary, #6b7280);
+    font-weight: 600;
+}
+
+.fc-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+}
+
+.fc-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-view {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #4A90D9;
+    background: transparent;
+    color: #4A90D9;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.btn-view:hover {
+    background: #eff6ff;
+}
+
+.btn-unfollow-sm {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    color: #64748b;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary, #6b7280);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+    color: var(--text-primary, #1a1a2e);
+    margin-bottom: 8px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #94a3b8;
+}
+
+.trader-bio {
+    color: var(--text-secondary, #6b7280);
+    margin: 8px 0 20px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.p-stat {
+    text-align: center;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.p-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-secondary, #6b7280);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.p-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.p-value.positive {
+    color: #10b981;
+}
+
+.p-value.negative {
+    color: #ef4444;
+}
+
+.modal-content h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 16px 0 10px;
+}
+
+.holdings-list,
+.trades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.holding-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.holding-weight {
+    font-weight: 600;
+    color: #4A90D9;
+}
+
+.trade-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    align-items: center;
+}
+
+.trade-type {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.7rem;
+}
+
+.trade-type.BUY {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.trade-type.SELL {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Skeletons */
+.loading-rows {
+    padding: 20px;
+}
+
+.skeleton-row {
+    height: 50px;
+    background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+    .my-stats-card {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .following-grid {
+        grid-template-columns: 1fr;
+    }
+}

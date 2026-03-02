@@ -508,11 +508,253 @@ function generateRiskExplanation(params) {
 
 
 // ══════════════════════════════════════════════════════════════
-// 10. FULL RISK ANALYSIS
+// 10. SORTINO RATIO
 // ══════════════════════════════════════════════════════════════
 
 /**
- * Run the complete risk analysis pipeline.
+ * Compute Sortino Ratio — like Sharpe but only penalizes downside volatility.
+ *
+ * Formula: Sortino = (R̄ₚ - Rₑ) / σ_downside
+ * Where σ_downside = √( Σ(min(rᵢ,0))² / n )
+ *
+ * @param {number[]} dailyReturns
+ * @param {number} riskFreeRate — Annual risk-free rate
+ * @returns {number}
+ */
+function computeSortinoRatio(dailyReturns, riskFreeRate = RISK_FREE_RATE_ANNUAL) {
+    if (!dailyReturns || dailyReturns.length < 2) return 0;
+
+    const meanDailyReturn = dailyReturns.reduce((s, r) => s + r, 0) / dailyReturns.length;
+    const annualizedReturn = meanDailyReturn * TRADING_DAYS_PER_YEAR;
+
+    // Downside deviation: only count negative returns
+    const negativeReturns = dailyReturns.filter(r => r < 0);
+    if (negativeReturns.length === 0) return 3.0; // no downside → excellent
+
+    const downsideVariance = negativeReturns.reduce((s, r) => s + r * r, 0) / dailyReturns.length;
+    const downsideDeviation = Math.sqrt(downsideVariance) * Math.sqrt(TRADING_DAYS_PER_YEAR);
+
+    if (downsideDeviation === 0) return 0;
+    return (annualizedReturn - riskFreeRate) / downsideDeviation;
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// 11. STRESS TESTING
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Simulate portfolio impact under market crash scenarios.
+ *
+ * Scenarios:
+ *   - Mild correction:  -10%
+ *   - Moderate crash:   -20%
+ *   - Severe crash:     -30%
+ *   - Black swan:       -50%
+ *
+ * Each holding's loss is amplified by its beta (higher beta → bigger loss).
+ *
+ * @param {Object[]} holdings — Holdings with currentPrice, quantity, sector
+ * @param {number} beta — Portfolio beta
+ * @returns {Object[]} — Array of scenario results
+ */
+function computeStressTest(holdings, beta = 1.0) {
+    if (!holdings || holdings.length === 0) return [];
+
+    const currentValue = holdings.reduce((s, h) => s + h.quantity * h.currentPrice, 0);
+    if (currentValue <= 0) return [];
+
+    const scenarios = [
+        { name: 'Mild Correction', marketDrop: -0.10, description: 'Market drops 10%' },
+        { name: 'Moderate Crash', marketDrop: -0.20, description: 'Market drops 20%' },
+        { name: 'Severe Crash', marketDrop: -0.30, description: 'Market drops 30%' },
+        { name: 'Black Swan', marketDrop: -0.50, description: 'Market drops 50%' },
+    ];
+
+    // Sector beta multipliers (some sectors more volatile in crashes)
+    const sectorMultiplier = {
+        'Information Technology': 1.1,
+        'Banking & Finance': 1.3,
+        'Energy & Petrochemicals': 1.2,
+        'Automobile': 1.15,
+        'Pharmaceuticals': 0.7,
+        'FMCG': 0.6,
+        'Telecom': 0.85,
+        'Infrastructure': 1.25,
+        'Other': 1.0,
+    };
+
+    return scenarios.map(scenario => {
+        let portfolioLoss = 0;
+        const holdingImpacts = holdings.map(h => {
+            const value = h.quantity * h.currentPrice;
+            const sectorMult = sectorMultiplier[h.sector] || 1.0;
+            const effectiveDrop = scenario.marketDrop * beta * sectorMult;
+            const loss = value * effectiveDrop;
+            const newValue = value + loss;
+
+            portfolioLoss += loss;
+
+            return {
+                symbol: h.symbol,
+                currentValue: Math.round(value),
+                projectedValue: Math.round(Math.max(0, newValue)),
+                loss: Math.round(loss),
+                dropPercent: parseFloat((effectiveDrop * 100).toFixed(1)),
+            };
+        });
+
+        return {
+            scenario: scenario.name,
+            description: scenario.description,
+            marketDrop: scenario.marketDrop * 100,
+            portfolioCurrentValue: Math.round(currentValue),
+            portfolioProjectedValue: Math.round(Math.max(0, currentValue + portfolioLoss)),
+            portfolioLoss: Math.round(portfolioLoss),
+            portfolioDropPercent: parseFloat(((portfolioLoss / currentValue) * 100).toFixed(1)),
+            holdingImpacts,
+        };
+    });
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// 12. WHAT-IF ANALYSIS
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Analyze impact of adding or removing a stock on portfolio risk.
+ *
+ * @param {Object[]} currentHoldings — Current portfolio holdings
+ * @param {Object} change — { action: 'ADD'|'REMOVE', symbol, sector, quantity, price }
+ * @param {Object[]} transactions — Transaction history
+ * @returns {Object} — Before/after risk comparison
+ */
+function computeWhatIf(currentHoldings, change, transactions = []) {
+    // Compute current risk
+    const currentAnalysis = runFullAnalysis({ holdings: currentHoldings, transactions });
+
+    // Build modified holdings
+    let modifiedHoldings = [...currentHoldings.map(h => ({ ...h }))];
+
+    if (change.action === 'ADD') {
+        const existing = modifiedHoldings.find(h => h.symbol === change.symbol);
+        if (existing) {
+            const totalQty = existing.quantity + change.quantity;
+            const totalCost = (existing.averagePrice * existing.quantity) + (change.price * change.quantity);
+            existing.quantity = totalQty;
+            existing.averagePrice = totalCost / totalQty;
+            existing.currentPrice = change.price;
+        } else {
+            modifiedHoldings.push({
+                symbol: change.symbol,
+                companyName: change.symbol,
+                quantity: change.quantity,
+                averagePrice: change.price,
+                currentPrice: change.price,
+                sector: change.sector || 'Other',
+            });
+        }
+    } else if (change.action === 'REMOVE') {
+        const idx = modifiedHoldings.findIndex(h => h.symbol === change.symbol);
+        if (idx !== -1) {
+            modifiedHoldings[idx].quantity -= change.quantity;
+            if (modifiedHoldings[idx].quantity <= 0) {
+                modifiedHoldings.splice(idx, 1);
+            }
+        }
+    }
+
+    // Compute new risk
+    const newAnalysis = modifiedHoldings.length > 0
+        ? runFullAnalysis({ holdings: modifiedHoldings, transactions })
+        : { riskScore: 0, riskCategory: 'N/A', metrics: { volatility: 0, sharpeRatio: 0, maxDrawdown: 0, beta: 0, varDaily: 0 } };
+
+    return {
+        action: change.action,
+        symbol: change.symbol,
+        before: {
+            riskScore: currentAnalysis.riskScore,
+            riskCategory: currentAnalysis.riskCategory,
+            volatility: currentAnalysis.metrics.volatility,
+            sharpeRatio: currentAnalysis.metrics.sharpeRatio,
+            holdingCount: currentHoldings.length,
+        },
+        after: {
+            riskScore: newAnalysis.riskScore,
+            riskCategory: newAnalysis.riskCategory,
+            volatility: newAnalysis.metrics.volatility,
+            sharpeRatio: newAnalysis.metrics.sharpeRatio,
+            holdingCount: modifiedHoldings.length,
+        },
+        impact: {
+            riskScoreChange: newAnalysis.riskScore - currentAnalysis.riskScore,
+            volatilityChange: parseFloat((newAnalysis.metrics.volatility - currentAnalysis.metrics.volatility).toFixed(2)),
+            recommendation: newAnalysis.riskScore < currentAnalysis.riskScore
+                ? '✅ This change would reduce your portfolio risk.'
+                : newAnalysis.riskScore > currentAnalysis.riskScore
+                    ? '⚠️ This change would increase your portfolio risk.'
+                    : '📊 This change has minimal impact on your risk.',
+        },
+    };
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// 13. SECTOR BREAKDOWN (for charting)
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Build sector allocation data for pie chart visualization.
+ *
+ * @param {Object[]} holdings
+ * @returns {Object[]} — Array of { sector, value, percent, color, stocks }
+ */
+function buildSectorBreakdown(holdings) {
+    if (!holdings || holdings.length === 0) return [];
+
+    const totalValue = holdings.reduce((s, h) => s + h.quantity * h.currentPrice, 0);
+    if (totalValue <= 0) return [];
+
+    const sectorColors = {
+        'Information Technology': '#3b82f6',
+        'Banking & Finance': '#10b981',
+        'Energy & Petrochemicals': '#f59e0b',
+        'Automobile': '#8b5cf6',
+        'Pharmaceuticals': '#ec4899',
+        'FMCG': '#06b6d4',
+        'Telecom': '#f97316',
+        'Infrastructure': '#6366f1',
+        'Other': '#94a3b8',
+    };
+
+    const sectorMap = {};
+    holdings.forEach(h => {
+        const sector = h.sector || 'Other';
+        if (!sectorMap[sector]) sectorMap[sector] = { value: 0, stocks: [] };
+        const value = h.quantity * h.currentPrice;
+        sectorMap[sector].value += value;
+        sectorMap[sector].stocks.push({ symbol: h.symbol, value: Math.round(value) });
+    });
+
+    return Object.entries(sectorMap)
+        .map(([sector, data]) => ({
+            sector,
+            value: Math.round(data.value),
+            percent: parseFloat(((data.value / totalValue) * 100).toFixed(1)),
+            color: sectorColors[sector] || '#94a3b8',
+            stocks: data.stocks,
+        }))
+        .sort((a, b) => b.value - a.value);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// 14. FULL RISK ANALYSIS (Enhanced)
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Run the complete risk analysis pipeline with all enhancements.
  *
  * @param {Object} params
  * @param {Object[]} params.holdings — Portfolio holdings with sector info
@@ -530,6 +772,7 @@ function runFullAnalysis({ holdings, transactions, benchmarkReturns = null }) {
     // 2. Compute all metrics
     const volatility = computeVolatility(dailyReturns);
     const sharpeRatio = computeSharpeRatio(dailyReturns);
+    const sortinoRatio = computeSortinoRatio(dailyReturns);
     const { maxDrawdown, currentDrawdown } = computeMaxDrawdown(portfolioValues);
     const beta = computeBeta(dailyReturns, benchmarkReturns);
     const { varPercent, varAmount } = computeVaR(dailyReturns, VAR_CONFIDENCE, currentValue);
@@ -557,19 +800,28 @@ function runFullAnalysis({ holdings, transactions, benchmarkReturns = null }) {
         holdingCount: holdings.length,
     });
 
+    // 5. Stress testing
+    const stressTest = computeStressTest(holdings, beta);
+
+    // 6. Sector breakdown for charting
+    const sectorBreakdown = buildSectorBreakdown(holdings);
+
     return {
         riskScore,
         riskCategory,
         metrics: {
-            volatility: parseFloat((volatility * 100).toFixed(2)),       // as %
+            volatility: parseFloat((volatility * 100).toFixed(2)),
             sharpeRatio: parseFloat(sharpeRatio.toFixed(2)),
-            maxDrawdown: parseFloat((maxDrawdown * 100).toFixed(2)),      // as %
+            sortinoRatio: parseFloat(sortinoRatio.toFixed(2)),
+            maxDrawdown: parseFloat((maxDrawdown * 100).toFixed(2)),
             currentDrawdown: parseFloat((currentDrawdown * 100).toFixed(2)),
             beta: parseFloat(beta.toFixed(2)),
-            varDaily: parseFloat(varPercent.toFixed(2)),                  // daily VaR %
+            varDaily: parseFloat(varPercent.toFixed(2)),
             varAmount: Math.round(varAmount),
         },
         diversification,
+        sectorBreakdown,
+        stressTest,
         scoreBreakdown: breakdown,
         explanations,
         portfolioValues: portfolioValues.map((v, i) => ({
@@ -590,11 +842,15 @@ module.exports = {
     simulatePortfolioHistory,
     computeVolatility,
     computeSharpeRatio,
+    computeSortinoRatio,
     computeMaxDrawdown,
     computeBeta,
     computeVaR,
     computeDiversificationMetrics,
     computeCompositeRiskScore,
+    computeStressTest,
+    computeWhatIf,
+    buildSectorBreakdown,
     generateRiskExplanation,
     runFullAnalysis,
     // Constants (for testing)

@@ -19,6 +19,9 @@ const Sidebar = () => {
         { path: '/risk-analysis', icon: '🛡️', label: 'Risk Analysis' },
         { path: '/paper-trading', icon: '📈', label: 'Paper Trading' },
         { path: '/chat-advisor', icon: '🤖', label: 'AI Chat' },
+        { path: '/broker-integration', icon: '🔗', label: 'Broker' },
+        { path: '/social-trading', icon: '🏆', label: 'Social Trading' },
+        { path: '/education', icon: '📚', label: 'Education' },
     ];
 
     return (

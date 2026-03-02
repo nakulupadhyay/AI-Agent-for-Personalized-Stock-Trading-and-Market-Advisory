@@ -424,6 +424,201 @@
     margin: 0 auto;
 }
 
+/* ── Sector Pie Chart ── */
+.ra-sector-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ra-sector-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.ra-pie-container {
+    flex-shrink: 0;
+}
+
+.ra-pie-chart {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ra-pie-inner {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--card-bg, white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.ra-pie-count {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.ra-pie-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ra-sector-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ra-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+}
+
+.ra-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ra-legend-label {
+    flex: 1;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.ra-legend-pct {
+    font-weight: 700;
+    color: var(--text-primary);
+    min-width: 40px;
+    text-align: right;
+}
+
+.ra-legend-val {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    min-width: 80px;
+    text-align: right;
+}
+
+/* ── Stress Test ── */
+.ra-stress-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ra-stress-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+.ra-stress-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.ra-stress-card {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    border-left: 4px solid #f59e0b;
+}
+
+.ra-stress--0 {
+    border-left-color: #f59e0b;
+}
+
+.ra-stress--1 {
+    border-left-color: #f97316;
+}
+
+.ra-stress--2 {
+    border-left-color: #ef4444;
+}
+
+.ra-stress--3 {
+    border-left-color: #991b1b;
+}
+
+.ra-stress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.ra-stress-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.ra-stress-drop {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #ef4444;
+}
+
+.ra-stress-bar {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.ra-stress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.ra-stress-values {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.ra-stress-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.ra-stress-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ra-neg {
+    color: #ef4444;
+}
+
 .ra-timestamp {
     text-align: center;
     font-size: 0.68rem;
@@ -448,6 +643,14 @@
     .ra-summary-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .ra-sector-layout {
+        flex-direction: column;
+    }
+
+    .ra-stress-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 600px) {
@@ -469,5 +672,19 @@
 
     .ra-loading-grid {
         grid-template-columns: 1fr;
+    }
+
+    .ra-stress-values {
+        grid-template-columns: 1fr;
+    }
+
+    .ra-pie-chart {
+        width: 150px;
+        height: 150px;
+    }
+
+    .ra-pie-inner {
+        width: 85px;
+        height: 85px;
     }
 }

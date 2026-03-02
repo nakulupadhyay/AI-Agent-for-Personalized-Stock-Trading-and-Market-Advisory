@@ -83,19 +83,26 @@ const RiskProfile = () => {
         if (currentQ > 0) setCurrentQ(currentQ - 1);
     };
 
+    // Map frontend short values to backend-expected values
+    const horizonMap = { short: 'Short-term (<1 year)', medium: 'Medium-term (1-5 years)', long: 'Long-term (5+ years)' };
+    const toleranceMap = { sell: 'Conservative', wait: 'Moderate', buy: 'Aggressive' };
+    const experienceMap = { beginner: 'Beginner', intermediate: 'Intermediate', expert: 'Expert' };
+    const goalMap = { preserve: 'Capital Preservation', balanced: 'Balanced Growth', aggressive: 'Aggressive Growth' };
+    const incomeMap = { low: 'Less than 10%', medium: '10-30%', high: 'More than 30%' };
+
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
             const res = await api.post('/risk-profile', {
-                investmentHorizon: answers.horizon?.value,
-                riskTolerance: answers.tolerance?.value,
-                experience: answers.experience?.value,
-                financialGoal: answers.goal?.value,
-                incomeAllocation: answers.income?.value,
+                investmentHorizon: horizonMap[answers.horizon?.value] || answers.horizon?.value,
+                riskTolerance: toleranceMap[answers.tolerance?.value] || answers.tolerance?.value,
+                investmentExperience: experienceMap[answers.experience?.value] || answers.experience?.value,
+                financialGoal: goalMap[answers.goal?.value] || answers.goal?.value,
+                monthlyIncome: incomeMap[answers.income?.value] || answers.income?.value,
             });
             setResult(res.data.data);
         } catch (e) {
-            console.error(e);
+            console.error('Risk profile submit error:', e);
         }
         setSubmitting(false);
     };

@@ -295,7 +295,7 @@ const Portfolio = () => {
                 <h2 className="section-title">🛡️ AI Risk Analysis</h2>
                 <div className="risk-grid">
                     <div className="risk-metric">
-                        <div className={`risk-badge risk-${riskAnalysis.riskScore?.toLowerCase()}`}>{riskAnalysis.riskScore}</div>
+                        <div className={`risk-badge risk-${(riskAnalysis.riskCategory || 'medium').toLowerCase()}`}>{riskAnalysis.riskScore}</div>
                         <span className="rm-label">Risk Score</span>
                     </div>
                     <div className="risk-metric">

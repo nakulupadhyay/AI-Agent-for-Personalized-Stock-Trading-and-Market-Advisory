@@ -55,6 +55,7 @@ const RiskAnalysis = () => {
     const getDrawdownStatus = (d) => d < 10 ? 'good' : d < 20 ? 'warning' : 'danger';
     const getBetaStatus = (b) => b < 0.8 ? 'good' : b < 1.2 ? 'warning' : 'danger';
     const getVarStatus = (v) => v < 2 ? 'good' : v < 3.5 ? 'warning' : 'danger';
+    const getSortinoStatus = (s) => s > 1.5 ? 'good' : s > 0.5 ? 'warning' : 'danger';
 
     if (loading) {
         return (
@@ -104,7 +105,7 @@ const RiskAnalysis = () => {
         );
     }
 
-    const { metrics, diversification, scoreBreakdown, explanations, mlPrediction, userRiskProfile, portfolioSummary } = data;
+    const { metrics, diversification, scoreBreakdown, explanations, mlPrediction, userRiskProfile, portfolioSummary, stressTest, sectorBreakdown } = data;
 
     return (
         <div className="ra-page">
@@ -212,7 +213,72 @@ const RiskAnalysis = () => {
                     status={diversification?.sectorConcentration > 60 ? 'danger' : diversification?.sectorConcentration > 40 ? 'warning' : 'good'}
                     description={`HHI: ${diversification?.hhi || 0} | Diversification ratio: ${diversification?.diversificationRatio || 0}`}
                 />
+                <MetricCard
+                    icon="📉"
+                    label="Sortino Ratio"
+                    value={metrics.sortinoRatio || 0}
+                    unit=""
+                    status={getSortinoStatus(metrics.sortinoRatio)}
+                    description="Like Sharpe but only penalizes downside volatility. Higher = better downside protection."
+                />
             </div>
+
+            {/* Sector Pie Chart */}
+            {sectorBreakdown && sectorBreakdown.length > 0 && (
+                <div className="ra-sector-section glass-card">
+                    <h3 className="ra-section-title">🏭 Sector Diversification</h3>
+                    <div className="ra-sector-layout">
+                        <div className="ra-pie-container">
+                            <SectorPieChart sectors={sectorBreakdown} />
+                        </div>
+                        <div className="ra-sector-legend">
+                            {sectorBreakdown.map((s, i) => (
+                                <div key={i} className="ra-legend-item">
+                                    <span className="ra-legend-dot" style={{ backgroundColor: s.color }}></span>
+                                    <span className="ra-legend-label">{s.sector}</span>
+                                    <span className="ra-legend-pct">{s.percent}%</span>
+                                    <span className="ra-legend-val">₹{s.value.toLocaleString('en-IN')}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Stress Test */}
+            {stressTest && stressTest.length > 0 && (
+                <div className="ra-stress-section glass-card">
+                    <h3 className="ra-section-title">💥 Stress Test Scenarios</h3>
+                    <p className="ra-stress-desc">Simulated portfolio impact under different market crash scenarios, adjusted for portfolio beta and sector sensitivity.</p>
+                    <div className="ra-stress-grid">
+                        {stressTest.map((scenario, i) => (
+                            <div key={i} className={`ra-stress-card ra-stress--${i}`}>
+                                <div className="ra-stress-header">
+                                    <span className="ra-stress-name">{scenario.scenario}</span>
+                                    <span className="ra-stress-drop">{scenario.marketDrop}%</span>
+                                </div>
+                                <div className="ra-stress-bar">
+                                    <div className="ra-stress-fill" style={{ width: `${Math.min(100, Math.abs(scenario.portfolioDropPercent))}%` }}></div>
+                                </div>
+                                <div className="ra-stress-values">
+                                    <div>
+                                        <span className="ra-stress-label">Portfolio Drop</span>
+                                        <span className="ra-stress-val ra-neg">{scenario.portfolioDropPercent}%</span>
+                                    </div>
+                                    <div>
+                                        <span className="ra-stress-label">Estimated Loss</span>
+                                        <span className="ra-stress-val ra-neg">₹{Math.abs(scenario.portfolioLoss).toLocaleString('en-IN')}</span>
+                                    </div>
+                                    <div>
+                                        <span className="ra-stress-label">Remaining</span>
+                                        <span className="ra-stress-val">₹{scenario.portfolioProjectedValue.toLocaleString('en-IN')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* AI Explanations */}
             <div className="ra-insights-section glass-card">
@@ -336,5 +402,25 @@ const ProbabilityBar = ({ label, value, color }) => (
         </div>
     </div>
 );
+
+const SectorPieChart = ({ sectors }) => {
+    // Build conic-gradient from sector data
+    let cumulative = 0;
+    const stops = sectors.map(s => {
+        const start = cumulative;
+        cumulative += s.percent;
+        return `${s.color} ${start}% ${cumulative}%`;
+    });
+    const gradient = `conic-gradient(${stops.join(', ')})`;
+
+    return (
+        <div className="ra-pie-chart" style={{ background: gradient }}>
+            <div className="ra-pie-inner">
+                <span className="ra-pie-count">{sectors.length}</span>
+                <span className="ra-pie-label">Sectors</span>
+            </div>
+        </div>
+    );
+};
 
 export default RiskAnalysis;

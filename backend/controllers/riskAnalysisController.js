@@ -130,6 +130,7 @@ const getRiskAnalysis = async (req, res) => {
                     totalInvested: enrichedHoldings.reduce((s, h) => s + h.quantity * h.averagePrice, 0),
                     currentValue: enrichedHoldings.reduce((s, h) => s + h.quantity * h.currentPrice, 0),
                     holdingCount: enrichedHoldings.length,
+                    sectorCount: new Set(enrichedHoldings.map(h => h.sector)).size,
                 },
             },
         });

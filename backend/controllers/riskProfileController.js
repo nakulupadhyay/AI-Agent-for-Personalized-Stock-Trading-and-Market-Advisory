@@ -17,7 +17,7 @@ const saveRiskProfile = async (req, res) => {
             monthlyIncome,
         } = req.body;
 
-        // Calculate risk level based on answers
+        // Calculate risk score based on all 5 answers
         let riskScore = 0;
 
         // Investment horizon scoring
@@ -35,17 +35,26 @@ const saveRiskProfile = async (req, res) => {
         else if (investmentExperience === 'Intermediate') riskScore += 2;
         else riskScore += 1;
 
-        // Calculate final risk level
+        // Financial goal scoring
+        if (financialGoal === 'Aggressive Growth') riskScore += 3;
+        else if (financialGoal === 'Balanced Growth') riskScore += 2;
+        else riskScore += 1;
+
+        // Income allocation scoring
+        if (monthlyIncome === 'More than 30%') riskScore += 3;
+        else if (monthlyIncome === '10-30%') riskScore += 2;
+        else riskScore += 1;
+
+        // Calculate final risk level (score out of 15)
         let calculatedRiskLevel;
-        if (riskScore >= 7) calculatedRiskLevel = 'High';
-        else if (riskScore >= 5) calculatedRiskLevel = 'Medium';
+        if (riskScore >= 11) calculatedRiskLevel = 'High';
+        else if (riskScore >= 7) calculatedRiskLevel = 'Medium';
         else calculatedRiskLevel = 'Low';
 
         // Update or create risk profile
         let riskProfile = await RiskProfile.findOne({ userId });
 
         if (riskProfile) {
-            // Update existing profile
             riskProfile.investmentHorizon = investmentHorizon;
             riskProfile.riskTolerance = riskTolerance;
             riskProfile.investmentExperience = investmentExperience;
@@ -54,7 +63,6 @@ const saveRiskProfile = async (req, res) => {
             riskProfile.calculatedRiskLevel = calculatedRiskLevel;
             await riskProfile.save();
         } else {
-            // Create new profile
             riskProfile = await RiskProfile.create({
                 userId,
                 investmentHorizon,
@@ -72,7 +80,11 @@ const saveRiskProfile = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Risk profile saved successfully',
-            data: riskProfile,
+            data: {
+                ...riskProfile.toObject(),
+                riskLevel: calculatedRiskLevel,
+                riskScore: riskScore,
+            },
         });
     } catch (error) {
         console.error('Save risk profile error:', error);
@@ -102,9 +114,41 @@ const getRiskProfile = async (req, res) => {
             });
         }
 
+        // Recalculate score for display
+        let riskScore = 0;
+        const h = riskProfile.investmentHorizon;
+        const t = riskProfile.riskTolerance;
+        const e = riskProfile.investmentExperience;
+        const g = riskProfile.financialGoal;
+        const m = riskProfile.monthlyIncome;
+
+        if (h === 'Long-term (5+ years)') riskScore += 3;
+        else if (h === 'Medium-term (1-5 years)') riskScore += 2;
+        else riskScore += 1;
+
+        if (t === 'Aggressive') riskScore += 3;
+        else if (t === 'Moderate') riskScore += 2;
+        else riskScore += 1;
+
+        if (e === 'Expert') riskScore += 3;
+        else if (e === 'Intermediate') riskScore += 2;
+        else riskScore += 1;
+
+        if (g === 'Aggressive Growth') riskScore += 3;
+        else if (g === 'Balanced Growth') riskScore += 2;
+        else riskScore += 1;
+
+        if (m === 'More than 30%') riskScore += 3;
+        else if (m === '10-30%') riskScore += 2;
+        else riskScore += 1;
+
         res.status(200).json({
             success: true,
-            data: riskProfile,
+            data: {
+                ...riskProfile.toObject(),
+                riskLevel: riskProfile.calculatedRiskLevel,
+                riskScore: riskScore,
+            },
         });
     } catch (error) {
         console.error('Get risk profile error:', error);

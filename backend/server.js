@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const { errorHandler, logger } = require('./middleware/errorHandler');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
 // Initialize app
 const app = express();
@@ -17,13 +19,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Rate limiting
+app.use('/api/', apiLimiter);
+
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
+    logger.info(`${req.method} ${req.path}`);
     next();
 });
 
-// Routes
+// ─── Routes ──────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/stocks', require('./routes/stocks'));
 app.use('/api/ai', require('./routes/ai'));
@@ -32,11 +37,18 @@ app.use('/api/risk-profile', require('./routes/riskProfile'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/risk-analysis', require('./routes/riskAnalysis'));
 
+// New routes
+app.use('/api/broker', require('./routes/broker'));
+app.use('/api/social', require('./routes/social'));
+app.use('/api/education', require('./routes/education'));
+app.use('/api/portfolio', require('./routes/portfolio'));
+app.use('/api/sentiment', require('./routes/sentiment'));
+
 // Welcome route
 app.get('/', (req, res) => {
     res.json({
         message: 'AI Stock Trading & Market Advisory API',
-        version: '1.0.0',
+        version: '2.0.0',
         endpoints: {
             auth: '/api/auth',
             stocks: '/api/stocks',
@@ -44,18 +56,18 @@ app.get('/', (req, res) => {
             trading: '/api/trading',
             riskProfile: '/api/risk-profile',
             riskAnalysis: '/api/risk-analysis',
+            settings: '/api/settings',
+            broker: '/api/broker',
+            social: '/api/social',
+            education: '/api/education',
+            portfolio: '/api/portfolio',
+            sentiment: '/api/sentiment',
         },
     });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
-    res.status(err.status || 500).json({
-        success: false,
-        message: err.message || 'Server Error',
-    });
-});
+// Centralized error handler
+app.use(errorHandler);
 
 // 404 handler
 app.use((req, res) => {
@@ -68,6 +80,6 @@ app.use((req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`🚀 Server running on port ${PORT}`);
+    logger.info(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
 });

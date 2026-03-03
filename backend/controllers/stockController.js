@@ -1,16 +1,15 @@
 /**
- * Stock Controller — Powered by Alpha Vantage API
- * Uses real-time stock data with in-memory caching to respect API rate limits
- * Free tier: 25 requests/day, so caching is critical
+ * Stock Controller — Powered by Yahoo Finance API
+ * Uses Yahoo Finance v8 chart API for real-time & historical stock data
+ * No API key required — free unlimited access via public endpoints
  */
 
 const axios = require('axios');
 
-const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
-const BASE_URL = 'https://www.alphavantage.co/query';
+const YAHOO_BASE = 'https://query1.finance.yahoo.com';
+const YAHOO_HEADERS = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' };
 
 // ── In-Memory Cache ──────────────────────────────
-// Caches data for 5 minutes to avoid hitting rate limits
 const cache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
@@ -27,16 +26,22 @@ const setCache = (key, data) => {
     cache.set(key, { data, timestamp: Date.now() });
 };
 
-// ── Default Indian Stock Symbols (BSE/NSE) ──────
+// ── Default Indian Stock Symbols (NSE) ───────────
+// Yahoo Finance uses .NS suffix for NSE stocks
 const DEFAULT_SYMBOLS = [
-    { symbol: 'RELIANCE.BSE', displaySymbol: 'RELIANCE', companyName: 'Reliance Industries Ltd' },
-    { symbol: 'TCS.BSE', displaySymbol: 'TCS', companyName: 'Tata Consultancy Services' },
-    { symbol: 'INFY.BSE', displaySymbol: 'INFY', companyName: 'Infosys Limited' },
-    { symbol: 'HDFCBANK.BSE', displaySymbol: 'HDFCBANK', companyName: 'HDFC Bank Limited' },
-    { symbol: 'ICICIBANK.BSE', displaySymbol: 'ICICIBANK', companyName: 'ICICI Bank Limited' },
+    { yahoo: 'RELIANCE.NS', display: 'RELIANCE', name: 'Reliance Industries Ltd' },
+    { yahoo: 'TCS.NS', display: 'TCS', name: 'Tata Consultancy Services' },
+    { yahoo: 'INFY.NS', display: 'INFY', name: 'Infosys Limited' },
+    { yahoo: 'HDFCBANK.NS', display: 'HDFCBANK', name: 'HDFC Bank Limited' },
+    { yahoo: 'ICICIBANK.NS', display: 'ICICIBANK', name: 'ICICI Bank Limited' },
+    { yahoo: 'WIPRO.NS', display: 'WIPRO', name: 'Wipro Limited' },
+    { yahoo: 'SBIN.NS', display: 'SBIN', name: 'State Bank of India' },
+    { yahoo: 'BHARTIARTL.NS', display: 'BHARTIARTL', name: 'Bharti Airtel Limited' },
+    { yahoo: 'ITC.NS', display: 'ITC', name: 'ITC Limited' },
+    { yahoo: 'LT.NS', display: 'LT', name: 'Larsen & Toubro Limited' },
 ];
 
-// ── Fallback Mock Data (when API is unavailable) ──
+// ── Fallback Mock Data ───────────────────────────
 const FALLBACK_STOCKS = [
     { symbol: 'RELIANCE', companyName: 'Reliance Industries Ltd', currentPrice: 2456.75, change: 12.30, changePercent: 0.50, high: 2470.00, low: 2440.50, volume: 5234567, marketCap: '16.5L Cr' },
     { symbol: 'TCS', companyName: 'Tata Consultancy Services', currentPrice: 3678.90, change: -15.60, changePercent: -0.42, high: 3695.00, low: 3665.25, volume: 2345678, marketCap: '13.4L Cr' },
@@ -46,47 +51,59 @@ const FALLBACK_STOCKS = [
 ];
 
 /**
- * Fetch quote from Alpha Vantage GLOBAL_QUOTE
+ * Format market cap for display (₹ in Crores)
  */
-const fetchQuote = async (avSymbol) => {
+const formatMarketCap = (cap) => {
+    if (!cap) return '—';
+    const crore = cap / 10000000;
+    if (crore >= 100000) return `${(crore / 100000).toFixed(1)}L Cr`;
+    if (crore >= 1000) return `${(crore / 1000).toFixed(1)}K Cr`;
+    return `${crore.toFixed(0)} Cr`;
+};
+
+/**
+ * Fetch a single stock quote from Yahoo Finance v8 chart API
+ */
+const fetchYahooQuote = async (yahooSymbol) => {
     try {
-        const res = await axios.get(BASE_URL, {
-            params: {
-                function: 'GLOBAL_QUOTE',
-                symbol: avSymbol,
-                apikey: API_KEY,
-            },
+        const response = await axios.get(`${YAHOO_BASE}/v8/finance/chart/${yahooSymbol}`, {
+            params: { interval: '1d', range: '1d' },
+            headers: YAHOO_HEADERS,
             timeout: 10000,
         });
 
-        const quote = res.data['Global Quote'];
-        if (!quote || !quote['05. price']) {
-            return null;
-        }
+        const result = response.data?.chart?.result?.[0];
+        if (!result || !result.meta) return null;
+
+        const meta = result.meta;
+        const price = meta.regularMarketPrice;
+        const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+        const change = price - prevClose;
+        const changePercent = prevClose > 0 ? (change / prevClose) * 100 : 0;
 
         return {
-            currentPrice: parseFloat(quote['05. price']),
-            change: parseFloat(quote['09. change']),
-            changePercent: parseFloat(quote['10. change percent']?.replace('%', '')),
-            high: parseFloat(quote['03. high']),
-            low: parseFloat(quote['04. low']),
-            volume: parseInt(quote['06. volume']),
-            previousClose: parseFloat(quote['08. previous close']),
+            currentPrice: price,
+            change: parseFloat(change.toFixed(2)),
+            changePercent: parseFloat(changePercent.toFixed(2)),
+            high: meta.regularMarketDayHigh || price,
+            low: meta.regularMarketDayLow || price,
+            volume: meta.regularMarketVolume || 0,
+            previousClose: prevClose,
+            open: meta.regularMarketDayHigh ? price : price, // approximation
         };
     } catch (error) {
-        console.error(`Alpha Vantage quote error for ${avSymbol}:`, error.message);
+        console.error(`Yahoo Finance quote error for ${yahooSymbol}:`, error.message);
         return null;
     }
 };
 
 /**
  * @route   GET /api/stocks
- * @desc    Get live stock market data from Alpha Vantage
+ * @desc    Get live stock market data from Yahoo Finance
  * @access  Private
  */
 const getStocks = async (req, res) => {
     try {
-        // Check cache first
         const cacheKey = 'stocks_list';
         const cached = getCached(cacheKey);
         if (cached) {
@@ -94,38 +111,39 @@ const getStocks = async (req, res) => {
             return res.status(200).json({ success: true, count: cached.length, data: cached, source: 'cache' });
         }
 
-        console.log('🌐 Fetching stocks from Alpha Vantage...');
+        console.log('🌐 Fetching stocks from Yahoo Finance...');
         const results = [];
         let usedFallback = false;
 
-        // Fetch quotes sequentially to avoid rate-limiting
-        for (const stock of DEFAULT_SYMBOLS) {
-            const quote = await fetchQuote(stock.symbol);
+        // Fetch all quotes concurrently (Yahoo has no strict rate limit)
+        const quotePromises = DEFAULT_SYMBOLS.map(async (stock) => {
+            const quote = await fetchYahooQuote(stock.yahoo);
             if (quote) {
-                results.push({
-                    symbol: stock.displaySymbol,
-                    companyName: stock.companyName,
+                return {
+                    symbol: stock.display,
+                    companyName: stock.name,
                     currentPrice: quote.currentPrice,
                     change: quote.change,
                     changePercent: quote.changePercent,
                     high: quote.high,
                     low: quote.low,
                     volume: quote.volume,
-                    marketCap: '—', // Alpha Vantage GLOBAL_QUOTE does not include market cap
-                });
+                    marketCap: '—',
+                    open: quote.open,
+                    previousClose: quote.previousClose,
+                };
             } else {
-                // If any single fetch fails, use fallback for that stock
-                const fb = FALLBACK_STOCKS.find(f => f.symbol === stock.displaySymbol);
-                if (fb) {
-                    results.push(fb);
-                    usedFallback = true;
-                }
+                const fb = FALLBACK_STOCKS.find(f => f.symbol === stock.display);
+                if (fb) { usedFallback = true; return fb; }
+                return null;
             }
-        }
+        });
 
-        // If all API calls failed, return full fallback
+        const resolved = await Promise.all(quotePromises);
+        resolved.forEach(r => { if (r) results.push(r); });
+
         if (results.length === 0) {
-            console.log('⚠️ All API calls failed, using fallback data');
+            console.log('⚠️ All Yahoo Finance calls failed, using fallback data');
             setCache(cacheKey, FALLBACK_STOCKS);
             return res.status(200).json({ success: true, count: FALLBACK_STOCKS.length, data: FALLBACK_STOCKS, source: 'fallback' });
         }
@@ -135,23 +153,17 @@ const getStocks = async (req, res) => {
             success: true,
             count: results.length,
             data: results,
-            source: usedFallback ? 'partial_api' : 'alpha_vantage',
+            source: usedFallback ? 'partial_api' : 'yahoo_finance',
         });
     } catch (error) {
         console.error('Get stocks error:', error);
-        // Graceful degradation — return fallback data
-        res.status(200).json({
-            success: true,
-            count: FALLBACK_STOCKS.length,
-            data: FALLBACK_STOCKS,
-            source: 'fallback',
-        });
+        res.status(200).json({ success: true, count: FALLBACK_STOCKS.length, data: FALLBACK_STOCKS, source: 'fallback' });
     }
 };
 
 /**
  * @route   GET /api/stocks/:symbol
- * @desc    Get detailed stock data with historical prices from Alpha Vantage
+ * @desc    Get detailed stock data with historical prices from Yahoo Finance
  * @access  Private
  */
 const getStockDetails = async (req, res) => {
@@ -164,75 +176,55 @@ const getStockDetails = async (req, res) => {
             return res.status(200).json({ success: true, data: cached, source: 'cache' });
         }
 
-        // Look up the Alpha Vantage symbol mapping
-        const mapping = DEFAULT_SYMBOLS.find(s => s.displaySymbol === symbol.toUpperCase());
-        const avSymbol = mapping ? mapping.symbol : `${symbol}.BSE`;
+        const mapping = DEFAULT_SYMBOLS.find(s => s.display === symbol.toUpperCase());
+        const yahooSymbol = mapping ? mapping.yahoo : `${symbol}.NS`;
 
-        console.log(`🌐 Fetching ${avSymbol} historical data from Alpha Vantage...`);
-        const response = await axios.get(BASE_URL, {
-            params: {
-                function: 'TIME_SERIES_DAILY',
-                symbol: avSymbol,
-                outputsize: 'compact', // Last 100 data points
-                apikey: API_KEY,
-            },
+        console.log(`🌐 Fetching ${yahooSymbol} historical data from Yahoo Finance...`);
+
+        const response = await axios.get(`${YAHOO_BASE}/v8/finance/chart/${yahooSymbol}`, {
+            params: { interval: '1d', range: '3mo' },
+            headers: YAHOO_HEADERS,
             timeout: 15000,
         });
 
-        const timeSeries = response.data['Time Series (Daily)'];
+        const chartResult = response.data?.chart?.result?.[0];
 
-        if (!timeSeries) {
-            // API limit reached or symbol not found — return mock data
+        if (!chartResult || !chartResult.timestamp) {
             console.log(`⚠️ No data for ${symbol}, using mock historical data`);
-            const mockData = {
-                symbol,
-                prices: generateMockPrices(symbol),
-                source: 'fallback',
-            };
-            return res.status(200).json({ success: true, data: mockData });
+            return res.status(200).json({
+                success: true,
+                data: { symbol, prices: generateMockPrices(symbol), source: 'fallback' },
+            });
         }
 
-        // Convert to array format sorted by date ascending
-        const prices = Object.entries(timeSeries)
-            .map(([date, values]) => ({
-                date,
-                open: parseFloat(values['1. open']),
-                high: parseFloat(values['2. high']),
-                low: parseFloat(values['3. low']),
-                price: parseFloat(values['4. close']),
-                volume: parseInt(values['5. volume']),
-            }))
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
+        const timestamps = chartResult.timestamp;
+        const quotes = chartResult.indicators?.quote?.[0] || {};
 
-        const result = {
-            symbol,
-            prices,
-            source: 'alpha_vantage',
-        };
+        const prices = timestamps.map((ts, i) => ({
+            date: new Date(ts * 1000).toISOString().split('T')[0],
+            open: parseFloat((quotes.open?.[i] || 0).toFixed(2)),
+            high: parseFloat((quotes.high?.[i] || 0).toFixed(2)),
+            low: parseFloat((quotes.low?.[i] || 0).toFixed(2)),
+            price: parseFloat((quotes.close?.[i] || 0).toFixed(2)),
+            volume: quotes.volume?.[i] || 0,
+        })).filter(p => p.price > 0); // Remove invalid data points
 
+        const result = { symbol, prices, source: 'yahoo_finance' };
         setCache(cacheKey, result);
 
-        res.status(200).json({
-            success: true,
-            data: result,
-        });
+        res.status(200).json({ success: true, data: result });
     } catch (error) {
         console.error('Get stock details error:', error);
-        // Fallback mock historical data
         res.status(200).json({
             success: true,
-            data: {
-                symbol: req.params.symbol,
-                prices: generateMockPrices(req.params.symbol),
-                source: 'fallback',
-            },
+            data: { symbol: req.params.symbol, prices: generateMockPrices(req.params.symbol), source: 'fallback' },
         });
     }
 };
 
 /**
  * @route   GET /api/stocks/search/:query
- * @desc    Search for stocks using Alpha Vantage SYMBOL_SEARCH
+ * @desc    Search for stocks using Yahoo Finance autocomplete API
  * @access  Private
  */
 const searchStocks = async (req, res) => {
@@ -244,37 +236,35 @@ const searchStocks = async (req, res) => {
             return res.status(200).json({ success: true, data: cached });
         }
 
-        const response = await axios.get(BASE_URL, {
+        const response = await axios.get(`${YAHOO_BASE}/v1/finance/search`, {
             params: {
-                function: 'SYMBOL_SEARCH',
-                keywords: query,
-                apikey: API_KEY,
+                q: query,
+                quotesCount: 15,
+                newsCount: 0,
+                enableFuzzyQuery: true,
+                quotesQueryId: 'tss_match_phrase_query',
             },
+            headers: YAHOO_HEADERS,
             timeout: 10000,
         });
 
-        const matches = response.data.bestMatches || [];
-        const results = matches.map(m => ({
-            symbol: m['1. symbol'],
-            name: m['2. name'],
-            type: m['3. type'],
-            region: m['4. region'],
-            currency: m['8. currency'],
-        }));
+        const quotes = response.data?.quotes || [];
+        const results = quotes
+            .filter(q => q.quoteType === 'EQUITY')
+            .map(q => ({
+                symbol: q.symbol,
+                name: q.longname || q.shortname || q.symbol,
+                type: q.quoteType,
+                region: q.exchDisp || q.exchange,
+                currency: q.currency || 'INR',
+                exchange: q.exchange,
+            }));
 
         setCache(cacheKey, results);
-
-        res.status(200).json({
-            success: true,
-            data: results,
-        });
+        res.status(200).json({ success: true, data: results });
     } catch (error) {
         console.error('Search stocks error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to search stocks',
-            error: error.message,
-        });
+        res.status(500).json({ success: false, message: 'Failed to search stocks', error: error.message });
     }
 };
 
@@ -289,7 +279,6 @@ const generateMockPrices = (symbol) => {
     for (let i = 30; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
-        // Skip weekends
         if (date.getDay() === 0 || date.getDay() === 6) continue;
         prices.push({
             date: date.toISOString().split('T')[0],

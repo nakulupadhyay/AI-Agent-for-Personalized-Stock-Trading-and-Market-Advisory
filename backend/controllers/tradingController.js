@@ -526,4 +526,234 @@ const getPortfolioAnalysis = async (req, res) => {
     }
 };
 
-module.exports = { buyStock, sellStock, getPortfolio, getTransactions, getPortfolioAnalysis };
+/**
+ * @route   POST /api/trading/limit-order
+ * @desc    Place a limit order (executes when price reaches target)
+ * @access  Private
+ */
+const placeLimitOrder = async (req, res) => {
+    try {
+        const { symbol, companyName, quantity, limitPrice, type } = req.body;
+        const userId = req.user.id;
+
+        if (!symbol || !quantity || !limitPrice || !type) {
+            return res.status(400).json({ success: false, message: 'All fields required: symbol, quantity, limitPrice, type' });
+        }
+
+        const user = await User.findById(userId);
+        const totalAmount = quantity * limitPrice;
+
+        // For buy limit orders, check if user has enough balance
+        if (type === 'BUY' && user.virtualBalance < totalAmount) {
+            return res.status(400).json({ success: false, message: 'Insufficient balance for limit order' });
+        }
+
+        // For sell limit orders, check if user has the stock
+        if (type === 'SELL') {
+            const portfolio = await Portfolio.findOne({ userId });
+            const holding = portfolio?.holdings.find(h => h.symbol === symbol);
+            if (!holding || holding.quantity < quantity) {
+                return res.status(400).json({ success: false, message: 'Insufficient stock quantity' });
+            }
+        }
+
+        const order = await Transaction.create({
+            userId,
+            type,
+            orderType: 'LIMIT',
+            symbol,
+            companyName: companyName || symbol,
+            quantity,
+            price: limitPrice,
+            limitPrice,
+            totalAmount,
+            status: 'PENDING',
+        });
+
+        res.json({
+            success: true,
+            message: `Limit ${type} order placed for ${symbol} at ₹${limitPrice}`,
+            data: order,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * @route   POST /api/trading/stop-loss
+ * @desc    Place a stop-loss order
+ * @access  Private
+ */
+const placeStopLoss = async (req, res) => {
+    try {
+        const { symbol, companyName, quantity, stopLossPrice } = req.body;
+        const userId = req.user.id;
+
+        if (!symbol || !quantity || !stopLossPrice) {
+            return res.status(400).json({ success: false, message: 'All fields required: symbol, quantity, stopLossPrice' });
+        }
+
+        // Check user has the stock
+        const portfolio = await Portfolio.findOne({ userId });
+        const holding = portfolio?.holdings.find(h => h.symbol === symbol);
+        if (!holding || holding.quantity < quantity) {
+            return res.status(400).json({ success: false, message: 'Insufficient stock quantity for stop-loss' });
+        }
+
+        const order = await Transaction.create({
+            userId,
+            type: 'SELL',
+            orderType: 'STOP_LOSS',
+            symbol,
+            companyName: companyName || holding.companyName,
+            quantity,
+            price: stopLossPrice,
+            stopLossPrice,
+            totalAmount: quantity * stopLossPrice,
+            status: 'PENDING',
+        });
+
+        res.json({
+            success: true,
+            message: `Stop-loss set for ${symbol} at ₹${stopLossPrice}`,
+            data: order,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * @route   GET /api/trading/pending-orders
+ * @desc    List all pending limit and stop-loss orders
+ * @access  Private
+ */
+const getPendingOrders = async (req, res) => {
+    try {
+        const orders = await Transaction.find({
+            userId: req.user.id,
+            status: 'PENDING',
+        }).sort({ timestamp: -1 });
+
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * @route   DELETE /api/trading/order/:id
+ * @desc    Cancel a pending order
+ * @access  Private
+ */
+const cancelOrder = async (req, res) => {
+    try {
+        const order = await Transaction.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user.id, status: 'PENDING' },
+            { status: 'CANCELLED' },
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Pending order not found' });
+        }
+
+        res.json({ success: true, message: 'Order cancelled', data: order });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+/**
+ * @route   GET /api/trading/analytics
+ * @desc    Trading performance analytics
+ * @access  Private
+ */
+const getTradeAnalytics = async (req, res) => {
+    try {
+        const transactions = await Transaction.find({
+            userId: req.user.id,
+            status: { $ne: 'PENDING' },
+        }).sort({ timestamp: 1 });
+
+        if (transactions.length === 0) {
+            return res.json({
+                success: true,
+                data: {
+                    totalTrades: 0,
+                    buyTrades: 0,
+                    sellTrades: 0,
+                    winRate: 0,
+                    avgReturn: 0,
+                    bestTrade: null,
+                    worstTrade: null,
+                    totalVolume: 0,
+                    mostTraded: null,
+                    tradesByMonth: [],
+                },
+            });
+        }
+
+        const buys = {};
+        let wins = 0, losses = 0, totalReturn = 0;
+        let bestPL = -Infinity, worstPL = Infinity;
+        let bestTrade = null, worstTrade = null;
+        const stockVolume = {};
+
+        for (const tx of transactions) {
+            // Track volume
+            stockVolume[tx.symbol] = (stockVolume[tx.symbol] || 0) + tx.totalAmount;
+
+            if (tx.type === 'BUY') {
+                buys[tx.symbol] = { price: tx.price, amount: tx.totalAmount, date: tx.timestamp };
+            } else if (tx.type === 'SELL' && buys[tx.symbol]) {
+                const pl = (tx.price - buys[tx.symbol].price) * tx.quantity;
+                totalReturn += pl;
+                if (pl > 0) wins++;
+                else losses++;
+                if (pl > bestPL) { bestPL = pl; bestTrade = { symbol: tx.symbol, profitLoss: pl, price: tx.price, date: tx.timestamp }; }
+                if (pl < worstPL) { worstPL = pl; worstTrade = { symbol: tx.symbol, profitLoss: pl, price: tx.price, date: tx.timestamp }; }
+                delete buys[tx.symbol];
+            }
+        }
+
+        const buyTrades = transactions.filter(t => t.type === 'BUY').length;
+        const sellTrades = transactions.filter(t => t.type === 'SELL').length;
+        const closedTrades = wins + losses;
+        const totalVolume = transactions.reduce((s, t) => s + t.totalAmount, 0);
+        const mostTraded = Object.entries(stockVolume).sort((a, b) => b[1] - a[1])[0];
+
+        // Trades by month
+        const monthMap = {};
+        transactions.forEach(tx => {
+            const key = new Date(tx.timestamp).toISOString().slice(0, 7);
+            if (!monthMap[key]) monthMap[key] = { buys: 0, sells: 0, volume: 0 };
+            if (tx.type === 'BUY') monthMap[key].buys++;
+            else monthMap[key].sells++;
+            monthMap[key].volume += tx.totalAmount;
+        });
+        const tradesByMonth = Object.entries(monthMap).map(([month, data]) => ({ month, ...data }));
+
+        res.json({
+            success: true,
+            data: {
+                totalTrades: transactions.length,
+                buyTrades,
+                sellTrades,
+                winRate: closedTrades > 0 ? Math.round((wins / closedTrades) * 100) : 0,
+                avgReturn: closedTrades > 0 ? Math.round(totalReturn / closedTrades) : 0,
+                totalReturn: Math.round(totalReturn),
+                bestTrade,
+                worstTrade,
+                totalVolume: Math.round(totalVolume),
+                mostTraded: mostTraded ? { symbol: mostTraded[0], volume: mostTraded[1] } : null,
+                tradesByMonth,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+module.exports = { buyStock, sellStock, getPortfolio, getTransactions, getPortfolioAnalysis, placeLimitOrder, placeStopLoss, getPendingOrders, cancelOrder, getTradeAnalytics };

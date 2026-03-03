@@ -426,13 +426,7 @@ uvicorn app.main:app --reload --port 8000
 8. **Education** — Progress through structured learning modules on stock market fundamentals.
 9. **Settings** — Manage account details, notification preferences, and security options.
 
----
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 <div align="center">
 

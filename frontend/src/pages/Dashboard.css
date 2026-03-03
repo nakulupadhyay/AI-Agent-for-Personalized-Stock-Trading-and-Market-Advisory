@@ -236,7 +236,13 @@
     cursor: not-allowed;
 }
 
-/* Search Result */
+/* Search Results List */
+.search-results-list {
+    max-height: 320px;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
 .search-result {
     display: flex;
     align-items: center;

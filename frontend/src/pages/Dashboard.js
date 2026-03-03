@@ -38,7 +38,7 @@ const Dashboard = () => {
     const [showAiExplanation, setShowAiExplanation] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResult, setSearchResult] = useState(null);
+    const [searchResults, setSearchResults] = useState([]);
     const [searchLoading, setSearchLoading] = useState(false);
     const [selectedStock, setSelectedStock] = useState(null);
 
@@ -104,20 +104,23 @@ const Dashboard = () => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
         setSearchLoading(true);
-        setSearchResult(null);
+        setSearchResults([]);
         try {
             const res = await api.get(`/stocks/search/${searchQuery.trim()}`);
             const results = res.data.data;
             if (results && results.length > 0) {
-                setSearchResult(results[0]);
+                setSearchResults(results);
             } else {
-                setSearchResult({ notFound: true });
+                setSearchResults([{ notFound: true }]);
             }
         } catch (err) {
             // Fallback: search in loaded stocks
-            const found = stocks.find(s => s.symbol.toLowerCase().includes(searchQuery.toLowerCase()));
-            if (found) setSearchResult(found);
-            else setSearchResult({ notFound: true });
+            const found = stocks.filter(s =>
+                s.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                s.companyName?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            if (found.length > 0) setSearchResults(found);
+            else setSearchResults([{ notFound: true }]);
         }
         setSearchLoading(false);
     };
@@ -295,23 +298,27 @@ const Dashboard = () => {
                         {searchLoading ? '...' : 'Search'}
                     </button>
                 </form>
-                {searchResult && !searchResult.notFound && (
-                    <div className="search-result animate-fadeIn">
-                        <div className="sr-main">
-                            <span className="sr-symbol">{searchResult.symbol || searchResult['1. symbol']}</span>
-                            <span className="sr-name">{searchResult.companyName || searchResult['2. name'] || ''}</span>
-                        </div>
-                        <div className="sr-price">
-                            {searchResult.currentPrice ? `₹${fmt(searchResult.currentPrice)}` : searchResult['8. currency'] || ''}
-                        </div>
-                        {searchResult.changePercent !== undefined && (
-                            <span className={`sr-change ${searchResult.changePercent >= 0 ? 'positive' : 'negative'}`}>
-                                {searchResult.changePercent >= 0 ? '▲' : '▼'} {Math.abs(searchResult.changePercent)?.toFixed(2)}%
-                            </span>
-                        )}
+                {searchResults.length > 0 && !searchResults[0]?.notFound && (
+                    <div className="search-results-list animate-fadeIn">
+                        {searchResults.map((result, idx) => (
+                            <div key={idx} className="search-result">
+                                <div className="sr-main">
+                                    <span className="sr-symbol">{result.symbol}</span>
+                                    <span className="sr-name">{result.companyName || result.name || ''}</span>
+                                </div>
+                                <div className="sr-price">
+                                    {result.currentPrice ? `₹${fmt(result.currentPrice)}` : ''}
+                                </div>
+                                {result.changePercent !== undefined && (
+                                    <span className={`sr-change ${result.changePercent >= 0 ? 'positive' : 'negative'}`}>
+                                        {result.changePercent >= 0 ? '▲' : '▼'} {Math.abs(result.changePercent)?.toFixed(2)}%
+                                    </span>
+                                )}
+                            </div>
+                        ))}
                     </div>
                 )}
-                {searchResult?.notFound && (
+                {searchResults.length > 0 && searchResults[0]?.notFound && (
                     <div className="search-result animate-fadeIn">
                         <span className="sr-empty">No results found for "{searchQuery}"</span>
                     </div>

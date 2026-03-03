@@ -222,9 +222,84 @@ const getStockDetails = async (req, res) => {
     }
 };
 
+// ── Comprehensive Indian Stock Database for Local Search ──
+const INDIAN_STOCKS_DB = [
+    { yahoo: 'RELIANCE.NS', symbol: 'RELIANCE', name: 'Reliance Industries Ltd' },
+    { yahoo: 'TCS.NS', symbol: 'TCS', name: 'Tata Consultancy Services' },
+    { yahoo: 'INFY.NS', symbol: 'INFY', name: 'Infosys Limited' },
+    { yahoo: 'HDFCBANK.NS', symbol: 'HDFCBANK', name: 'HDFC Bank Limited' },
+    { yahoo: 'ICICIBANK.NS', symbol: 'ICICIBANK', name: 'ICICI Bank Limited' },
+    { yahoo: 'WIPRO.NS', symbol: 'WIPRO', name: 'Wipro Limited' },
+    { yahoo: 'SBIN.NS', symbol: 'SBIN', name: 'State Bank of India' },
+    { yahoo: 'BHARTIARTL.NS', symbol: 'BHARTIARTL', name: 'Bharti Airtel Limited' },
+    { yahoo: 'ITC.NS', symbol: 'ITC', name: 'ITC Limited' },
+    { yahoo: 'LT.NS', symbol: 'LT', name: 'Larsen & Toubro Limited' },
+    { yahoo: 'HINDUNILVR.NS', symbol: 'HINDUNILVR', name: 'Hindustan Unilever Ltd' },
+    { yahoo: 'BAJFINANCE.NS', symbol: 'BAJFINANCE', name: 'Bajaj Finance Limited' },
+    { yahoo: 'MARUTI.NS', symbol: 'MARUTI', name: 'Maruti Suzuki India Ltd' },
+    { yahoo: 'HCLTECH.NS', symbol: 'HCLTECH', name: 'HCL Technologies Limited' },
+    { yahoo: 'AXISBANK.NS', symbol: 'AXISBANK', name: 'Axis Bank Limited' },
+    { yahoo: 'KOTAKBANK.NS', symbol: 'KOTAKBANK', name: 'Kotak Mahindra Bank Ltd' },
+    { yahoo: 'TATAMOTORS.NS', symbol: 'TATAMOTORS', name: 'Tata Motors Limited' },
+    { yahoo: 'SUNPHARMA.NS', symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical Ind' },
+    { yahoo: 'ADANIENT.NS', symbol: 'ADANIENT', name: 'Adani Enterprises Limited' },
+    { yahoo: 'NTPC.NS', symbol: 'NTPC', name: 'NTPC Limited' },
+    { yahoo: 'TITAN.NS', symbol: 'TITAN', name: 'Titan Company Limited' },
+    { yahoo: 'POWERGRID.NS', symbol: 'POWERGRID', name: 'Power Grid Corp of India' },
+    { yahoo: 'ASIANPAINT.NS', symbol: 'ASIANPAINT', name: 'Asian Paints Limited' },
+    { yahoo: 'TECHM.NS', symbol: 'TECHM', name: 'Tech Mahindra Limited' },
+    { yahoo: 'ULTRACEMCO.NS', symbol: 'ULTRACEMCO', name: 'UltraTech Cement Limited' },
+    { yahoo: 'TATASTEEL.NS', symbol: 'TATASTEEL', name: 'Tata Steel Limited' },
+    { yahoo: 'BAJAJFINSV.NS', symbol: 'BAJAJFINSV', name: 'Bajaj Finserv Limited' },
+    { yahoo: 'COALINDIA.NS', symbol: 'COALINDIA', name: 'Coal India Limited' },
+    { yahoo: 'ONGC.NS', symbol: 'ONGC', name: 'Oil & Natural Gas Corp' },
+    { yahoo: 'DRREDDY.NS', symbol: 'DRREDDY', name: 'Dr Reddys Laboratories' },
+    { yahoo: 'DIVISLAB.NS', symbol: 'DIVISLAB', name: 'Divis Laboratories Ltd' },
+    { yahoo: 'JSWSTEEL.NS', symbol: 'JSWSTEEL', name: 'JSW Steel Limited' },
+    { yahoo: 'M&M.NS', symbol: 'M&M', name: 'Mahindra & Mahindra Ltd' },
+    { yahoo: 'NESTLEIND.NS', symbol: 'NESTLEIND', name: 'Nestle India Limited' },
+    { yahoo: 'CIPLA.NS', symbol: 'CIPLA', name: 'Cipla Limited' },
+    { yahoo: 'GRASIM.NS', symbol: 'GRASIM', name: 'Grasim Industries Limited' },
+    { yahoo: 'HEROMOTOCO.NS', symbol: 'HEROMOTOCO', name: 'Hero MotoCorp Limited' },
+    { yahoo: 'EICHERMOT.NS', symbol: 'EICHERMOT', name: 'Eicher Motors Limited' },
+    { yahoo: 'APOLLOHOSP.NS', symbol: 'APOLLOHOSP', name: 'Apollo Hospitals Enterprise' },
+    { yahoo: 'BPCL.NS', symbol: 'BPCL', name: 'Bharat Petroleum Corp' },
+    { yahoo: 'HINDALCO.NS', symbol: 'HINDALCO', name: 'Hindalco Industries Ltd' },
+    { yahoo: 'TATACONSUM.NS', symbol: 'TATACONSUM', name: 'Tata Consumer Products' },
+    { yahoo: 'INDUSINDBK.NS', symbol: 'INDUSINDBK', name: 'IndusInd Bank Limited' },
+    { yahoo: 'ADANIPORTS.NS', symbol: 'ADANIPORTS', name: 'Adani Ports & SEZ Ltd' },
+    { yahoo: 'VEDL.NS', symbol: 'VEDL', name: 'Vedanta Limited' },
+    { yahoo: 'ZOMATO.NS', symbol: 'ZOMATO', name: 'Zomato Limited' },
+    { yahoo: 'PAYTM.NS', symbol: 'PAYTM', name: 'One 97 Communications (Paytm)' },
+    { yahoo: 'IRCTC.NS', symbol: 'IRCTC', name: 'Indian Railway Catering & Tourism' },
+    { yahoo: 'DMART.NS', symbol: 'DMART', name: 'Avenue Supermarts (DMart)' },
+    { yahoo: 'PNB.NS', symbol: 'PNB', name: 'Punjab National Bank' },
+    { yahoo: 'BANKBARODA.NS', symbol: 'BANKBARODA', name: 'Bank of Baroda' },
+    { yahoo: 'IOC.NS', symbol: 'IOC', name: 'Indian Oil Corporation' },
+    { yahoo: 'HAL.NS', symbol: 'HAL', name: 'Hindustan Aeronautics Ltd' },
+    { yahoo: 'BEL.NS', symbol: 'BEL', name: 'Bharat Electronics Limited' },
+    { yahoo: 'TATAPOWER.NS', symbol: 'TATAPOWER', name: 'Tata Power Company Ltd' },
+    { yahoo: 'DABUR.NS', symbol: 'DABUR', name: 'Dabur India Limited' },
+    { yahoo: 'PIDILITIND.NS', symbol: 'PIDILITIND', name: 'Pidilite Industries Ltd' },
+    { yahoo: 'BRITANNIA.NS', symbol: 'BRITANNIA', name: 'Britannia Industries Ltd' },
+    { yahoo: 'GODREJCP.NS', symbol: 'GODREJCP', name: 'Godrej Consumer Products' },
+    { yahoo: 'SIEMENS.NS', symbol: 'SIEMENS', name: 'Siemens Limited' },
+];
+
+/**
+ * Search stocks locally from the database
+ */
+const searchStocksLocally = (query) => {
+    const q = query.toLowerCase().trim();
+    return INDIAN_STOCKS_DB.filter(stock =>
+        stock.symbol.toLowerCase().includes(q) ||
+        stock.name.toLowerCase().includes(q)
+    );
+};
+
 /**
  * @route   GET /api/stocks/search/:query
- * @desc    Search for stocks using Yahoo Finance autocomplete API
+ * @desc    Search for stocks — tries Yahoo Finance API first, falls back to local DB with live prices
  * @access  Private
  */
 const searchStocks = async (req, res) => {
@@ -236,35 +311,105 @@ const searchStocks = async (req, res) => {
             return res.status(200).json({ success: true, data: cached });
         }
 
-        const response = await axios.get(`${YAHOO_BASE}/v1/finance/search`, {
-            params: {
-                q: query,
-                quotesCount: 15,
-                newsCount: 0,
-                enableFuzzyQuery: true,
-                quotesQueryId: 'tss_match_phrase_query',
-            },
-            headers: YAHOO_HEADERS,
-            timeout: 10000,
-        });
+        let results = [];
 
-        const quotes = response.data?.quotes || [];
-        const results = quotes
-            .filter(q => q.quoteType === 'EQUITY')
-            .map(q => ({
-                symbol: q.symbol,
-                name: q.longname || q.shortname || q.symbol,
-                type: q.quoteType,
-                region: q.exchDisp || q.exchange,
-                currency: q.currency || 'INR',
-                exchange: q.exchange,
+        // Strategy 1: Try Yahoo Finance search API
+        try {
+            const response = await axios.get('https://query2.finance.yahoo.com/v1/finance/search', {
+                params: {
+                    q: query,
+                    quotesCount: 15,
+                    newsCount: 0,
+                    enableFuzzyQuery: true,
+                    quotesQueryId: 'tss_match_phrase_query',
+                },
+                headers: YAHOO_HEADERS,
+                timeout: 5000,
+            });
+
+            const quotes = response.data?.quotes || [];
+            results = quotes
+                .filter(q => q.quoteType === 'EQUITY')
+                .map(q => ({
+                    symbol: q.symbol.replace('.NS', '').replace('.BO', ''),
+                    name: q.longname || q.shortname || q.symbol,
+                    yahooSymbol: q.symbol,
+                    type: q.quoteType,
+                    region: q.exchDisp || q.exchange,
+                    currency: q.currency || 'INR',
+                    exchange: q.exchange,
+                }));
+
+            console.log(`🔍 Yahoo search for "${query}" returned ${results.length} results`);
+        } catch (yahooError) {
+            console.log(`⚠️ Yahoo search API failed for "${query}": ${yahooError.message}`);
+        }
+
+        // Strategy 2: If Yahoo search returned nothing, use local database
+        if (results.length === 0) {
+            console.log(`🔍 Using local stock database for "${query}"`);
+            const localMatches = searchStocksLocally(query);
+            results = localMatches.map(stock => ({
+                symbol: stock.symbol,
+                name: stock.name,
+                yahooSymbol: stock.yahoo,
+                type: 'EQUITY',
+                region: 'NSE',
+                currency: 'INR',
+                exchange: 'NSI',
             }));
+        }
 
-        setCache(cacheKey, results);
-        res.status(200).json({ success: true, data: results });
+        // Strategy 3: Fetch live prices for the top results using the reliable v8 chart API
+        const topResults = results.slice(0, 10);
+        const enrichedResults = await Promise.all(
+            topResults.map(async (stock) => {
+                try {
+                    const yahooSym = stock.yahooSymbol || `${stock.symbol}.NS`;
+                    const quote = await fetchYahooQuote(yahooSym);
+                    if (quote) {
+                        return {
+                            ...stock,
+                            symbol: stock.symbol,
+                            companyName: stock.name,
+                            currentPrice: quote.currentPrice,
+                            change: quote.change,
+                            changePercent: quote.changePercent,
+                            high: quote.high,
+                            low: quote.low,
+                            volume: quote.volume,
+                        };
+                    }
+                } catch (e) {
+                    // ignore individual fetch errors
+                }
+                // Return basic info even without live price
+                return {
+                    ...stock,
+                    companyName: stock.name,
+                };
+            })
+        );
+
+        setCache(cacheKey, enrichedResults);
+        res.status(200).json({ success: true, data: enrichedResults });
     } catch (error) {
         console.error('Search stocks error:', error);
-        res.status(500).json({ success: false, message: 'Failed to search stocks', error: error.message });
+
+        // Final fallback: search locally and return without live prices
+        try {
+            const localResults = searchStocksLocally(req.params.query).slice(0, 10).map(stock => ({
+                symbol: stock.symbol,
+                companyName: stock.name,
+                name: stock.name,
+                type: 'EQUITY',
+                region: 'NSE',
+                currency: 'INR',
+            }));
+            return res.status(200).json({ success: true, data: localResults });
+        } catch (fallbackError) {
+            res.status(500).json({ success: false, message: 'Failed to search stocks', error: error.message });
+        }
     }
 };
 

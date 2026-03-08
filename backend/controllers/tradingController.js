@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Portfolio = require('../models/Portfolio');
 const Transaction = require('../models/Transaction');
 const riskEngine = require('../utils/riskEngine');
+const { fetchLivePrice } = require('../utils/fetchLivePrice');
 
 /**
  * @route   POST /api/trading/buy
@@ -122,17 +123,17 @@ const sellStock = async (req, res) => {
         const userId = req.user.id;
 
         // Validation
-        if (!symbol || !quantity || !price) {
+        if (!symbol || !quantity) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide all required fields',
+                message: 'Please provide symbol and quantity',
             });
         }
 
-        if (quantity <= 0 || price <= 0) {
+        if (quantity <= 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Quantity and price must be positive numbers',
+                message: 'Quantity must be a positive number',
             });
         }
 
@@ -163,49 +164,89 @@ const sellStock = async (req, res) => {
             });
         }
 
-        const totalAmount = quantity * price;
+        // ── FETCH LIVE MARKET PRICE ─────────────────────
+        // This is the key fix: use real-time price instead of stale request body price
+        let sellPrice;
+        const liveData = await fetchLivePrice(symbol);
 
-        // Add to virtual balance
+        if (liveData && liveData.currentPrice > 0) {
+            sellPrice = liveData.currentPrice;
+            console.log(`📈 Live sell price for ${symbol}: ₹${sellPrice}`);
+        } else {
+            // Fallback: use the price from request body (frontend's last known price)
+            sellPrice = price || holding.currentPrice || holding.averagePrice;
+            console.log(`⚠️ Using fallback sell price for ${symbol}: ₹${sellPrice}`);
+        }
+
+        // ── CALCULATE P&L ───────────────────────────────
+        const buyPrice = holding.averagePrice;
+        const investment = buyPrice * quantity;
+        const sellValue = sellPrice * quantity;
+        const profitLoss = sellValue - investment;
+        const percentGain = buyPrice > 0
+            ? ((sellPrice - buyPrice) / buyPrice) * 100
+            : 0;
+
+        // ── UPDATE USER BALANCE ─────────────────────────
+        // Credit the ACTUAL sell value (with profit or loss), not the original investment
         const user = await User.findById(userId);
-        user.virtualBalance += totalAmount;
+        user.virtualBalance += sellValue;
         await user.save();
 
-        // Update holding
+        // ── UPDATE HOLDING ──────────────────────────────
         holding.quantity -= quantity;
 
         // Remove holding if quantity becomes zero
         if (holding.quantity === 0) {
             portfolio.holdings = portfolio.holdings.filter(h => h.symbol !== symbol);
+        } else {
+            // Update current price on remaining holding
+            holding.currentPrice = sellPrice;
         }
 
-        // Update portfolio totals
+        // ── UPDATE PORTFOLIO TOTALS ─────────────────────
         portfolio.totalInvested = portfolio.holdings.reduce((sum, h) =>
             sum + (h.quantity * h.averagePrice), 0
         );
         portfolio.currentValue = portfolio.holdings.reduce((sum, h) =>
-            sum + (h.quantity * h.currentPrice), 0
+            sum + (h.quantity * (h.currentPrice || h.averagePrice)), 0
         );
         portfolio.profitLoss = portfolio.currentValue - portfolio.totalInvested;
         portfolio.updatedAt = Date.now();
 
         await portfolio.save();
 
-        // Create transaction record
+        // ── CREATE TRANSACTION RECORD (with P&L) ────────
         await Transaction.create({
             userId,
             type: 'SELL',
             symbol,
-            companyName: companyName || holding.companyName,
+            companyName: companyName || holding.companyName || symbol,
             quantity,
-            price,
-            totalAmount,
+            price: sellPrice,
+            totalAmount: sellValue,
+            sellPrice,
+            buyPrice,
+            profitLoss,
+            percentGain: parseFloat(percentGain.toFixed(2)),
         });
 
+        // ── ENRICHED RESPONSE WITH P&L BREAKDOWN ────────
         res.status(200).json({
             success: true,
             message: 'Sell order executed successfully',
             data: {
-                remainingBalance: user.virtualBalance,
+                sellDetails: {
+                    symbol,
+                    quantity,
+                    buyPrice: parseFloat(buyPrice.toFixed(2)),
+                    sellPrice: parseFloat(sellPrice.toFixed(2)),
+                    investment: parseFloat(investment.toFixed(2)),
+                    sellValue: parseFloat(sellValue.toFixed(2)),
+                    profitLoss: parseFloat(profitLoss.toFixed(2)),
+                    percentGain: parseFloat(percentGain.toFixed(2)),
+                },
+                updatedBalance: user.virtualBalance,
                 portfolio,
             },
         });

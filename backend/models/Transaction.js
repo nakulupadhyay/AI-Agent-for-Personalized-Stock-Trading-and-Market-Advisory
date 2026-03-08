@@ -45,6 +45,19 @@ const transactionSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    // ── P&L fields (populated for SELL orders) ──
+    sellPrice: {
+        type: Number,
+    },
+    buyPrice: {
+        type: Number,
+    },
+    profitLoss: {
+        type: Number,
+    },
+    percentGain: {
+        type: Number,
+    },
     status: {
         type: String,
         enum: ['EXECUTED', 'PENDING', 'CANCELLED', 'EXPIRED'],

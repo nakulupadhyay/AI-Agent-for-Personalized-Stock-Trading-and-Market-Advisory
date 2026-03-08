@@ -72,13 +72,24 @@ const PaperTrading = () => {
         setMessage(null);
         try {
             const endpoint = orderType === 'buy' ? '/trading/buy' : '/trading/sell';
-            await api.post(endpoint, {
+            const response = await api.post(endpoint, {
                 symbol: selectedStock.symbol,
                 companyName: selectedStock.companyName || selectedStock.symbol,
                 quantity: parseInt(quantity),
                 price: selectedStock.currentPrice,
             });
-            setMessage({ type: 'success', text: `${orderType.toUpperCase()} order placed for ${quantity} shares of ${selectedStock.symbol}!` });
+
+            // Show P&L details for sell orders
+            if (orderType === 'sell' && response.data?.data?.sellDetails) {
+                const sd = response.data.data.sellDetails;
+                const plSign = sd.profitLoss >= 0 ? '+' : '';
+                setMessage({
+                    type: 'success',
+                    text: `SELL completed for ${sd.quantity} shares of ${sd.symbol} — ${plSign}₹${Math.abs(sd.profitLoss).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${plSign}${sd.percentGain.toFixed(2)}%)`,
+                });
+            } else {
+                setMessage({ type: 'success', text: `${orderType.toUpperCase()} order placed for ${quantity} shares of ${selectedStock.symbol}!` });
+            }
             fetchData();
         } catch (error) {
             setMessage({ type: 'error', text: error.response?.data?.message || 'Order failed' });

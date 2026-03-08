@@ -3,18 +3,20 @@ import api from '../utils/api';
 import './ChatAdvisor.css';
 
 const suggestedQuestions = [
-    'Should I buy RELIANCE today?',
-    'What is the sentiment for TCS?',
-    'Is INFY a good long-term investment?',
+    'Should I buy TCS today?',
+    'How is RELIANCE performing?',
+    'What is P/E ratio?',
     'How should I diversify my portfolio?',
-    'What does a high Sharpe Ratio mean?',
+    'Explain SIP for beginners',
+    'What is a stop-loss order?',
+    'Is Infosys a good long-term investment?',
 ];
 
 const ChatAdvisor = () => {
     const [messages, setMessages] = useState([
         {
             role: 'assistant',
-            content: "Hello! I'm your AI Stock Advisor powered by CapitalWave. I can help you with stock analysis, market insights, and investment strategies.\n\nTry asking me about specific stocks, portfolio strategies, or market terminology!",
+            content: "Hello! 👋 I'm your AI Stock Advisor powered by CapitalWave.\n\nI can help you with:\n• Stock analysis — Ask \"Should I buy TCS?\" or \"How is RELIANCE doing?\"\n• Market concepts — Ask \"What is P/E ratio?\" or \"Explain SIP\"\n• Portfolio strategies — Ask \"How should I diversify?\"\n• Trading guidance — Ask about intraday, swing trading, or long-term investing\n\nTry asking me anything about stocks or investing!",
             timestamp: new Date(),
         },
     ]);
@@ -41,16 +43,21 @@ const ChatAdvisor = () => {
 
         try {
             const res = await api.post('/ai/chat', { message: msg });
+            const data = res.data.data;
+            // Support both 'response' and 'aiResponse' field names
+            const aiText = data?.response || data?.aiResponse || "I couldn't analyze that right now. Please try again in a moment.";
             const aiMsg = {
                 role: 'assistant',
-                content: res.data.data?.response || 'I apologize, I could not process your query. Please try again.',
+                content: aiText,
                 timestamp: new Date(),
+                detectedSymbol: data?.detectedSymbol || null,
+                source: data?.source || 'unknown',
             };
             setMessages(prev => [...prev, aiMsg]);
         } catch (error) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'Sorry, I encountered an error. Please try again.',
+                content: "I couldn't analyze your query right now. Please try again in a moment.",
                 timestamp: new Date(),
                 isError: true,
             }]);
@@ -100,8 +107,13 @@ const ChatAdvisor = () => {
                                 <div className="msg-avatar">🤖</div>
                             )}
                             <div className="msg-bubble">
-                                <p className="msg-text">{msg.content}</p>
-                                <span className="msg-time">{formatTime(msg.timestamp)}</span>
+                                <p className="msg-text" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
+                                <div className="msg-meta">
+                                    <span className="msg-time">{formatTime(msg.timestamp)}</span>
+                                    {msg.detectedSymbol && (
+                                        <span className="msg-symbol-badge">📊 {msg.detectedSymbol}</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}

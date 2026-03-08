@@ -141,6 +141,23 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+.msg-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.msg-symbol-badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(108, 92, 231, 0.12);
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
 /* Typing Indicator */
 .msg-bubble.typing {
     display: flex;

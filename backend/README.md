@@ -1,281 +1,110 @@
-# Backend - AI Stock Trading Platform
+<div align="center">
 
-Node.js/Express backend API for AI Stock Trading Platform.
+# 🧠 AI Stock Agent — Backend Core (Node.js)
 
-## 📦 Installation
+**The resilient, scalable API gateway linking user action with intelligent financial modeling.**
 
-```bash
-npm install
-```
+![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-Minimalist-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?logo=mongodb&logoColor=white)
+![Mongoose](https://img.shields.io/badge/Mongoose-ODM-880000?logo=mongoose&logoColor=white)
 
-## 🔧 Environment Variables
+</div>
 
-Create a `.env` file in the backend directory:
+---
 
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/ai-stock-trading
-JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_2024
-JWT_EXPIRE=7d
-NODE_ENV=development
-```
+## ⚡ What is this?
 
-## 🚀 Running the Server
+Welcome to the central nervous system of the **AI Stock Trading and Market Advisory Platform**. 
 
-Development mode:
-```bash
-npm start
-```
+This isn't just a CRUD server; it's a financial orchestrator. Built on Node.js and Express, this backend serves as the primary API gateway for our React frontend. It handles the critical tasks: securing user data, managing virtual paper trading wallets, executing risk assessment workflows, and most importantly, proxying complex machine learning requests to our Python microservice.
 
-With nodemon (auto-restart):
-```bash
-npm run dev
-```
+---
 
-## 📂 Project Structure
+## 🛠️ The Tech Stack
 
-```
+Designed for high concurrency and robust data integrity:
+
+- **Node.js & Express.js:** Fast, asynchronous, event-driven architecture.
+- **MongoDB & Mongoose:** Flexible NoSQL document storage for users, transactions, portfolios, and risk profiles.
+- **JWT & Bcrypt:** Industry-standard stateless authentication and secure password hashing.
+- **Yahoo Finance (`yahoo-finance2`):** Our live market data pipeline for real-time quotes, historical data, and symbol searches.
+- **Winston & Morgan:** Comprehensive logging for audit trails and debugging.
+- **Express Rate Limit:** Guarding our endpoints against abuse.
+
+---
+
+## 🏗️ Architecture & Structure
+
+We follow the standard MVC (Model-View-Controller) design pattern tailored for APIs.
+
+```text
 backend/
-├── config/
-│   └── db.js              # MongoDB connection
-├── controllers/
-│   ├── authController.js   # Authentication logic
-│   ├── stockController.js  # Stock data
-│   ├── aiController.js     # AI recommendations
-│   ├── tradingController.js # Paper trading
-│   └── riskProfileController.js # Risk assessment
-├── models/
-│   ├── User.js            # User schema
-│   ├── Portfolio.js       # Portfolio schema
-│   ├── Transaction.js     # Transaction schema
-│   └── RiskProfile.js     # Risk profile schema
-├── routes/
-│   ├── auth.js
-│   ├── stocks.js
-│   ├── ai.js
-│   ├── trading.js
-│   └── riskProfile.js
-├── middleware/
-│   └── auth.js            # JWT verification
-├── .env
-├── .gitignore
-├── package.json
-└── server.js              # Entry point
+├── config/              # Database connection and environment loaders
+├── controllers/         # The brains (Auth, Trading, AI Proxy, Social)
+├── middleware/          # The bouncers (Auth guards, Rate limiting, Error handling)
+├── models/              # The data structure (Mongoose Schemas)
+├── routes/              # The map (Express Routers)
+├── utils/               # The tools (Math helpers, token generators)
+├── server.js            # The bootstrap file
+└── .env                 # Environment variables
 ```
 
-## 🔐 Authentication
+---
 
-All protected routes require a JWT token in the Authorization header:
+## 🚀 Getting Started
 
-```
-Authorization: Bearer <your_jwt_token>
-```
+Let's spin up the API.
 
-## 📡 API Endpoints
+### Prerequisites
+- Node.js (v14+)
+- MongoDB (Running locally on 27017 or a Cloud Atlas URI)
 
-### Authentication Endpoints
+### Installation
 
-**Register User**
-```http
-POST /api/auth/register
-Content-Type: application/json
+1. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
 
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
+2. **Configure Environment Variables:**
+   Create a `.env` file in the `backend/` root directory:
+   ```env
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/ai-stock-trading
+   JWT_SECRET=super_secret_jwt_key_here
+   CLIENT_URL=http://localhost:3000
+   ML_SERVICE_URL=http://localhost:8000
+   ```
 
-**Login User**
-```http
-POST /api/auth/login
-Content-Type: application/json
+3. **Start the Server:**
+   ```bash
+   # For hot-reloading development
+   npm run dev
+   
+   # For production
+   npm start
+   ```
+   *The API will be available at `http://localhost:5000`.*
 
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
+---
 
-**Get Current User** (Protected)
-```http
-GET /api/auth/me
-Authorization: Bearer <token>
-```
+## 🔗 The ML Microservice Bridge
 
-### Stock Endpoints
+Why separate Node and Python? Because Node excels at I/O and web requests, while Python is the king of data science.
 
-**Get All Stocks** (Protected)
-```http
-GET /api/stocks
-Authorization: Bearer <token>
-```
+Instead of blocking our Node event loop with heavy ML computations, our `aiController.js` and `riskAnalysisController.js` act as intelligent proxies. They gather user data, format it, and shoot it over to the FastAPI Python service (Port 8000). Once the Python service crunches the numbers (LSTM forecasting, FinBERT sentiment, XGBoost classification), Node formats the insight and delivers it blazing fast back to the React client.
 
-**Get Stock Details** (Protected)
-```http
-GET /api/stocks/:symbol
-Authorization: Bearer <token>
-```
+---
 
-### AI Endpoints
+## 🔮 Future Roadmap
 
-**Get AI Recommendation** (Protected)
-```http
-POST /api/ai/recommendation
-Authorization: Bearer <token>
-Content-Type: application/json
+- [ ] **Redis Caching:** Implement Redis to cache Yahoo Finance API calls and ML predictions to reduce latency and third-party rate limits.
+- [ ] **Microservices Splitting:** As the community grows, break the `social` and `trading` logic into their own dedicated microservices.
+- [ ] **GraphQL:** Add a GraphQL overlay to allow the frontend to fetch exactly the data it needs for complex dashboard views.
 
-{
-  "symbol": "RELIANCE",
-  "currentPrice": 2456.75,
-  "sentiment": "Positive"
-}
-```
+---
 
-**Get Sentiment Analysis** (Protected)
-```http
-POST /api/ai/sentiment
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "symbol": "RELIANCE"
-}
-```
-
-**Chat with AI** (Protected)
-```http
-POST /api/ai/chat
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "message": "Should I invest in tech stocks?"
-}
-```
-
-### Trading Endpoints
-
-**Buy Stock** (Protected)
-```http
-POST /api/trading/buy
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "symbol": "RELIANCE",
-  "companyName": "Reliance Industries Ltd",
-  "quantity": 10,
-  "price": 2456.75
-}
-```
-
-**Sell Stock** (Protected)
-```http
-POST /api/trading/sell
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "symbol": "RELIANCE",
-  "companyName": "Reliance Industries Ltd",
-  "quantity": 5,
-  "price": 2500.00
-}
-```
-
-**Get Portfolio** (Protected)
-```http
-GET /api/trading/portfolio
-Authorization: Bearer <token>
-```
-
-**Get Transactions** (Protected)
-```http
-GET /api/trading/transactions
-Authorization: Bearer <token>
-```
-
-### Risk Profile Endpoints
-
-**Save Risk Profile** (Protected)
-```http
-POST /api/risk-profile
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "investmentHorizon": "Long-term (5+ years)",
-  "riskTolerance": "Moderate",
-  "investmentExperience": "Intermediate",
-  "financialGoal": "Retirement planning",
-  "monthlyIncome": "50000-100000"
-}
-```
-
-**Get Risk Profile** (Protected)
-```http
-GET /api/risk-profile
-Authorization: Bearer <token>
-```
-
-## 💾 Database Models
-
-### User Model
-- name, email, password (hashed)
-- riskProfile (Low/Medium/High)
-- virtualBalance (default: 1,000,000)
-
-### Portfolio Model
-- userId, holdings[], totalInvested, currentValue, profitLoss
-
-### Transaction Model
-- userId, type (BUY/SELL), symbol, quantity, price, totalAmount, timestamp
-
-### RiskProfile Model
-- userId, investmentHorizon, riskTolerance, investmentExperience, calculatedRiskLevel
-
-## 🔒 Security Features
-
-- Password hashing with bcrypt (salt rounds: 10)
-- JWT token-based authentication
-- Protected routes with middleware
-- Input validation
-- CORS configuration
-- Environment variable protection
-
-## 🛠️ Dependencies
-
-```json
-{
-  "express": "^4.18.2",
-  "mongoose": "^7.6.3",
-  "cors": "^2.8.5",
-  "dotenv": "^16.3.1",
-  "bcrypt": "^5.1.1",
-  "jsonwebtoken": "^9.0.2",
-  "axios": "^1.5.1"
-}
-```
-
-## 📝 Notes
-
-- Current implementation uses mock AI logic - replace with real ML models for production
-- Stock data is mocked - integrate with real APIs (Alpha Vantage, Yahoo Finance) for live data
-- MongoDB must be running before starting the server
-- Default virtual balance: ₹10,00,000
-
-## 🐛 Troubleshooting
-
-**MongoDB Connection Error:**
-- Ensure MongoDB is running
-- Check MONGODB_URI in .env file
-
-**JWT Error:**
-- Verify JWT_SECRET is set in .env
-- Check token format in Authorization header
-
-**Port Already in Use:**
-- Change PORT in .env file
-- Kill process using port 5000
+<div align="center">
+<i>Scale fast. Trade smart. 🚀 Let's disrupt.</i>
+</div>

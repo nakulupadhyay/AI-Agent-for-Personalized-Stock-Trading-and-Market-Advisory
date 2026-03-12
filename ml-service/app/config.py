@@ -19,11 +19,16 @@ class Settings:
     LSTM_LOOKBACK: int = 60
     TREND_ENSEMBLE_WEIGHTS: dict = {"lstm": 0.7, "xgboost": 0.3}
 
+    # Production settings
+    FEATURE_CACHE_TTL: int = int(os.getenv("FEATURE_CACHE_TTL", "300"))  # 5 minutes
+    MAX_TEXT_LENGTH: int = int(os.getenv("MAX_TEXT_LENGTH", "5000"))
+    REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "30"))
+
     # Indian stocks for tracking
-    TRACKED_STOCKS: list = [
+    TRACKED_STOCKS: tuple = (
         "RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK",
         "WIPRO", "SBIN", "ITC", "LT", "BHARTIARTL",
-    ]
+    )
 
     SECTOR_MAP: dict = {
         "RELIANCE": "Energy & Petrochemicals",

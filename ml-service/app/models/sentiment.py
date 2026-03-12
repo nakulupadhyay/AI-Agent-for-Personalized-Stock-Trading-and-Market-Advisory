@@ -54,6 +54,17 @@ class SentimentAnalyzer:
         Returns:
             dict with keys: label, confidence, probabilities, model
         """
+        if not text or not text.strip():
+            return {
+                "label": "neutral",
+                "confidence": 0.0,
+                "probabilities": {"positive": 0.0, "negative": 0.0, "neutral": 100.0},
+                "model": self.model_type,
+            }
+
+        # Truncate very long text to prevent OOM
+        text = text[:10000]
+
         if self.model_type == "finbert":
             return self._finbert_analyze(text)
         else:

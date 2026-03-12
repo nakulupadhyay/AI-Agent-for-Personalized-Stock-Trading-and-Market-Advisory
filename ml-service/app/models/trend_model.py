@@ -111,15 +111,26 @@ class TrendPredictor:
 
     def _ml_predict(self, features: dict) -> dict:
         """ML-based prediction using trained XGBoost model."""
-        available_cols = [c for c in FEATURE_COLS if c.lower().replace("_", "") in
-                          {k.lower().replace("_", "") for k in features}]
+        # Direct mapping from FEATURE_COLS to feature dict keys
+        _KEY_MAP = {
+            "Close": "close", "Volume": "volume",
+            "SMA_7": "sma_7", "SMA_21": "sma_21", "SMA_50": "sma_50",
+            "EMA_12": "ema_12", "EMA_26": "ema_26",
+            "RSI_14": "rsi_14", "MACD": "macd",
+            "MACD_Signal": "macd_signal", "MACD_Hist": "macd_hist",
+            "BB_Upper": "bb_upper", "BB_Lower": "bb_lower",
+            "ATR_14": "atr_14", "Log_Return": "log_return",
+            "Price_Range": "price_range", "Price_SMA50_Ratio": "price_sma50_ratio",
+            "MACD_Crossover": "macd_crossover",
+            "Volatility_Regime": "volatility_regime",
+            "Day_Sin": "day_sin", "Day_Cos": "day_cos",
+        }
 
-        # Build feature vector in correct order
+        # Build feature vector in correct order using direct mapping
         feature_vector = []
         for col in FEATURE_COLS:
-            key = col.lower()
-            # Try various key formats
-            val = features.get(key) or features.get(col) or 0.0
+            key = _KEY_MAP.get(col, col.lower())
+            val = features.get(key, features.get(col, 0.0))
             feature_vector.append(float(val))
 
         X = np.array([feature_vector])

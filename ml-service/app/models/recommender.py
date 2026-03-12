@@ -185,10 +185,10 @@ class StockRecommender:
         score = 0.5
 
         # Dividend yield bonus
-        if stock_info["dividend_yield"] > 1.0:
-            score += 0.2
-        elif stock_info["dividend_yield"] > 2.0:
+        if stock_info["dividend_yield"] > 2.0:
             score += 0.3
+        elif stock_info["dividend_yield"] > 1.0:
+            score += 0.2
 
         # Reasonable PE
         pe = stock_info["pe"]

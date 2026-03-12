@@ -13,9 +13,12 @@ Start with:
 """
 import logging
 import os
+import time
+import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.config import settings
 
 # Configure logging
@@ -66,6 +69,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+# ─── Middleware ────────────────────────────────────────────
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -74,6 +80,47 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_request_metadata(request: Request, call_next):
+    """Add request ID and response time tracking to every request."""
+    request_id = str(uuid.uuid4())[:8]
+    start_time = time.time()
+
+    # Attach request_id to request state for use in handlers
+    request.state.request_id = request_id
+
+    response = await call_next(request)
+
+    # Add response headers
+    duration_ms = round((time.time() - start_time) * 1000, 1)
+    response.headers["X-Request-ID"] = request_id
+    response.headers["X-Response-Time"] = f"{duration_ms}ms"
+
+    # Log request/response
+    logger.info(
+        f"[{request_id}] {request.method} {request.url.path} → "
+        f"{response.status_code} ({duration_ms}ms)"
+    )
+
+    return response
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler for unhandled errors."""
+    request_id = getattr(request.state, "request_id", "unknown")
+    logger.error(f"[{request_id}] Unhandled error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "error": "Internal server error",
+            "request_id": request_id,
+        },
+    )
+
 
 # ─── Include Routers ──────────────────────────────────────
 from app.routers import health, prediction, risk, sentiment_router, recommendation, behavior
@@ -106,6 +153,7 @@ async def root():
         "docs": "/docs",
         "endpoints": {
             "health": "GET /health",
+            "ready": "GET /ready",
             "prediction": "POST /predict/recommendation",
             "sentiment_predict": "POST /predict/sentiment",
             "sentiment_analyze": "POST /sentiment/analyze",

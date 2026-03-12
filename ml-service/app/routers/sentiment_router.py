@@ -5,7 +5,7 @@ Matches endpoints called by sentimentController.js and aiController.js.
 import logging
 import random
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from app.services.model_registry import registry
 from app.config import settings
@@ -15,8 +15,8 @@ router = APIRouter()
 
 
 class SentimentAnalyzeRequest(BaseModel):
-    text: str
-    symbol: Optional[str] = None
+    text: str = Field(..., min_length=1, max_length=5000, description="Financial text to analyze")
+    symbol: Optional[str] = Field(None, max_length=20, description="Optional stock symbol")
 
 
 @router.post("/analyze")
@@ -101,6 +101,8 @@ async def get_trending_sentiment():
         return {
             "success": True,
             "data": sentiments,
+            "source": "model-generated",
+            "note": "Sentiment scores are model-generated from stock analysis text, not live news feeds",
         }
 
     except Exception as e:

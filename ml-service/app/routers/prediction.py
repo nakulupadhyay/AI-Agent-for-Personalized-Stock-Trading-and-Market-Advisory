@@ -2,26 +2,36 @@
 Prediction Router — Market trend prediction endpoints.
 Matches POST /predict/recommendation called by aiController.js.
 """
+import re
 import logging
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from app.services.model_registry import registry
 from app.services.feature_engine import get_features_for_prediction
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 class RecommendationRequest(BaseModel):
-    symbol: str
-    currentPrice: Optional[float] = None
-    sentimentText: Optional[str] = None
+    symbol: str = Field(..., min_length=1, max_length=20, description="Stock symbol")
+    currentPrice: Optional[float] = Field(None, ge=0, description="Current stock price")
+    sentimentText: Optional[str] = Field(None, max_length=5000, description="Text for sentiment analysis")
     model: Optional[str] = "finbert"
+
+    @field_validator("symbol")
+    @classmethod
+    def validate_symbol(cls, v: str) -> str:
+        v = v.strip().upper()
+        if not re.match(r'^[A-Z0-9.]+$', v):
+            raise ValueError("Symbol must contain only letters, digits, and dots")
+        return v
 
 
 class SentimentRequest(BaseModel):
-    text: str
+    text: str = Field(..., min_length=1, max_length=5000, description="Text to analyze")
     model: Optional[str] = "finbert"
 
 

@@ -14,8 +14,8 @@ router = APIRouter()
 class RecommendationRequest(BaseModel):
     userId: Optional[str] = None
     riskProfile: Optional[str] = "Medium"
-    preferredSectors: Optional[List[str]] = []
-    currentHoldings: Optional[List[str]] = []
+    preferredSectors: Optional[List[str]] = None
+    currentHoldings: Optional[List[str]] = None
     topK: Optional[int] = 5
 
 
@@ -26,8 +26,10 @@ async def get_recommendations(request: RecommendationRequest):
     Uses risk profile, sector preferences, and sentiment for ranking.
     """
     try:
-        from app.models.recommender import StockRecommender
-        recommender = StockRecommender()
+        recommender = registry.get_model("recommender")
+        if not recommender:
+            from app.models.recommender import StockRecommender
+            recommender = StockRecommender()
 
         # Get sentiment scores for all stocks
         sentiment_scores = {}

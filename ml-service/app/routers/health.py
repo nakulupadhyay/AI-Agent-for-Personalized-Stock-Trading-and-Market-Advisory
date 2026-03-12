@@ -25,6 +25,27 @@ async def health_check():
     }
 
 
+@router.get("/ready")
+async def readiness_check():
+    """
+    Readiness probe — checks if all critical models are loaded
+    and the service is ready to handle requests.
+    Use this for Kubernetes/Docker readiness probes.
+    """
+    is_ready = registry.is_ready()
+    status = registry.get_status()
+
+    return {
+        "ready": is_ready,
+        "service": "StockAI ML Service",
+        "models_loaded": status["total_models"],
+        "models": {
+            name: info.get("available", False)
+            for name, info in status.get("models", {}).items()
+        },
+    }
+
+
 @router.get("/ml-status")
 async def ml_status():
     """Detailed ML service status."""

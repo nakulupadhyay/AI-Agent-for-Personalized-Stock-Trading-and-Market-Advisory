@@ -22,6 +22,7 @@ class ModelRegistry:
         self.models = {}
         self.metadata = {}
         self._loaded = False
+        self._ready = False
 
     def load_all_models(self, version: str = "latest"):
         """Load all available models from disk."""
@@ -42,7 +43,11 @@ class ModelRegistry:
         # Load user behavior model
         self._load_behavior_model(model_dir)
 
+        # Load recommender (stateless singleton)
+        self._load_recommender()
+
         self._loaded = True
+        self._ready = True
         logger.info(f"Model registry ready. Loaded models: {list(self.models.keys())}")
 
     def _load_risk_model(self, model_dir: str):
@@ -63,7 +68,7 @@ class ModelRegistry:
 
             self.models["risk_classifier"] = risk_model
             self.metadata["risk_classifier"] = {
-                "version": "v1.0",
+                "version": risk_model.model_version,
                 "loaded_at": datetime.now().isoformat(),
                 "type": "XGBoost Classifier",
             }
@@ -100,9 +105,9 @@ class ModelRegistry:
 
             self.models["trend"] = trend_model
             self.metadata["trend"] = {
-                "version": "v1.0",
+                "version": trend_model.model_version,
                 "loaded_at": datetime.now().isoformat(),
-                "type": "LSTM + XGBoost Ensemble",
+                "type": "XGBoost + Rule-Based Ensemble",
             }
         except Exception as e:
             logger.error(f"Failed to load trend model: {e}")
@@ -120,21 +125,42 @@ class ModelRegistry:
 
             self.models["user_behavior"] = behavior_model
             self.metadata["user_behavior"] = {
-                "version": "v1.0",
+                "version": behavior_model.model_version,
                 "loaded_at": datetime.now().isoformat(),
                 "type": "K-Means + Behavioral Scorer",
             }
         except Exception as e:
             logger.error(f"Failed to load user behavior model: {e}")
 
+    def _load_recommender(self):
+        """Load the stock recommender (stateless singleton)."""
+        try:
+            from app.models.recommender import StockRecommender
+            recommender = StockRecommender()
+            self.models["recommender"] = recommender
+            self.metadata["recommender"] = {
+                "version": recommender.model_version,
+                "loaded_at": datetime.now().isoformat(),
+                "type": "Hybrid Content-Based + Risk Recommender",
+            }
+            logger.info("Loaded stock recommender")
+        except Exception as e:
+            logger.error(f"Failed to load recommender: {e}")
+
     def get_model(self, name: str):
         """Get a loaded model by name."""
         return self.models.get(name)
+
+    def is_ready(self) -> bool:
+        """Check if all critical models are loaded."""
+        critical = ["risk_classifier", "sentiment", "trend"]
+        return all(name in self.models for name in critical) and self._ready
 
     def get_status(self) -> dict:
         """Get status of all loaded models."""
         return {
             "loaded": self._loaded,
+            "ready": self._ready,
             "models": {
                 name: {
                     "available": True,

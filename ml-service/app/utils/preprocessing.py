@@ -16,7 +16,7 @@ def clean_ohlcv_data(df: pd.DataFrame) -> pd.DataFrame:
     - Remove zero-volume days
     """
     result = df.copy()
-    result.fillna(method="ffill", inplace=True)
+    result = result.ffill()
     result.dropna(inplace=True)
 
     # Remove rows with zero close price

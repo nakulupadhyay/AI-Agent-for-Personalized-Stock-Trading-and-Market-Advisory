@@ -1,17 +1,41 @@
 """
 Feature Engine — Computes technical features from stock price data.
 Uses Yahoo Finance for data fetching and the indicators module for computation.
+Includes TTL-based caching to avoid redundant API calls.
 """
 import logging
+import time
 import numpy as np
 import pandas as pd
 import yfinance as yf
 from app.utils.indicators import compute_all_indicators
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 # NSE suffix for Indian stocks on Yahoo Finance
 NSE_SUFFIX = ".NS"
+
+# ─── Feature Cache ─────────────────────────────────────────
+# Simple TTL cache for feature results to avoid repeated Yahoo Finance calls
+_feature_cache: dict = {}
+
+
+def _get_cached(key: str):
+    """Get a cached value if it exists and hasn't expired."""
+    if key in _feature_cache:
+        value, expiry = _feature_cache[key]
+        if time.time() < expiry:
+            return value
+        del _feature_cache[key]
+    return None
+
+
+def _set_cached(key: str, value, ttl: int = None):
+    """Set a cached value with TTL."""
+    if ttl is None:
+        ttl = settings.FEATURE_CACHE_TTL
+    _feature_cache[key] = (value, time.time() + ttl)
 
 
 def fetch_stock_data(symbol: str, period: str = "1y") -> pd.DataFrame:
@@ -44,7 +68,16 @@ def get_features_for_prediction(symbol: str, period: str = "1y") -> dict:
     """
     Fetch stock data, compute all indicators, and return
     the latest feature values for prediction.
+
+    Results are cached for FEATURE_CACHE_TTL seconds to avoid
+    redundant Yahoo Finance API calls.
     """
+    cache_key = f"features:{symbol}:{period}"
+    cached = _get_cached(cache_key)
+    if cached is not None:
+        logger.debug(f"Feature cache hit for {symbol}")
+        return cached
+
     df = fetch_stock_data(symbol, period)
     if df.empty:
         return {}
@@ -78,12 +111,17 @@ def get_features_for_prediction(symbol: str, period: str = "1y") -> dict:
         "price_sma50_ratio": float(latest.get("Price_SMA50_Ratio", 1)),
         "macd_crossover": int(latest.get("MACD_Crossover", 0)),
         "volatility_regime": float(latest.get("Volatility_Regime", 0.5)),
+        "day_sin": float(latest.get("Day_Sin", 0)),
+        "day_cos": float(latest.get("Day_Cos", 0)),
     }
 
     # Replace NaN with defaults
     for key, val in features.items():
         if np.isnan(val) or np.isinf(val):
             features[key] = 0.0
+
+    # Cache the result
+    _set_cached(cache_key, features)
 
     return features
 

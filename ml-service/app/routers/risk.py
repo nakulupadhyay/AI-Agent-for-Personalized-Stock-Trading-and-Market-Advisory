@@ -42,15 +42,23 @@ async def predict_risk(request: RiskPredictionRequest):
             raise HTTPException(status_code=503, detail="Risk classifier not loaded")
 
         # Normalize keys — accept both camelCase and snake_case
+        # Use 'is not None' to avoid treating valid 0.0 as falsy
+        def _pick(snake, camel, default):
+            if snake is not None:
+                return snake
+            if camel is not None:
+                return camel
+            return default
+
         metrics = {
             "volatility": request.volatility,
-            "sharpe_ratio": request.sharpe_ratio or request.sharpeRatio or 1.0,
-            "max_drawdown": request.max_drawdown or request.maxDrawdown or 0.1,
-            "beta": request.beta or 1.0,
-            "var_daily": request.var_daily or 0.02,
-            "diversification_ratio": request.diversification_ratio or request.diversificationRatio or 0.5,
-            "sector_concentration": request.sector_concentration or request.sectorConcentration or 0.3,
-            "holding_count": request.holding_count or request.holdingCount or 5,
+            "sharpe_ratio": _pick(request.sharpe_ratio, request.sharpeRatio, 1.0),
+            "max_drawdown": _pick(request.max_drawdown, request.maxDrawdown, 0.1),
+            "beta": request.beta if request.beta is not None else 1.0,
+            "var_daily": request.var_daily if request.var_daily is not None else 0.02,
+            "diversification_ratio": _pick(request.diversification_ratio, request.diversificationRatio, 0.5),
+            "sector_concentration": _pick(request.sector_concentration, request.sectorConcentration, 0.3),
+            "holding_count": _pick(request.holding_count, request.holdingCount, 5),
         }
 
         result = risk_model.predict(metrics)

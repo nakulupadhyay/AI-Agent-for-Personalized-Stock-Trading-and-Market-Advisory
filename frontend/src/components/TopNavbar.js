@@ -1,82 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useLocation } from 'react-router-dom';
 import './TopNavbar.css';
+
+const pageTitles = {
+    '/dashboard': { title: 'Dashboard', subtitle: 'Market overview & portfolio summary' },
+    '/paper-trading': { title: 'Paper Trading', subtitle: 'Practice trading with virtual money' },
+    '/portfolio': { title: 'Portfolio', subtitle: 'Holdings, P&L & analytics' },
+    '/watchlist': { title: 'Watchlist', subtitle: 'Track your favorite stocks' },
+    '/risk-analysis': { title: 'Risk Analysis', subtitle: 'Portfolio risk assessment' },
+    '/risk-profile': { title: 'Risk Profile', subtitle: 'Your investment risk tolerance' },
+    '/chat-advisor': { title: 'AI Advisor', subtitle: 'AI-powered market insights' },
+    '/education': { title: 'Education', subtitle: 'Learn trading & finance' },
+    '/social-trading': { title: 'Social Trading', subtitle: 'Follow top traders' },
+    '/broker-integration': { title: 'Broker', subtitle: 'Connect your broker account' },
+    '/settings': { title: 'Settings', subtitle: 'Account & preferences' },
+};
 
 const TopNavbar = () => {
     const { user } = useAuth();
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [isMarketOpen, setIsMarketOpen] = useState(false);
+    const { isDark } = useTheme();
+    const location = useLocation();
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            const now = new Date();
-            setCurrentTime(now);
+    const pageInfo = pageTitles[location.pathname] || { title: 'CapitalWave', subtitle: '' };
 
-            // Indian market hours: 9:15 AM - 3:30 PM IST, Mon-Fri
-            const hours = now.getHours();
-            const mins = now.getMinutes();
-            const day = now.getDay();
-            const timeVal = hours * 60 + mins;
-            const isWeekday = day >= 1 && day <= 5;
-            const inMarketHours = timeVal >= 555 && timeVal <= 930; // 9:15 to 15:30
-            setIsMarketOpen(isWeekday && inMarketHours);
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
+    const formatBalance = (balance) => {
+        if (!balance) return '₹0';
+        return '₹' + balance.toLocaleString('en-IN');
+    };
 
     return (
         <header className="top-navbar">
             <div className="navbar-left">
-                <div className="search-box">
-                    <svg className="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                    </svg>
-                    <input
-                        type="text"
-                        placeholder="Search stocks, indices..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <kbd className="search-shortcut">⌘K</kbd>
+                <div>
+                    <h1 className="page-title">{pageInfo.title}</h1>
+                    {pageInfo.subtitle && (
+                        <p className="page-subtitle">{pageInfo.subtitle}</p>
+                    )}
                 </div>
             </div>
 
             <div className="navbar-right">
-                {/* Market Status */}
-                <div className="market-status">
-                    <span className={`market-dot ${isMarketOpen ? 'open' : 'closed'}`} />
-                    <span className="market-text">
-                        {isMarketOpen ? 'Market Open' : 'Market Closed'}
-                    </span>
+                <div className="navbar-balance" title="Virtual Balance">
+                    <span className="balance-label">Balance</span>
+                    <span className="balance-value">{formatBalance(user?.virtualBalance)}</span>
                 </div>
 
-                {/* Time */}
-                <div className="navbar-time">
-                    {currentTime.toLocaleTimeString('en-IN', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    })}
+                <div className="navbar-status">
+                    <span className="live-dot" />
+                    <span className="status-text">Live</span>
                 </div>
 
-                {/* Notifications */}
-                <button className="navbar-icon-btn" title="Notifications">
-                    <svg viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                    </svg>
-                    <span className="notification-badge">3</span>
-                </button>
-
-                {/* User Profile */}
                 <div className="navbar-user">
                     <div className="user-avatar">
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                     </div>
-                    <div className="user-info">
-                        <span className="user-name">{user?.name || 'User'}</span>
-                        <span className="user-role">Investor</span>
-                    </div>
+                    <span className="user-name hide-mobile">{user?.name || 'User'}</span>
                 </div>
             </div>
         </header>

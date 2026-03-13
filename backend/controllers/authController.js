@@ -1,15 +1,38 @@
 const User = require('../models/User');
 const Portfolio = require('../models/Portfolio');
 const jwt = require('jsonwebtoken');
+const { logger } = require('../middleware/errorHandler');
 
 /**
- * Generate JWT token
+ * Generate JWT access token
  */
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE,
+        expiresIn: process.env.JWT_EXPIRE || '7d',
     });
 };
+
+/**
+ * Generate JWT refresh token (longer-lived)
+ */
+const generateRefreshToken = (id) => {
+    return jwt.sign({ id, type: 'refresh' }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d',
+    });
+};
+
+/**
+ * Build safe user response object
+ */
+const buildUserResponse = (user) => ({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    riskProfile: user.riskProfile,
+    virtualBalance: user.virtualBalance,
+    theme: user.theme,
+    simulationMode: user.simulationMode,
+});
 
 /**
  * @route   POST /api/auth/register
@@ -20,7 +43,6 @@ const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Validation
         if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
@@ -28,8 +50,14 @@ const register = async (req, res) => {
             });
         }
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters',
+            });
+        }
+
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -37,40 +65,26 @@ const register = async (req, res) => {
             });
         }
 
-        // Create user
-        const user = await User.create({
-            name,
-            email,
-            password,
-        });
+        const user = await User.create({ name, email, password });
 
-        // Create initial portfolio for user
-        await Portfolio.create({
-            userId: user._id,
-            holdings: [],
-        });
+        // Create initial portfolio
+        await Portfolio.create({ userId: user._id, holdings: [] });
 
-        // Generate token
         const token = generateToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
 
         res.status(201).json({
             success: true,
             message: 'User registered successfully',
             token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                riskProfile: user.riskProfile,
-                virtualBalance: user.virtualBalance,
-            },
+            refreshToken,
+            user: buildUserResponse(user),
         });
     } catch (error) {
-        console.error('Register error:', error);
+        logger.error('Register error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during registration',
-            error: error.message,
         });
     }
 };
@@ -84,7 +98,6 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validation
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -92,8 +105,7 @@ const login = async (req, res) => {
             });
         }
 
-        // Find user and include password for comparison
-        const user = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
         if (!user) {
             return res.status(401).json({
@@ -102,7 +114,6 @@ const login = async (req, res) => {
             });
         }
 
-        // Check password
         const isPasswordMatch = await user.comparePassword(password);
 
         if (!isPasswordMatch) {
@@ -112,27 +123,21 @@ const login = async (req, res) => {
             });
         }
 
-        // Generate token
         const token = generateToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
 
         res.status(200).json({
             success: true,
             message: 'Login successful',
             token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                riskProfile: user.riskProfile,
-                virtualBalance: user.virtualBalance,
-            },
+            refreshToken,
+            user: buildUserResponse(user),
         });
     } catch (error) {
-        console.error('Login error:', error);
+        logger.error('Login error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during login',
-            error: error.message,
         });
     }
 };
@@ -146,24 +151,74 @@ const getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
 
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
         res.status(200).json({
             success: true,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                riskProfile: user.riskProfile,
-                virtualBalance: user.virtualBalance,
-            },
+            user: buildUserResponse(user),
         });
     } catch (error) {
-        console.error('Get user error:', error);
+        logger.error('Get user error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error',
-            error: error.message,
         });
     }
 };
 
-module.exports = { register, login, getMe };
+/**
+ * @route   POST /api/auth/refresh
+ * @desc    Refresh access token using refresh token
+ * @access  Public
+ */
+const refreshToken = async (req, res) => {
+    try {
+        const { refreshToken: token } = req.body;
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: 'Refresh token is required',
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (decoded.type !== 'refresh') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token type',
+            });
+        }
+
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        const newToken = generateToken(user._id);
+        const newRefreshToken = generateRefreshToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            token: newToken,
+            refreshToken: newRefreshToken,
+        });
+    } catch (error) {
+        logger.error('Refresh token error:', error);
+        res.status(401).json({
+            success: false,
+            message: 'Invalid or expired refresh token',
+        });
+    }
+};
+
+module.exports = { register, login, getMe, refreshToken };

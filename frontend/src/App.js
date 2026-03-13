@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Sidebar from './components/Sidebar';
 import TopNavbar from './components/TopNavbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -17,6 +18,7 @@ import RiskAnalysis from './pages/RiskAnalysis';
 import ChatAdvisor from './pages/ChatAdvisor';
 import Settings from './pages/Settings';
 import Portfolio from './pages/Portfolio';
+import Watchlist from './pages/Watchlist';
 import BrokerIntegration from './pages/BrokerIntegration';
 import SocialTrading from './pages/SocialTrading';
 import Education from './pages/Education';
@@ -24,7 +26,7 @@ import Education from './pages/Education';
 import './App.css';
 
 /**
- * Layout wrapper for authenticated pages — sidebar + top navbar
+ * Dashboard Layout — Sidebar + TopNavbar
  */
 const DashboardLayout = ({ children }) => (
     <div className="app-layout">
@@ -32,9 +34,10 @@ const DashboardLayout = ({ children }) => (
         <div className="app-main">
             <TopNavbar />
             <main className="app-content">
-                {children}
+                <ErrorBoundary fallbackMessage="This section encountered an error. Please try refreshing.">
+                    {children}
+                </ErrorBoundary>
             </main>
-            {/* Footer Risk Warning */}
             <footer className="risk-warning">
                 <span>⚠️</span> This is an AI-powered advisory system. Not financial advice. Invest at your own risk.
             </footer>
@@ -42,133 +45,62 @@ const DashboardLayout = ({ children }) => (
     </div>
 );
 
+/**
+ * Route configuration
+ */
+const routeConfig = [
+    { path: '/dashboard', Component: Dashboard },
+    { path: '/paper-trading', Component: PaperTrading },
+    { path: '/portfolio', Component: Portfolio },
+    { path: '/watchlist', Component: Watchlist },
+    { path: '/risk-profile', Component: RiskProfile },
+    { path: '/risk-analysis', Component: RiskAnalysis },
+    { path: '/chat-advisor', Component: ChatAdvisor },
+    { path: '/settings', Component: Settings },
+    { path: '/broker-integration', Component: BrokerIntegration },
+    { path: '/social-trading', Component: SocialTrading },
+    { path: '/education', Component: Education },
+];
+
 function AppRoutes() {
     const { isAuthenticated } = useAuth();
 
     return (
         <Routes>
-            {/* Public routes — no sidebar */}
-            <Route
-                path="/"
-                element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />}
-            />
+            {/* Public routes */}
+            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
-            {/* Protected routes — with sidebar layout */}
-            <Route
-                path="/dashboard"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <Dashboard />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/paper-trading"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <PaperTrading />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/risk-profile"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <RiskProfile />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/risk-analysis"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <RiskAnalysis />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/chat-advisor"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <ChatAdvisor />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/portfolio"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <Portfolio />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/settings"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <Settings />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/broker-integration"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <BrokerIntegration />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/social-trading"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <SocialTrading />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/education"
-                element={
-                    <ProtectedRoute>
-                        <DashboardLayout>
-                            <Education />
-                        </DashboardLayout>
-                    </ProtectedRoute>
-                }
-            />
+            {/* Protected routes with dashboard layout */}
+            {routeConfig.map(({ path, Component }) => (
+                <Route
+                    key={path}
+                    path={path}
+                    element={
+                        <ProtectedRoute>
+                            <DashboardLayout>
+                                <Component />
+                            </DashboardLayout>
+                        </ProtectedRoute>
+                    }
+                />
+            ))}
         </Routes>
     );
 }
 
 function App() {
     return (
-        <ThemeProvider>
-            <Router>
-                <AuthProvider>
-                    <AppRoutes />
-                </AuthProvider>
-            </Router>
-        </ThemeProvider>
+        <ErrorBoundary fallbackMessage="The application encountered a critical error. Please refresh the page.">
+            <ThemeProvider>
+                <Router>
+                    <AuthProvider>
+                        <AppRoutes />
+                    </AuthProvider>
+                </Router>
+            </ThemeProvider>
+        </ErrorBoundary>
     );
 }
 

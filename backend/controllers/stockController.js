@@ -5,13 +5,15 @@
  */
 
 const axios = require('axios');
+const { logger } = require('../middleware/errorHandler');
 
 const YAHOO_BASE = 'https://query1.finance.yahoo.com';
 const YAHOO_HEADERS = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' };
 
-// ── In-Memory Cache ──────────────────────────────
+// ── Bounded In-Memory LRU Cache ──────────────────
 const cache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 200;       // Prevent memory leaks
 
 const getCached = (key) => {
     const entry = cache.get(key);
@@ -23,6 +25,11 @@ const getCached = (key) => {
 };
 
 const setCache = (key, data) => {
+    // Evict oldest entries if cache is full
+    if (cache.size >= MAX_CACHE_SIZE) {
+        const oldestKey = cache.keys().next().value;
+        cache.delete(oldestKey);
+    }
     cache.set(key, { data, timestamp: Date.now() });
 };
 

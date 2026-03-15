@@ -1,79 +1,68 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import './Sidebar.css';
 
+const menuItems = [
+    { path: '/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/paper-trading', icon: '📈', label: 'Paper Trading' },
+    { path: '/portfolio', icon: '💼', label: 'Portfolio' },
+    { path: '/watchlist', icon: '⭐', label: 'Watchlist' },
+    { path: '/risk-analysis', icon: '🛡️', label: 'Risk Analysis' },
+    { path: '/risk-profile', icon: '🎯', label: 'Risk Profile' },
+    { path: '/chat-advisor', icon: '🤖', label: 'AI Advisor' },
+    { path: '/education', icon: '📚', label: 'Education' },
+    { path: '/social-trading', icon: '👥', label: 'Social' },
+    { path: '/broker-integration', icon: '🔗', label: 'Broker' },
+    { path: '/settings', icon: '⚙️', label: 'Settings' },
+];
+
 const Sidebar = () => {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
-
-    const menuItems = [
-        { path: '/dashboard', icon: '📊', label: 'Dashboard' },
-        { path: '/portfolio', icon: '💼', label: 'Portfolio' },
-        { path: '/risk-profile', icon: '🎯', label: 'Risk Profile' },
-        { path: '/risk-analysis', icon: '🛡️', label: 'Risk Analysis' },
-        { path: '/paper-trading', icon: '📈', label: 'Paper Trading' },
-        { path: '/chat-advisor', icon: '🤖', label: 'AI Chat' },
-        { path: '/broker-integration', icon: '🔗', label: 'Broker' },
-        { path: '/social-trading', icon: '🏆', label: 'Social Trading' },
-        { path: '/education', icon: '📚', label: 'Education' },
-    ];
+    const { user, logout } = useAuth();
+    const { theme, toggleTheme, isDark } = useTheme();
+    const location = useLocation();
+    const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <aside className="sidebar">
-            {/* Logo */}
-            <div className="sidebar-logo">
-                <div className="logo-icon">
-                    <svg viewBox="0 0 32 32" fill="none">
-                        <rect width="32" height="32" rx="8" fill="url(#logo-gradient)" />
-                        <path d="M8 22L14 14L18 18L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <defs>
-                            <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
-                                <stop stopColor="#4A90D9" />
-                                <stop offset="1" stopColor="#6BA3E0" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <div className="logo-text">
-                    <span className="logo-name">CapitalWave</span>
-                    <span className="logo-tagline">AI Stock Advisor</span>
-                </div>
+        <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+            {/* Brand */}
+            <div className="sidebar-brand">
+                <div className="brand-logo">CW</div>
+                {!collapsed && <span className="brand-text">CapitalWave</span>}
+                <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}
+                    title={collapsed ? 'Expand' : 'Collapse'}>
+                    {collapsed ? '→' : '←'}
+                </button>
             </div>
 
-            {/* Navigation Menu */}
+            {/* Navigation */}
             <nav className="sidebar-nav">
-                <div className="nav-label">MAIN MENU</div>
                 {menuItems.map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}
                         className={({ isActive }) =>
-                            `sidebar-link ${isActive ? 'active' : ''}`
+                            `nav-item ${isActive ? 'active' : ''}`
                         }
+                        title={collapsed ? item.label : ''}
                     >
-                        <span className="link-icon">{item.icon}</span>
-                        <span className="link-text">{item.label}</span>
-                        <span className="link-indicator" />
+                        <span className="nav-icon">{item.icon}</span>
+                        {!collapsed && <span className="nav-label">{item.label}</span>}
+                        {!collapsed && location.pathname === item.path && (
+                            <span className="nav-indicator" />
+                        )}
                     </NavLink>
                 ))}
             </nav>
 
-            {/* Bottom Section */}
-            <div className="sidebar-bottom">
-                <div className="nav-label">SETTINGS</div>
-                <NavLink to="/settings" className="sidebar-link">
-                    <span className="link-icon">⚙️</span>
-                    <span className="link-text">Settings</span>
-                </NavLink>
-                <button onClick={handleLogout} className="sidebar-link logout-link">
-                    <span className="link-icon">🚪</span>
-                    <span className="link-text">Logout</span>
+            {/* Footer */}
+            <div className="sidebar-footer">
+                <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+                    {isDark ? '☀️' : '🌙'} {!collapsed && (isDark ? 'Light' : 'Dark')}
+                </button>
+                <button className="logout-btn" onClick={logout} title="Logout">
+                    🚪 {!collapsed && 'Logout'}
                 </button>
             </div>
         </aside>

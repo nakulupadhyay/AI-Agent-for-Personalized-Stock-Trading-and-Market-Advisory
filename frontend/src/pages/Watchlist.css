@@ -1,0 +1,87 @@
+.watchlist-page { padding: 1.5rem; max-width: 1200px; }
+
+.watchlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+.watchlist-header h2 { font-size: 1.5rem; font-weight: 700; }
+.watchlist-header .text-muted { color: var(--text-muted); font-size: 0.85rem; }
+
+/* Search */
+.watchlist-search { position: relative; margin-bottom: 1.5rem; }
+
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 30;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid var(--border);
+}
+.search-result:last-child { border-bottom: none; }
+.search-result:hover { background: var(--bg-card-hover); }
+.result-symbol { font-weight: 700; font-size: 0.9rem; margin-right: 8px; }
+.result-name { color: var(--text-muted); font-size: 0.82rem; }
+.add-icon { color: var(--primary); font-weight: 600; font-size: 0.85rem; }
+
+/* Grid */
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.watchlist-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    transition: all var(--transition);
+    position: relative;
+}
+.watchlist-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.wc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.wc-symbol { font-weight: 800; font-size: 1rem; color: var(--primary-light); }
+.wc-remove {
+    width: 24px; height: 24px;
+    border: none; background: transparent;
+    color: var(--text-muted); font-size: 0.9rem;
+    cursor: pointer; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition-fast);
+    opacity: 0;
+}
+.watchlist-card:hover .wc-remove { opacity: 1; }
+.wc-remove:hover { background: var(--accent-red-bg); color: var(--accent-red); }
+
+.wc-company { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.75rem; }
+.wc-price { font-size: 1.4rem; font-weight: 700; margin-bottom: 4px; }
+.wc-change { font-size: 0.82rem; font-weight: 600; }
+.wc-change.positive { color: var(--accent-green); }
+.wc-change.negative { color: var(--accent-red); }
+.wc-volume { font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; }
+
+@media (max-width: 768px) {
+    .watchlist-grid { grid-template-columns: 1fr; }
+}

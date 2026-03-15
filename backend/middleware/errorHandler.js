@@ -1,7 +1,9 @@
 const winston = require('winston');
+const path = require('path');
 
 /**
  * Centralized logger using Winston
+ * Console + File transports for production-grade logging
  */
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -19,6 +21,18 @@ const logger = winston.createLogger({
                     return `${timestamp} [${level}]: ${message} ${Object.keys(meta).length > 1 ? JSON.stringify(meta) : ''}`;
                 })
             ),
+        }),
+        // File transport for persistent logging
+        new winston.transports.File({
+            filename: path.join(__dirname, '..', 'logs', 'error.log'),
+            level: 'error',
+            maxsize: 5242880, // 5MB
+            maxFiles: 5,
+        }),
+        new winston.transports.File({
+            filename: path.join(__dirname, '..', 'logs', 'combined.log'),
+            maxsize: 5242880,
+            maxFiles: 5,
         }),
     ],
 });
@@ -67,10 +81,11 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
-    // Default server error
+    // Default server error — don't leak error details in production
+    const isProduction = process.env.NODE_ENV === 'production';
     res.status(err.status || 500).json({
         success: false,
-        message: err.message || 'Internal Server Error',
+        message: isProduction ? 'Internal Server Error' : (err.message || 'Internal Server Error'),
     });
 };
 

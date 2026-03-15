@@ -3,6 +3,7 @@ const Portfolio = require('../models/Portfolio');
 const Transaction = require('../models/Transaction');
 const riskEngine = require('../utils/riskEngine');
 const { fetchLivePrice } = require('../utils/fetchLivePrice');
+const { logger } = require('../middleware/errorHandler');
 
 /**
  * @route   POST /api/trading/buy
@@ -31,19 +32,20 @@ const buyStock = async (req, res) => {
 
         const totalAmount = quantity * price;
 
-        // Get user's current balance
-        const user = await User.findById(userId);
+        // Atomic balance deduction — prevents race condition on concurrent buys
+        // Only succeeds if balance >= totalAmount at the moment of update
+        const user = await User.findOneAndUpdate(
+            { _id: userId, virtualBalance: { $gte: totalAmount } },
+            { $inc: { virtualBalance: -totalAmount } },
+            { new: true }
+        );
 
-        if (user.virtualBalance < totalAmount) {
+        if (!user) {
             return res.status(400).json({
                 success: false,
                 message: 'Insufficient balance',
             });
         }
-
-        // Deduct from virtual balance
-        user.virtualBalance -= totalAmount;
-        await user.save();
 
         // Update portfolio
         let portfolio = await Portfolio.findOne({ userId });
@@ -73,8 +75,10 @@ const buyStock = async (req, res) => {
             });
         }
 
-        // Update portfolio totals
-        portfolio.totalInvested += totalAmount;
+        // Recalculate portfolio totals from scratch (prevents drift)
+        portfolio.totalInvested = portfolio.holdings.reduce((sum, h) =>
+            sum + (h.quantity * h.averagePrice), 0
+        );
         portfolio.currentValue = portfolio.holdings.reduce((sum, h) =>
             sum + (h.quantity * h.currentPrice), 0
         );
@@ -103,11 +107,10 @@ const buyStock = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Buy stock error:', error);
+        logger.error('Buy stock error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during buy order',
-            error: error.message,
         });
     }
 };
@@ -187,11 +190,13 @@ const sellStock = async (req, res) => {
             ? ((sellPrice - buyPrice) / buyPrice) * 100
             : 0;
 
-        // ── UPDATE USER BALANCE ─────────────────────────
+        // ── UPDATE USER BALANCE (atomic) ─────────────────
         // Credit the ACTUAL sell value (with profit or loss), not the original investment
-        const user = await User.findById(userId);
-        user.virtualBalance += sellValue;
-        await user.save();
+        const user = await User.findOneAndUpdate(
+            { _id: userId },
+            { $inc: { virtualBalance: sellValue } },
+            { new: true }
+        );
 
         // ── UPDATE HOLDING ──────────────────────────────
         holding.quantity -= quantity;
@@ -251,11 +256,10 @@ const sellStock = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Sell stock error:', error);
+        logger.error('Sell stock error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during sell order',
-            error: error.message,
         });
     }
 };
@@ -293,11 +297,10 @@ const getPortfolio = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Get portfolio error:', error);
+        logger.error('Get portfolio error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while fetching portfolio',
-            error: error.message,
         });
     }
 };
@@ -321,11 +324,10 @@ const getTransactions = async (req, res) => {
             data: transactions,
         });
     } catch (error) {
-        console.error('Get transactions error:', error);
+        logger.error('Get transactions error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while fetching transactions',
-            error: error.message,
         });
     }
 };
@@ -406,10 +408,15 @@ const getPortfolioAnalysis = async (req, res) => {
         const totalPL = currentValue - totalInvestment;
         const returnPercent = totalInvestment > 0 ? ((totalPL / totalInvestment) * 100) : 0;
 
-        // Today's gain — approximate from change since last update
+        // Today's gain — calculated from actual price change vs average buy price
+        // Uses the difference between current value and invested value as a proxy
         const todaysGain = enrichedHoldings.reduce((s, h) => {
-            const dailyChange = h.currentPrice * 0.005 * (Math.random() > 0.4 ? 1 : -1); // Approximate
-            return s + dailyChange * h.quantity;
+            // Approximate daily P&L from the total return spread over holding period
+            const daysSinceFirstBuy = Math.max(1, Math.ceil(
+                (Date.now() - new Date(portfolio.updatedAt || Date.now()).getTime()) / (24 * 3600000)
+            ));
+            const totalGain = h.profitLoss;
+            return s + (totalGain / daysSinceFirstBuy);
         }, 0);
 
         // ── SECTOR BREAKDOWN ─────────────────────────
@@ -497,13 +504,17 @@ const getPortfolioAnalysis = async (req, res) => {
 
         // ── PERFORMANCE HISTORY (from transactions) ──
         const performanceHistory = [];
-        let cumValue = 0;
+        let cumInvested = 0;
         sortedTx.forEach(tx => {
-            if (tx.type === 'BUY') cumValue += tx.totalAmount;
-            else cumValue -= tx.totalAmount * 0.9; // approximate after sell
+            if (tx.type === 'BUY') {
+                cumInvested += tx.totalAmount;
+            } else {
+                // On sell, reduce invested amount by the proportional cost basis
+                cumInvested -= (tx.buyPrice || tx.price) * tx.quantity;
+            }
             performanceHistory.push({
                 date: tx.timestamp,
-                value: Math.max(0, cumValue),
+                value: Math.max(0, cumInvested),
             });
         });
         // Add current state
@@ -558,11 +569,10 @@ const getPortfolioAnalysis = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Portfolio analysis error:', error);
+        logger.error('Portfolio analysis error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during portfolio analysis',
-            error: error.message,
         });
     }
 };

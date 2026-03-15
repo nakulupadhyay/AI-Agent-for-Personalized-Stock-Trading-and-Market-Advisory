@@ -52,4 +52,6 @@ const portfolioSchema = new mongoose.Schema({
     },
 });
 
+portfolioSchema.index({ userId: 1 });
+
 module.exports = mongoose.model('Portfolio', portfolioSchema);

@@ -1,0 +1,15 @@
+node_modules
+.git
+.env
+*.log
+logs/
+build/
+dist/
+venv/
+__pycache__
+*.pyc
+.DS_Store
+*.egg-info
+.mypy_cache
+.pytest_cache
+models/finbert-cache/

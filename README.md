@@ -1,306 +1,312 @@
 <div align="center">
 
-# 📈 AI Agent for Personalized Stock Trading & Market Advisory
+# 🚀 CapitalWave AI
 
-**An intelligent, full-stack trading platform powered by machine learning for real-time market predictions, sentiment analysis, quantitative risk assessment, and virtual portfolio management.**
+### AI-Powered Stock Trading & Market Advisory Platform
 
-![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js&logoColor=white)
-![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)
-![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104-009688?logo=fastapi&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?logo=mongodb&logoColor=white)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-FF6F00?logo=tensorflow&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+> An intelligent paper trading platform that combines **LSTM deep learning**, **FinBERT NLP sentiment analysis**, and **XGBoost ensemble models** to deliver real-time BUY/SELL/HOLD recommendations with confidence scores for Indian (NSE) stocks.
+
+[Demo](#screenshots) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Contributing](#-contributing)
 
 </div>
 
 ---
 
-## 📖 Project Description
+## ✨ Features
 
-The **AI Agent for Personalized Stock Trading & Market Advisory** is an end-to-end intelligent platform that enables users to make sophisticated, data-driven financial decisions. By combining real-time market data with advanced machine learning algorithms, the platform offers precise stock price predictions, news sentiment analysis, and personalized risk assessments. Whether you are a beginner looking for a risk-free paper trading environment or an advanced trader seeking AI-backed market insights, this platform provides all the necessary tools in a beautifully crafted, responsive dashboard.
+### 🤖 AI & Machine Learning
+- **LSTM Neural Network** — Time-series stock price prediction with 60-day lookback
+- **FinBERT Sentiment Analysis** — NLP-based market sentiment from financial text
+- **XGBoost Ensemble** — Feature-engineered trend classification
+- **Combined AI Signal** — BUY / SELL / HOLD with confidence score (0–100%)
+- **AI Chat Advisor** — Interactive financial Q&A with stock-specific analysis
 
----
+### 📈 Trading Platform
+- **Paper Trading** — Risk-free trading with ₹10,00,000 virtual balance
+- **Real-time Stock Data** — Live NSE prices via Yahoo Finance API
+- **Portfolio Analytics** — P&L tracking, sector breakdown, risk metrics
+- **Watchlist** — Track favorite stocks with live price updates
+- **Order Types** — Market, Limit, and Stop-Loss orders
+- **Trade History** — Full transaction log with P&L per trade
 
-## 🎯 Problem Statement
+### 🛡️ Risk Management
+- **Quantitative Risk Engine** — Volatility, Sharpe ratio, Beta, VaR calculations
+- **Risk Profile Assessment** — Personalized risk tolerance questionnaire
+- **Portfolio Rebalancing** — AI-suggested sector allocation adjustments
+- **Stop-Loss Recommendations** — Automated risk thresholds per holding
+- **Drawdown Analysis** — Max and current drawdown tracking
 
-Retail investors often struggle to analyze vast amounts of market data, leading to emotional and uninformed trading decisions. While professional traders use expensive quantitative tools and algorithms to minimize risk and maximize returns, everyday investors are left guessing market directions. This project bridges the gap by democratizing professional-grade AI tools, providing actionable market insights, real-time news sentiment, and strict risk management in an accessible, user-friendly interface.
+### 🎨 Premium UI/UX
+- **Dark & Light Themes** — Premium fintech-grade design system
+- **Glassmorphism Cards** — Modern glass-blur effects with gradient accents
+- **Loading Skeletons** — Polished loading states across all pages
+- **Responsive Design** — Works on desktop, tablet, and mobile
+- **Micro-animations** — Smooth transitions and staggered reveals
+- **Error Boundaries** — Graceful error handling without crashes
 
----
-
-## 🛠️ Tech Stack
-
-### 🎨 Frontend
-- **React.js (18.x)** - Component-based dynamic UI
-- **React Router (v6)** - Client-side navigation
-- **Chart.js & React-Chartjs-2** - Interactive, responsive data visualization
-- **Axios** - Async HTTP requests
-- **Framer Motion** - Fluid micro-animations
-- **Vanilla CSS3** - Modern, responsive styling with dark mode support
-
-### ⚙️ Backend (Node.js)
-- **Node.js & Express.js** - Robust RESTful API server
-- **MongoDB & Mongoose** - NoSQL database and schema modeling
-- **JWT (JSON Web Tokens)** - Stateless, secure user authentication
-- **Yahoo Finance API (`yahoo-finance2`)** - Live market quotes & historical data
-- **Socket.IO** - Real-time client-server communication
-
-### 🧠 AI/ML Microservice (Python)
-- **FastAPI** - High-performance async Python backend
-- **TensorFlow / Keras** - Time-series prediction using LSTM
-- **PyTorch & Transformers** - NLP-powered Sentiment Analysis (FinBERT)
-- **XGBoost & Scikit-Learn** - Classification and predictive modeling
-- **Pandas / NumPy** - Data processing and technical indicators (TA)
-
----
-
-## 🔥 Key Features
-
-- **🤖 AI Trade Recommendations:** Buy, Sell, or Hold signals backed by ML model confidence scores.
-- **📰 Sentiment Analysis:** Real-time NLP parsing of financial news to determine stock sentiment.
-- **📈 Market Trend Prediction:** Future price-direction forecasting using LSTM and XGBoost models.
-- **📊 Virtual Paper Trading:** A risk-free trading simulator starting with a ₹10,00,000 balance.
-- **💼 Portfolio Management:** Comprehensive tracking of live holdings, profit/loss, and historical snapshots.
-- **📉 Quantitative Risk Assessment:** In-depth user risk profiling, Sharpe ratio calculations, and ML risk classification.
-- **💬 AI Chat Advisor:** An intelligent chatbot assisting users with specific stock and market queries.
-- **🤝 Social Trading:** Follow top-performing traders, share logic, and view community trades.
-- **🎓 Education Center:** Step-by-step learning modules to master the stock market fundamentals.
-- **🔗 Broker Integration:** Seamless linkage with external brokerage accounts for live execution.
+### 🔒 Security
+- **JWT Authentication** — Access + refresh token system
+- **Helmet.js** — HTTP security headers
+- **Rate Limiting** — API, auth, and AI endpoint throttling
+- **Input Sanitization** — NoSQL injection and XSS protection
+- **Password Hashing** — bcrypt with salt rounds
 
 ---
 
-## 🏗️ System Architecture
+## 🏗️ Architecture
 
-The platform follows a decoupled, three-tier architecture ensuring scalability, separation of concerns, and maintainability.
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     CAPITALWAVE AI                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │
+│   │   Frontend    │   │   Backend    │   │  ML Service   │   │
+│   │   React 18    │──▶│  Express.js  │──▶│   FastAPI     │   │
+│   │   Chart.js    │   │   Node.js    │   │   Python 3.11 │   │
+│   │   Framer      │   │   JWT Auth   │   │   TensorFlow  │   │
+│   │   Motion      │   │   Winston    │   │   PyTorch     │   │
+│   │   :3000       │   │   :5000      │   │   XGBoost     │   │
+│   └──────────────┘   └──────┬───────┘   │   :5001       │   │
+│                              │           └──────────────┘   │
+│                     ┌────────▼───────┐                      │
+│                     │    MongoDB     │                      │
+│                     │   :27017       │                      │
+│                     └────────────────┘                      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-- **Frontend (React)**: Handles the presentation layer, form validation, chart rendering, and user state management.
-- **Backend (Node.js/Express)**: Acts as the primary orchestrator, managing user authentication, portfolio states, risk engines, database reads/writes, and routing ML requests.
-- **AI/ML Service (FastAPI)**: A dedicated microservice executing heavy computational models (TensorFlow, PyTorch) independently, allowing the Node server to remain non-blocking.
-- **Database (MongoDB)**: Centralized data repository storing user credentials, virtual balances, transaction histories, API caches, and risk profiles.
+### Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | React 18, Chart.js, Recharts, Framer Motion | Interactive UI, charts, animations |
+| **Backend** | Node.js, Express, Mongoose, Winston | REST API, auth, business logic |
+| **ML Service** | FastAPI, TensorFlow, PyTorch, XGBoost | Predictions, sentiment, risk analysis |
+| **Database** | MongoDB 7 | User data, portfolios, transactions |
+| **Security** | Helmet, JWT, bcrypt, rate-limit | Auth, headers, input sanitization |
+| **DevOps** | Docker, docker-compose, nginx | Containerization, reverse proxy |
 
 ---
 
-## 🚀 Installation Guide
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v14+)
-- Python (v3.9+)
-- MongoDB (Running locally on default port 27017 or Cloud Atlas)
-- Git
+- **Node.js** 18+ and npm
+- **Python** 3.11+ and pip
+- **MongoDB** 7 (local or Atlas)
+- **Docker** (optional, for containerized setup)
 
-### Step-by-Step Instructions
+### Option 1: Docker (Recommended)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/ai-stock-trading-agent.git
-   cd ai-stock-trading-agent
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/capitalwave-ai.git
+cd capitalwave-ai
 
-2. **Setup the Node.js Backend:**
-   ```bash
-   cd backend
-   npm install
-   ```
-   *Create a `.env` file in the `backend/` directory:*
-   ```env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/ai-stock-trading
-   JWT_SECRET=your_super_secret_key_here
-   CLIENT_URL=http://localhost:3000
-   ML_SERVICE_URL=http://localhost:8000
-   ```
-   *Run the backend:*
-   ```bash
-   npm run dev
-   ```
+# Start all services
+docker-compose up --build
 
-3. **Setup the React Frontend:**
-   ```bash
-   cd ../frontend
-   npm install
-   npm start
-   ```
+# Access the app
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:5000
+# ML Docs:  http://localhost:5001/docs
+```
 
-4. **Setup the Python ML Microservice:**
-   ```bash
-   cd ../ml-service
-   python -m venv venv
-   # Activate virtual environment
-   # Windows: venv\Scripts\activate
-   # macOS/Linux: source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-   *Create a `.env` file in the `ml-service/` directory:*
-   ```env
-   MONGO_URI=mongodb://localhost:27017/ai-stock-trading
-   MODEL_DIR=./models
-   ```
-   *Run the ML Service:*
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
+### Option 2: Manual Setup
 
----
+```bash
+# 1. Backend
+cd backend
+cp .env.example .env          # Configure environment variables
+npm install
+npm run dev                    # Starts on :5000
 
-## 💻 Usage Guide
+# 2. ML Service (new terminal)
+cd ml-service
+cp .env.example .env
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 0.0.0.0 --port 5001 --reload
 
-1. **Account Creation:** Open your browser to `http://localhost:3000`. Register a new account.
-2. **Dashboard Overview:** Upon login, navigate the dashboard to explore the top movers, SPY/NIFTY indexes, and daily market sentiment.
-3. **Analyze a Stock:** Use the top search bar to find a specific ticker. View its AI recommendation (Buy/Sell/Hold), recent news sentiment, and historical price charts.
-4. **Take the Risk Quiz:** Head to the *Risk Analysis* tab to undergo investor profiling. The system will adapt to your specified risk tolerance.
-5. **Paper Trade:** Go to *Paper Trading*, select a stock, enter quantity, and execute a virtual order without risking actual capital.
-6. **Consult the AI Chat:** Stuck on market jargon? Open the *Chat Advisor* and type "Should I invest in AAPL?" to get a tailored ML response.
+# 3. Frontend (new terminal)
+cd frontend
+npm install
+npm start                      # Starts on :3000
+```
 
----
+### Environment Variables
 
-## 📂 Folder Structure
+**Backend** (`backend/.env`):
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/ai-stock-trading
+JWT_SECRET=your_secure_random_string_here
+JWT_EXPIRE=7d
+JWT_REFRESH_EXPIRE=30d
+NODE_ENV=development
+ML_SERVICE_URL=http://localhost:5001
+CLIENT_URL=http://localhost:3000
+```
 
-```text
-ai-stock-trading-agent/
-│
-├── backend/                   # Node.js API Service
-│   ├── config/                # DB & Environment Config
-│   ├── controllers/           # Business Logic (Auth, Portfolios, Stocks)
-│   ├── middleware/            # JWT Verification, Rate Limiter
-│   ├── models/                # Mongoose Database Schemas
-│   ├── routes/                # Express API Endpoints
-│   ├── utils/                 # Helper Functions
-│   └── server.js              # Entry Point
-│
-├── frontend/                  # React Application
-│   ├── public/                # Static assets
-│   ├── src/
-│   │   ├── components/        # Reusable UI Elements (Navbars, Cards)
-│   │   ├── context/           # React Global State (Auth)
-│   │   ├── pages/             # View Containers (Dashboard, Settings, Trade)
-│   │   ├── utils/             # API Interceptors & Fetch Clients
-│   │   ├── App.js             # Main Router
-│   │   └── index.js           # DOM Entry
-│
-└── ml-service/                # Python Model API
-    ├── app/
-    │   ├── routers/           # FastAPI Routes (Predict, Risk, Recommend)
-    │   ├── services/          # Core Logic (Sentiment, Feature Engine)
-    │   ├── models/            # Pydantic Schemas
-    │   └── main.py            # Uvicorn Setup
-    ├── models/                # Pre-trained .h5, .pkl, and .bin files
-    └── requirements.txt       # Python Libraries
+**ML Service** (`ml-service/.env`):
+```env
+PORT=5001
+MONGODB_URI=mongodb://localhost:27017/ai-stock-trading
+MODEL_DIR=./models
+LOG_LEVEL=INFO
 ```
 
 ---
 
 ## 📡 API Documentation
 
-Below are a few of the core API endpoints from the Node.js backend:
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/register` | Register new user |
+| `POST` | `/api/auth/login` | Login and get tokens |
+| `POST` | `/api/auth/refresh` | Refresh access token |
+| `GET` | `/api/auth/me` | Get current user (🔒) |
 
-### 1. Execute Virtual Trade
-- **Endpoint:** `POST /api/trading/buy`
-- **Headers:** `Authorization: Bearer <token>`
-- **Request Body:**
-  ```json
-  {
-    "symbol": "AAPL",
-    "shares": 10,
-    "currentPrice": 185.00
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "message": "Buy order executed successfully.",
-    "transactionId": "651a2b3c4d5e",
-    "updatedBalance": 998150.00
-  }
-  ```
+### Stocks
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/stocks` | Get top NSE stocks with live prices (🔒) |
+| `GET` | `/api/stocks/:symbol` | Get stock details + 3-month history (🔒) |
+| `GET` | `/api/stocks/search/:query` | Search stocks by name/symbol (🔒) |
 
-### 2. Fetch ML Trade Recommendation
-- **Endpoint:** `POST /api/ai/recommendation`
-- **Headers:** `Authorization: Bearer <token>`
-- **Request Body:**
-  ```json
-  {
-    "symbol": "TSLA"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "symbol": "TSLA",
-    "action": "BUY",
-    "confidence": 0.82,
-    "reasoning": "Strong upward momentum detected via LSTM prediction and positive news sentiment."
-  }
-  ```
+### Trading
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/trading/buy` | Execute buy order (🔒) |
+| `POST` | `/api/trading/sell` | Execute sell order (🔒) |
+| `GET` | `/api/trading/portfolio` | Get portfolio holdings (🔒) |
+| `GET` | `/api/trading/transactions` | Get transaction history (🔒) |
+| `GET` | `/api/trading/portfolio/analysis` | Full portfolio analysis (🔒) |
+| `POST` | `/api/trading/limit-order` | Place limit order (🔒) |
+| `POST` | `/api/trading/stop-loss` | Place stop-loss order (🔒) |
+| `GET` | `/api/trading/analytics` | Trading performance analytics (🔒) |
+
+### AI & ML
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/ai/recommendation` | Get AI stock recommendation (🔒) |
+| `POST` | `/api/ai/sentiment` | Analyze stock sentiment (🔒) |
+| `POST` | `/api/ai/chat` | AI financial advisor chat (🔒) |
+| `GET` | `/api/ai/ml-status` | Check ML service status (🔒) |
+
+### ML Service (Direct)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check + model status |
+| `POST` | `/predict/recommendation` | ML prediction |
+| `POST` | `/predict/sentiment` | FinBERT sentiment |
+| `POST` | `/predict-risk` | Risk classification |
+| `POST` | `/recommend` | Full recommendation pipeline |
+
+> 🔒 = Requires `Authorization: Bearer <token>` header
 
 ---
 
-## 🤖 AI/ML Model Explanation
+## 📁 Project Structure
 
-Our custom ML microservice takes raw market data and turns it into reliable intelligence using a pipelined approach:
+```
+capitalwave-ai/
+├── backend/                    # Node.js Express API
+│   ├── config/                 # DB connection, env validation
+│   ├── controllers/            # Route handlers (12 controllers)
+│   ├── middleware/              # Auth, error handler, rate limiter, validator
+│   ├── models/                 # Mongoose schemas (11 models)
+│   ├── routes/                 # Express route definitions
+│   ├── utils/                  # Risk engine, live price fetcher
+│   ├── logs/                   # Winston log files
+│   ├── Dockerfile
+│   └── server.js               # Entry point
+│
+├── frontend/                   # React 18 SPA
+│   ├── src/
+│   │   ├── components/         # Sidebar, TopNavbar, ErrorBoundary, LoadingSkeleton
+│   │   ├── context/            # AuthContext, ThemeContext
+│   │   ├── pages/              # 13 pages (Dashboard, Trading, Watchlist, etc.)
+│   │   ├── utils/              # Axios API client
+│   │   └── App.js              # Root component with routing
+│   ├── Dockerfile
+│   └── nginx.conf
+│
+├── ml-service/                 # Python FastAPI ML Service
+│   ├── app/
+│   │   ├── models/             # LSTM, FinBERT, XGBoost, Risk Classifier
+│   │   ├── routers/            # Health, prediction, sentiment, risk
+│   │   ├── services/           # Model registry, feature engine, data service
+│   │   ├── training/           # Model training scripts
+│   │   ├── utils/              # Indicators, preprocessing, synthetic data
+│   │   └── main.py             # FastAPI entry point
+│   ├── models/                 # Saved model files (.pkl, FinBERT cache)
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── docker-compose.yml          # Full-stack orchestration
+├── .dockerignore
+└── README.md
+```
 
-1. **Market Trend Prediction (LSTM & XGBoost):** 
-   - **Data Collection:** Retrieves 5+ years of historical adjusted close prices and volume via Yahoo Finance.
-   - **Feature Engineering:** Computes technical indicators like RSI, MACD, and Bollinger Bands.
-   - **Model:** A Long Short-Term Memory (LSTM) deep learning network handles sequence forecasting, while an XGBoost classifier is used for short-term buy/sell probability categorization.
-2. **Sentiment Analysis (FinBERT):**
-   - **Data Collection:** Scrapes real-time financial headlines using News APIs.
-   - **Model:** A PyTorch-based, fine-tuned transformer model (FinBERT) designed explicitly to categorize financial text into *Positive, Negative, or Neutral* sentiment scores.
-3. **Risk Classification (Scikit-Learn Random Forest):**
-   - Calculates historical volatility and Value-at-Risk (VaR) to classify user portfolios as *Conservative, Moderate, or Aggressive*, matching against their questionnaire profiles.
+---
+
+## 🧪 Testing
+
+```bash
+# Backend unit tests
+cd backend && npx jest
+
+# Frontend tests
+cd frontend && npm test
+
+# ML service (manually via docs)
+# Visit http://localhost:5001/docs for interactive Swagger docs
+```
 
 ---
 
 ## 📸 Screenshots
 
-*(Replace the placeholder links with actual images of the project)*
-
-### 1. Interactive User Dashboard
-![Dashboard Screenshot Placeholder](https://via.placeholder.com/800x400?text=Insert+Dashboard+Screenshot+Here)
-
-### 2. AI Chat Advisor Interface
-![AI Chat Screenshot Placeholder](https://via.placeholder.com/800x400?text=Insert+AI+Chat+Advisor+Screenshot+Here)
-
-### 3. Quantitative Risk Meter
-![Risk Analysis Screenshot Placeholder](https://via.placeholder.com/800x400?text=Insert+Risk+Meter+Screenshot+Here)
+> _Screenshots will be added here. Run the application locally and capture:_
+> 1. Landing Page
+> 2. Dashboard (dark theme)
+> 3. Paper Trading with buy/sell
+> 4. Portfolio Analytics
+> 5. AI Chat Advisor
+> 6. Watchlist
+> 7. Risk Analysis
 
 ---
 
-## 🔮 Future Improvements
+## 🤝 Contributing
 
-- **Algorithmic Trading Bots:** Allow users to automate trades based on predefined technical criteria and AI signals.
-- **Crypto Integration:** Expand asset class options to include Bitcoin, Ethereum, and altcoins.
-- **Advanced Options Trading:** Enable paper trading for put/call options and straddle strategies.
-- **Mobile Application:** Build a cross-platform React Native app for iOS and Android access.
-- **Enhanced Social Feeds:** Implement upvoting, deep-linking to shared charts, and trader leagues.
-
----
-
-## 🤝 Contributing Guide
-
-We welcome contributions from the open-source community!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request for review
-
-*Please make sure to run all local tests and adhere to ESLint/Prettier formatting rules before submitting a PR.*
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
 
-<!-- 
-## ✍️ Author
 
-**[Your Name / Your GitHub Handle]**   -->
-<!-- *Senior Software Engineer & FinTech Enthusiast*
-- GitHub: [@your-username](https://github.com/your-username)
-- LinkedIn: [Your Profile Link](https://linkedin.com/in/your-profile)
-- Portfolio: [Your Website Link](https://your-website.com) -->
+## ⚠️ Disclaimer
+
+This platform is for **educational and paper trading purposes only**. It does not constitute financial advice. Stock markets are subject to market risks. Always consult a certified financial advisor before making real investment decisions.
 
 ---
 
 <div align="center">
-<i>Built with ❤️ for Traders & Developers.</i>
+
+**Built with ❤️ using AI + Modern Web Technologies**
+
 </div>

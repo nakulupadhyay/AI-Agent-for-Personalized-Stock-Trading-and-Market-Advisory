@@ -1,0 +1,87 @@
+# Docker Compose — AI Stock Trading Platform
+# Usage: docker-compose up --build
+
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: capitalwave-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=ai-stock-trading
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node.js Backend API
+  backend:
+    build: ./backend
+    container_name: capitalwave-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/ai-stock-trading
+      - JWT_SECRET=${JWT_SECRET:-your_super_secret_jwt_key_change_this}
+      - JWT_EXPIRE=7d
+      - JWT_REFRESH_EXPIRE=30d
+      - NODE_ENV=production
+      - ML_SERVICE_URL=http://ml-service:5001
+      - CLIENT_URL=http://localhost:3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5000/ || exit 1
+      interval: 30s
+      timeout: 5s
+
+  # Python ML Service
+  ml-service:
+    build: ./ml-service
+    container_name: capitalwave-ml
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGODB_URI=mongodb://mongodb:27017/ai-stock-trading
+      - MODEL_DIR=/app/models
+      - LOG_LEVEL=INFO
+    volumes:
+      - ml_models:/app/models
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: python -c "import urllib.request; urllib.request.urlopen('http://localhost:5001/health')"
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+
+  # React Frontend (production build served via nginx)
+  frontend:
+    build: ./frontend
+    container_name: capitalwave-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+      interval: 30s
+      timeout: 5s
+
+volumes:
+  mongo_data:
+  ml_models:

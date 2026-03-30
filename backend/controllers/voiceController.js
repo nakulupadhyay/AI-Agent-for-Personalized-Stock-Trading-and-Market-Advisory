@@ -75,7 +75,19 @@ const parseIntent = (text) => {
         return { intent: 'portfolio', stock };
     }
 
-    // ── Buy intent ──
+    // ── Recommendation / Should I buy (MUST be before buy/sell) ──
+    if (
+        lower.includes('should i') ||
+        lower.includes('recommend') ||
+        lower.includes('suggestion') ||
+        lower.includes('what do you think about') ||
+        lower.includes('is it good to buy') ||
+        lower.includes('worth buying')
+    ) {
+        return { intent: 'stock_recommendation', stock };
+    }
+
+    // ── Buy intent (direct trade, not advisory) ──
     if (lower.includes('buy') && stock) {
         return { intent: 'buy', stock };
     }
@@ -83,16 +95,6 @@ const parseIntent = (text) => {
     // ── Sell intent ──
     if (lower.includes('sell') && stock) {
         return { intent: 'sell', stock };
-    }
-
-    // ── Recommendation / Should I buy ──
-    if (
-        lower.includes('should i') ||
-        lower.includes('recommend') ||
-        lower.includes('suggestion') ||
-        lower.includes('what do you think about')
-    ) {
-        return { intent: 'stock_recommendation', stock };
     }
 
     // ── Analyze stock ──

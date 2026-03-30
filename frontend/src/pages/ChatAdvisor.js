@@ -2,177 +2,104 @@ import React, { useState, useRef, useEffect } from 'react';
 import api from '../utils/api';
 import './ChatAdvisor.css';
 
-const suggestedQuestions = [
-    'Should I buy TCS today?',
-    'How is RELIANCE performing?',
-    'What is P/E ratio?',
-    'How should I diversify my portfolio?',
-    'Explain SIP for beginners',
-    'What is a stop-loss order?',
-    'Is Infosys a good long-term investment?',
-];
-
-const ChatAdvisor = () => {
+function ChatAdvisor() {
     const [messages, setMessages] = useState([
         {
             role: 'assistant',
-            content: "Hello! 👋 I'm your AI Stock Advisor powered by CapitalWave.\n\nI can help you with:\n• Stock analysis — Ask \"Should I buy TCS?\" or \"How is RELIANCE doing?\"\n• Market concepts — Ask \"What is P/E ratio?\" or \"Explain SIP\"\n• Portfolio strategies — Ask \"How should I diversify?\"\n• Trading guidance — Ask about intraday, swing trading, or long-term investing\n\nTry asking me anything about stocks or investing!",
-            timestamp: new Date(),
+            content:
+                "Hi! I'm StockWise AI. Ask me anything about stocks, investing, or market concepts. This is not financial advice.",
         },
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const messagesEndRef = useRef(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    const chatRef = useRef(null);
 
     useEffect(() => {
-        scrollToBottom();
+        chatRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const sendMessage = async (text) => {
-        const msg = text || input.trim();
-        if (!msg) return;
+    const sendMessage = async (e) => {
+        e.preventDefault();
+        if (!input.trim() || loading) return;
 
-        const userMsg = { role: 'user', content: msg, timestamp: new Date() };
-        setMessages(prev => [...prev, userMsg]);
+        const userMessage = { role: 'user', content: input.trim() };
+        setMessages((prev) => [...prev, userMessage]);
         setInput('');
         setLoading(true);
 
         try {
-            const res = await api.post('/ai/chat', { message: msg });
+            const res = await api.post('/ai/chat', { message: userMessage.content });
             const data = res.data.data;
-            // Support both 'response' and 'aiResponse' field names
-            const aiText = data?.response || data?.aiResponse || "I couldn't analyze that right now. Please try again in a moment.";
-            const aiMsg = {
-                role: 'assistant',
-                content: aiText,
-                timestamp: new Date(),
-                detectedSymbol: data?.detectedSymbol || null,
-                source: data?.source || 'unknown',
-            };
-            setMessages(prev => [...prev, aiMsg]);
-        } catch (error) {
-            setMessages(prev => [...prev, {
-                role: 'assistant',
-                content: "I couldn't analyze your query right now. Please try again in a moment.",
-                timestamp: new Date(),
-                isError: true,
-            }]);
+            const aiText = data?.response || data?.aiResponse || "Sorry, I couldn't reach the AI right now. Please try again.";
+            setMessages((prev) => [...prev, { role: 'assistant', content: aiText }]);
+        } catch (err) {
+            console.error(err);
+            setMessages((prev) => [
+                ...prev,
+                { role: 'assistant', content: "Sorry, I couldn't reach the AI right now. Please try again." },
+            ]);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        sendMessage();
-    };
-
-    const formatTime = (date) => {
-        return new Date(date).toLocaleTimeString('en-IN', {
-            hour: '2-digit',
-            minute: '2-digit',
-        });
     };
 
     return (
-        <div className="chat-page">
-            <div className="chat-container animate-fadeInUp">
-                {/* Chat Header */}
-                <div className="chat-header glass">
-                    <div className="ch-left">
-                        <div className="ch-avatar">🤖</div>
-                        <div className="ch-info">
-                            <h2>AI Stock Advisor</h2>
-                            <span className="ch-status">
-                                <span className="live-dot" /> Online — Ready to assist
-                            </span>
-                        </div>
-                    </div>
-                    <div className="ch-right">
-                        <span className="ch-badge badge badge-buy">AI Powered</span>
+        <div className="sw-chat-page">
+            <div className="sw-chat-wrapper">
+                {/* Header */}
+                <div className="sw-header">
+                    <div className="sw-header-icon">📈</div>
+                    <div className="sw-header-info">
+                        <h1>StockWise AI</h1>
+                        <p>Powered by Mistral-7B • Hugging Face</p>
                     </div>
                 </div>
 
-                {/* Messages Area */}
-                <div className="chat-messages">
+                {/* Messages */}
+                <div className="sw-messages chat-container">
                     {messages.map((msg, i) => (
                         <div
                             key={i}
-                            className={`chat-msg ${msg.role} ${msg.isError ? 'error' : ''} animate-fadeInUp`}
+                            className={`sw-msg-row ${msg.role === 'user' ? 'sw-msg-user' : 'sw-msg-assistant'}`}
                         >
-                            {msg.role === 'assistant' && (
-                                <div className="msg-avatar">🤖</div>
-                            )}
-                            <div className="msg-bubble">
-                                <p className="msg-text" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</p>
-                                <div className="msg-meta">
-                                    <span className="msg-time">{formatTime(msg.timestamp)}</span>
-                                    {msg.detectedSymbol && (
-                                        <span className="msg-symbol-badge">📊 {msg.detectedSymbol}</span>
-                                    )}
-                                </div>
+                            <div className={`sw-bubble ${msg.role}`}>
+                                <p>{msg.content}</p>
                             </div>
                         </div>
                     ))}
-
                     {loading && (
-                        <div className="chat-msg assistant animate-fadeIn">
-                            <div className="msg-avatar">🤖</div>
-                            <div className="msg-bubble typing">
-                                <span className="typing-dot" />
-                                <span className="typing-dot" />
-                                <span className="typing-dot" />
+                        <div className="sw-msg-row sw-msg-assistant">
+                            <div className="sw-bubble assistant sw-typing">
+                                <div className="sw-dots">
+                                    <span className="sw-dot" />
+                                    <span className="sw-dot" />
+                                    <span className="sw-dot" />
+                                </div>
+                                <span className="sw-thinking-text">Thinking...</span>
                             </div>
                         </div>
                     )}
-
-                    <div ref={messagesEndRef} />
+                    <div ref={chatRef} />
                 </div>
 
-                {/* Suggested Questions */}
-                {messages.length <= 1 && (
-                    <div className="suggested-questions">
-                        <span className="sq-label">Try asking:</span>
-                        <div className="sq-list">
-                            {suggestedQuestions.map((q, i) => (
-                                <button
-                                    key={i}
-                                    className="sq-btn"
-                                    onClick={() => sendMessage(q)}
-                                >
-                                    {q}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Input Area */}
-                <form className="chat-input-area" onSubmit={handleSubmit}>
-                    <div className="chat-input-wrapper">
+                {/* Input */}
+                <form onSubmit={sendMessage} className="sw-input-area">
+                    <div className="sw-input-row">
                         <input
                             type="text"
-                            placeholder="Ask about stocks, markets, or strategies..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
+                            placeholder="Ask about stocks, charts, or investing..."
                             disabled={loading}
                         />
-                        <button type="submit" className="send-btn" disabled={!input.trim() || loading}>
-                            <svg viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                            </svg>
+                        <button type="submit" disabled={loading || !input.trim()}>
+                            Send
                         </button>
                     </div>
-                    <p className="chat-disclaimer">
-                        AI responses are generated for educational purposes. Always consult a certified financial advisor.
-                    </p>
                 </form>
             </div>
         </div>
     );
-};
+}
 
 export default ChatAdvisor;

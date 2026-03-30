@@ -1,0 +1,555 @@
+/* ============================================
+   VOICE ASSISTANT — Premium Fintech Theme
+   ============================================ */
+
+.voice-assistant-panel {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition);
+}
+
+.voice-assistant-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6C5CE7, #A29BFE, #00D68F);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* ── Header ── */
+.va-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.va-live-badge {
+    margin-left: 8px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--accent-red);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulse-badge 1.2s ease infinite;
+}
+
+.va-speaking-badge {
+    margin-left: 8px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--primary);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulse-badge 1.2s ease infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.va-expand-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.va-expand-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+/* ── Body ── */
+.va-body {
+    margin-top: 1rem;
+    animation: fadeInUp 0.3s ease;
+}
+
+/* ── Mic Button ── */
+.va-mic-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.va-mic-btn {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    background: var(--bg-input);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    z-index: 1;
+}
+
+.va-mic-btn:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: scale(1.05);
+}
+
+.va-mic-btn.active {
+    border-color: var(--accent-red);
+    background: var(--accent-red-bg);
+    animation: mic-glow 1.5s ease infinite;
+}
+
+.va-mic-btn.processing {
+    border-color: var(--primary);
+    background: var(--primary-glow);
+    cursor: wait;
+}
+
+@keyframes mic-glow {
+    0%, 100% {
+        box-shadow: 0 0 12px rgba(255, 107, 107, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+    }
+}
+
+.mic-icon {
+    font-size: 1.8rem;
+    z-index: 2;
+    position: relative;
+}
+
+/* Mic Rings — volume reactive */
+.mic-rings {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--accent-red);
+    opacity: 0;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.va-mic-btn.active .ring-1 {
+    opacity: calc(0.3 * var(--volume, 0));
+    transform: scale(calc(1 + 0.15 * var(--volume, 0)));
+    animation: ring-pulse 1.5s ease infinite;
+}
+
+.va-mic-btn.active .ring-2 {
+    opacity: calc(0.2 * var(--volume, 0));
+    transform: scale(calc(1 + 0.3 * var(--volume, 0)));
+    animation: ring-pulse 1.5s ease 0.3s infinite;
+}
+
+.va-mic-btn.active .ring-3 {
+    opacity: calc(0.1 * var(--volume, 0));
+    transform: scale(calc(1 + 0.45 * var(--volume, 0)));
+    animation: ring-pulse 1.5s ease 0.6s infinite;
+}
+
+@keyframes ring-pulse {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.4; }
+}
+
+.va-mic-label {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ── Transcript ── */
+.va-transcript {
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.va-transcript-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.va-transcript-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.va-interim {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ── Error ── */
+.va-error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--accent-red-bg);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--accent-red);
+    margin-bottom: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ── AI Response ── */
+.va-response {
+    padding: 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--primary);
+    animation: slideInRight 0.4s ease;
+}
+
+.va-response.stock_recommendation { border-left-color: var(--accent-green); }
+.va-response.analyze_stock { border-left-color: var(--accent-blue); }
+.va-response.portfolio { border-left-color: var(--primary); }
+.va-response.risk_level { border-left-color: var(--accent-yellow); }
+.va-response.buy { border-left-color: var(--accent-green); }
+.va-response.sell { border-left-color: var(--accent-red); }
+
+.va-response-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.va-response-icon { font-size: 1.2rem; }
+
+.va-response-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary-light);
+}
+
+.va-intent-badge {
+    margin-left: auto;
+    padding: 2px 8px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-full);
+    background: var(--primary-glow);
+    color: var(--primary-light);
+}
+
+.va-response-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.va-stop-speak {
+    margin-top: 10px;
+    padding: 6px 14px;
+    background: var(--accent-red-bg);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--accent-red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.va-stop-speak:hover {
+    background: rgba(255, 107, 107, 0.2);
+}
+
+/* Recommendation badge */
+.va-rec-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.va-rec-badge {
+    padding: 6px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.va-rec-badge.buy {
+    background: var(--accent-green-bg);
+    color: var(--accent-green);
+    border: 1px solid rgba(0, 214, 143, 0.25);
+}
+
+.va-rec-badge.sell {
+    background: var(--accent-red-bg);
+    color: var(--accent-red);
+    border: 1px solid rgba(255, 107, 107, 0.25);
+}
+
+.va-rec-badge.hold {
+    background: var(--accent-yellow-bg);
+    color: var(--accent-yellow);
+    border: 1px solid rgba(254, 202, 87, 0.25);
+}
+
+.va-rec-conf {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* ── Quick Commands ── */
+.va-quick {
+    margin-bottom: 1rem;
+}
+
+.va-quick-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.va-quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.va-quick-btn {
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.va-quick-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+    background: var(--primary-glow);
+}
+
+.va-quick-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Controls ── */
+.va-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.va-ctrl-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.va-ctrl-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+}
+
+.va-ctrl-btn.active {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    background: var(--accent-green-bg);
+}
+
+/* ── Conversation Log ── */
+.va-log {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}
+
+.va-log-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.va-log-list {
+    max-height: 240px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.va-log-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    animation: fadeIn 0.3s ease;
+}
+
+.va-log-item.user {
+    background: var(--primary-glow);
+    border: 1px solid rgba(108, 92, 231, 0.15);
+}
+
+.va-log-item.assistant {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}
+
+.va-log-item.error {
+    background: var(--accent-red-bg);
+    border: 1px solid rgba(255, 107, 107, 0.15);
+}
+
+.va-log-role {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.va-log-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.va-log-content p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.va-log-time {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    display: block;
+}
+
+/* ── Wake Word Hint ── */
+.va-wake-hint {
+    padding: 10px 14px;
+    background: var(--accent-green-bg);
+    border: 1px solid rgba(0, 214, 143, 0.15);
+    border-radius: var(--radius-sm);
+    font-size: 0.78rem;
+    color: var(--accent-green);
+    text-align: center;
+    margin-top: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.va-wake-hint strong {
+    color: #fff;
+}
+
+/* ── Unsupported State ── */
+.va-unsupported {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.va-unsupported-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.5;
+}
+
+.va-unsupported p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .va-mic-btn {
+        width: 70px;
+        height: 70px;
+    }
+
+    .mic-icon {
+        font-size: 1.5rem;
+    }
+
+    .va-quick-btns {
+        flex-direction: column;
+    }
+}

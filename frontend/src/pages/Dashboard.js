@@ -6,6 +6,7 @@ import {
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import VoiceAssistant from '../components/VoiceAssistant';
 import './Dashboard.css';
 
 /* ── HELPERS ──────────────────────────────── */
@@ -682,6 +683,9 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
+
+            {/* ══════════ VOICE ASSISTANT PANEL ══════════ */}
+            <VoiceAssistant />
 
             {/* ══════════ 10. TOP STOCKS TABLE ══════════ */}
             <div className="stocks-section glass-card animate-fadeInUp">

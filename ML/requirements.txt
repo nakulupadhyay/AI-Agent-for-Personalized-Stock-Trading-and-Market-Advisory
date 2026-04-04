@@ -1,7 +1,27 @@
-pandas
-numpy
-scikit-learn
-xgboost
-tensorflow
-yfinance
-ta
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+
+# ── Stock Data ────────────────────────────────────────────────
+yfinance==0.2.38
+pandas==2.2.2
+numpy==1.26.4
+
+# ── Machine Learning ──────────────────────────────────────────
+scikit-learn==1.4.2
+joblib==1.4.2
+
+# ── NLP / Sentiment Analysis ──────────────────────────────────
+vaderSentiment==3.3.2         # VADER: best for short financial text
+textblob==0.18.0              # TextBlob: secondary confirmation
+
+# ── News Fetching ────────────────────────────────────────────
+requests==2.31.0
+newsapi-python==0.2.7         # Official NewsAPI Python client
+
+# ── Utilities ────────────────────────────────────────────────
+python-dotenv==1.0.1
+python-dateutil==2.9.0
+pytz==2024.1
+httpx==0.27.0
+curl_cffi>=0.6.2

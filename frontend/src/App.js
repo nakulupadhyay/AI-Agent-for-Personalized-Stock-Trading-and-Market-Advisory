@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import TopNavbar from './components/TopNavbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import FloatingAIAssistant from './components/FloatingAIAssistant';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -42,6 +43,8 @@ const DashboardLayout = ({ children }) => (
                 <span>⚠️</span> This is an AI-powered advisory system. Not financial advice. Invest at your own risk.
             </footer>
         </div>
+        {/* Floating AI Assistant — visible on all dashboard pages */}
+        <FloatingAIAssistant />
     </div>
 );
 

@@ -11,7 +11,6 @@ const menuItems = [
     { path: '/watchlist', icon: '⭐', label: 'Watchlist' },
     { path: '/risk-analysis', icon: '🛡️', label: 'Risk Analysis' },
     { path: '/risk-profile', icon: '🎯', label: 'Risk Profile' },
-    { path: '/chat-advisor', icon: '🤖', label: 'AI Advisor' },
     { path: '/education', icon: '📚', label: 'Education' },
     { path: '/social-trading', icon: '👥', label: 'Social' },
     { path: '/broker-integration', icon: '🔗', label: 'Broker' },

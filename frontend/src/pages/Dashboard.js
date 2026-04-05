@@ -6,7 +6,7 @@ import {
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import VoiceAssistant from '../components/VoiceAssistant';
+
 import './Dashboard.css';
 
 /* ── HELPERS ──────────────────────────────── */
@@ -623,7 +623,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* ══════════ BOTTOM ROW: Alerts + AI Model ══════════ */}
+            {/* ══════════ BOTTOM ROW: Alerts ══════════ */}
             <div className="bottom-grid">
                 {/* ── 8. ALERTS & NOTIFICATIONS ── */}
                 <div className="alerts-section glass-card animate-fadeInUp">
@@ -648,44 +648,7 @@ const Dashboard = () => {
                         )}
                     </div>
                 </div>
-
-                {/* ── 9. AI MODEL INFO ── */}
-                <div className="ai-model-section glass-card animate-fadeInUp">
-                    <h2 className="section-title">
-                        <span className="section-icon">🧠</span> AI Model Info
-                    </h2>
-                    <div className="model-grid">
-                        <div className="model-stat">
-                            <div className="ms-icon-wrap green">🎯</div>
-                            <div className="ms-value">82%</div>
-                            <div className="ms-label">Model Accuracy</div>
-                            <div className="ms-bar"><div className="ms-fill" style={{ width: '82%' }} /></div>
-                        </div>
-                        <div className="model-stat">
-                            <div className="ms-icon-wrap blue">⏱️</div>
-                            <div className="ms-value">{getTimeAgo()}</div>
-                            <div className="ms-label">Last Updated</div>
-                        </div>
-                        <div className="model-stat">
-                            <div className="ms-icon-wrap yellow">🛡️</div>
-                            <div className="ms-value">{user?.riskProfile || 'Medium'}</div>
-                            <div className="ms-label">Risk Score</div>
-                        </div>
-                        <div className="model-stat">
-                            <div className="ms-icon-wrap purple">📊</div>
-                            <div className="ms-value">v2.4</div>
-                            <div className="ms-label">Model Version</div>
-                        </div>
-                    </div>
-                    <div className="model-footer">
-                        <span className="mf-dot" />
-                        <span>Powered by Multi-Layer LSTM + Sentiment NLP Engine</span>
-                    </div>
-                </div>
             </div>
-
-            {/* ══════════ VOICE ASSISTANT PANEL ══════════ */}
-            <VoiceAssistant />
 
             {/* ══════════ 10. TOP STOCKS TABLE ══════════ */}
             <div className="stocks-section glass-card animate-fadeInUp">

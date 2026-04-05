@@ -162,12 +162,7 @@ const Portfolio = () => {
     return (
         <div className="portfolio-page">
             {/* Paper Trading Banner */}
-            {simulationMode && (
-                <div className="sim-banner animate-fadeInUp">
-                    <span className="sim-icon">🎮</span>
-                    <span>This is a <strong>Simulated Portfolio</strong> — No real money is involved. All trades are paper trades.</span>
-                </div>
-            )}
+           
 
             {/* Header */}
             <div className="pf-header animate-fadeInUp">

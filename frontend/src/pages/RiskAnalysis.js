@@ -632,7 +632,7 @@ const RiskAnalysis = () => {
             )}
 
             {/* ═══ FORMULAS ═══ */}
-            <div className="rd-formulas glass-card">
+            {/* <div className="rd-formulas glass-card">
                 <h3 className="rd-section-title">📐 Mathematical Formulas</h3>
                 <div className="rd-formula-grid">
                     <div className="rd-formula-item"><h4>Volatility</h4><code>σ = √(Σ(rᵢ − r̄)² / (n−1)) × √252</code></div>
@@ -642,7 +642,7 @@ const RiskAnalysis = () => {
                     <div className="rd-formula-item"><h4>VaR (95%)</h4><code>VaR = 5th percentile of sorted returns</code></div>
                     <div className="rd-formula-item"><h4>Risk Score</h4><code>S = 0.35V + 0.25SR + 0.25DD + 0.15VaR</code></div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

@@ -235,14 +235,7 @@ const PaperTrading = () => {
                 <h1 className="pt-title">Paper Trading Simulator</h1>
                 <p className="pt-subtitle">Practice trading with virtual capital — zero real risk</p>
             </div>
-
-            {/* ── SIM BANNER ── */}
-            <div className="sim-banner animate-fadeInUp">
-                <span className="sim-icon">🧪</span>
-                <div>
-                    <strong>Simulation Mode Active</strong> — This is a simulated trading environment. No real money is involved.
-                </div>
-            </div>
+            
 
             {/* ══════════════════════════════
                1. VIRTUAL BALANCE SECTION

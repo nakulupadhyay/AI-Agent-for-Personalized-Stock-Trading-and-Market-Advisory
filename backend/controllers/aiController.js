@@ -1,18 +1,21 @@
 /**
  * AI Controller - Multi-Model with Triple Fallback
  * Priority: Google Gemini → HuggingFace Mistral → Built-in Knowledge Engine
+ * HuggingFace: uses router.huggingface.co (replaces deprecated api-inference endpoint)
  */
 const axios = require('axios');
-const { HfInference } = require('@huggingface/inference');
 const { GoogleGenAI } = require('@google/genai');
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+const HF_API_KEY = process.env.HF_API_KEY;
+const HF_ROUTER_URL = 'https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.3/v1/chat/completions';
 
-// ── AI Client Setup ────────────────────────────────
-const hf = new HfInference(process.env.HF_API_KEY);
-const gemini = process.env.GEMINI_API_KEY
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-    : null;
+// ── Gemini Setup — try key_1 first, fall back to key_2 ────
+const gemini = process.env.GEMINI_API_KEY_1
+    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 })
+    : process.env.GEMINI_API_KEY
+        ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+        : null;
 
 const SYSTEM_PROMPT_TEXT = `You are "CapitalWave AI Advisor", a smart AI assistant for Indian stock market guidance and financial advisory.
 
@@ -140,9 +143,10 @@ const tryGemini = async (message, history) => {
 };
 
 /**
- * Try HuggingFace Mistral-7B
+ * Try HuggingFace Mistral-7B via router.huggingface.co
  */
 const tryHuggingFace = async (message, history) => {
+    if (!HF_API_KEY) return null;
     try {
         const fullMessages = [
             SYSTEM_PROMPT,
@@ -150,16 +154,24 @@ const tryHuggingFace = async (message, history) => {
             { role: 'user', content: message },
         ];
 
-        const chatCompletion = await hf.chatCompletion({
-            model: 'mistralai/Mistral-7B-Instruct-v0.3',
-            messages: fullMessages,
-            max_tokens: 512,
-            temperature: 0.7,
-            top_p: 0.95,
-            stream: false,
-        });
+        const { data } = await axios.post(
+            HF_ROUTER_URL,
+            {
+                model: 'mistralai/Mistral-7B-Instruct-v0.3',
+                messages: fullMessages,
+                max_tokens: 512,
+                temperature: 0.7,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${HF_API_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+                timeout: 20000,
+            }
+        );
 
-        const text = chatCompletion.choices[0]?.message?.content;
+        const text = data.choices?.[0]?.message?.content;
         if (text && text.trim().length > 10) {
             return { reply: text.trim(), source: 'huggingface_mistral' };
         }

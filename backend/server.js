@@ -59,6 +59,7 @@ app.use('/api/social', require('./routes/social'));
 app.use('/api/education', require('./routes/education'));
 app.use('/api/portfolio', require('./routes/portfolio'));
 app.use('/api/sentiment', require('./routes/sentiment'));
+app.use('/api/stock-decision', require('./routes/stockDecision'));
 
 // Welcome route
 app.get('/', (req, res) => {

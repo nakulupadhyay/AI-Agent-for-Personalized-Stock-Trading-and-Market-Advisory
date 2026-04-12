@@ -176,6 +176,27 @@ const getStocks = async (req, res) => {
 const getStockDetails = async (req, res) => {
     try {
         const { symbol } = req.params;
+
+        // ── Phase 4 Fix: Validate symbol length & format ─────────────
+        const SYMBOL_MAX = 20;
+        const SYMBOL_RE  = /^[A-Z0-9.&\-]+$/i;
+
+        if (!symbol || symbol.trim().length === 0) {
+            return res.status(400).json({ success: false, message: 'Stock symbol is required' });
+        }
+        if (symbol.length > SYMBOL_MAX) {
+            return res.status(400).json({
+                success: false,
+                message: `Symbol too long — max ${SYMBOL_MAX} characters`,
+            });
+        }
+        if (!SYMBOL_RE.test(symbol)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid stock symbol format',
+            });
+        }
+
         const cacheKey = `stock_detail_${symbol}`;
         const cached = getCached(cacheKey);
         if (cached) {

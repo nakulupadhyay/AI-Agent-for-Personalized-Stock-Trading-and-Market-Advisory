@@ -26,8 +26,19 @@ export default function PaperTradingPage() {
   const loadTrades = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/trading/paper');
-      setTrades(data.trades ?? data.data?.trades ?? DEMO_TRADES);
+      const { data } = await api.get('/trading/transactions');
+      const txs = data.data || [];
+      const mapped = txs.map((t: any) => ({
+        _id: t._id,
+        symbol: t.symbol,
+        action: t.type,
+        quantity: t.quantity,
+        price: t.price || t.buyPrice || t.sellPrice || 0,
+        total: t.totalAmount,
+        timestamp: t.timestamp,
+        pnl: t.profitLoss
+      }));
+      setTrades(mapped.length ? mapped : DEMO_TRADES);
     } catch { setTrades(DEMO_TRADES); }
     finally { setLoading(false); }
   };
@@ -40,9 +51,9 @@ export default function PaperTradingPage() {
     if (form.quantity < 1) { setError('Quantity must be at least 1'); return; }
     setError(''); setSuccess(''); setSubmitting(true);
     try {
-      await api.post('/trading/paper', {
+      const endpoint = form.action === 'BUY' ? '/trading/buy' : '/trading/sell';
+      await api.post(endpoint, {
         symbol: form.symbol.trim().toUpperCase(),
-        action: form.action,
         quantity: Number(form.quantity),
       });
       setSuccess(`${form.action} order for ${form.quantity} ${form.symbol.toUpperCase()} placed!`);

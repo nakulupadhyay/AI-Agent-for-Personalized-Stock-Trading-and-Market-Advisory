@@ -89,7 +89,11 @@ const getSnapshots = async (req, res) => {
 
         res.json({ success: true, data: snapshots });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to retrieve portfolio snapshots' : error.message,
+        });
     }
 };
 
@@ -169,9 +173,14 @@ const getRebalanceSuggestion = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to compute rebalance suggestion' : error.message,
+        });
     }
 };
+
 
 /**
  * @route   POST /api/portfolio/snapshot
@@ -208,7 +217,11 @@ const takeSnapshot = async (req, res) => {
 
         res.json({ success: true, data: snapshot });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to take portfolio snapshot' : error.message,
+        });
     }
 };
 

@@ -12,24 +12,37 @@ const { logger } = require('../middleware/errorHandler');
  */
 const buyStock = async (req, res) => {
     try {
-        const { symbol, companyName, quantity, price } = req.body;
+        let { symbol, companyName, quantity, price } = req.body;
         const userId = req.user.id;
 
         // Validation
-        if (!symbol || !companyName || !quantity || !price) {
+        if (!symbol || !quantity) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide all required fields',
+                message: 'Please provide symbol and quantity',
             });
         }
 
-        if (quantity <= 0 || price <= 0) {
+        if (quantity <= 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Quantity and price must be positive numbers',
+                message: 'Quantity must be a positive number',
             });
         }
 
+        // Fetch live price if not provided
+        const liveData = await fetchLivePrice(symbol);
+        if (liveData && liveData.currentPrice > 0) {
+            price = liveData.currentPrice;
+            companyName = companyName || liveData.companyName || symbol;
+        } else if (!price) {
+            return res.status(400).json({
+                success: false,
+                message: 'Could not fetch live price, please try again or verify symbol',
+            });
+        }
+
+        companyName = companyName || symbol;
         const totalAmount = quantity * price;
 
         // Atomic balance deduction — prevents race condition on concurrent buys

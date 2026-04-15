@@ -48,7 +48,7 @@ export default function ChatAdvisorPage() {
 
     try {
       const { data } = await api.post('/ai/chat', { message: trimmed });
-      const reply = data.reply ?? data.message ?? data.response ?? data.data?.reply ??
+      const reply = data.reply ?? data.message ?? data.response ?? data.data?.reply ?? data.data?.response ?? data.data?.aiResponse ??
         "I couldn't get a response right now. Please try again.";
       setMessages((prev) => [...prev, { id: uid(), role: 'assistant', content: reply, timestamp: new Date() }]);
     } catch {
@@ -79,7 +79,7 @@ export default function ChatAdvisorPage() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow-primary">
-            <Sparkles size={18} className="text-white" />
+            <Sparkles size={18} className="text-slate-900 dark:text-white" />
           </div>
           <div>
             <h1 className="page-title text-xl">AI Chat Advisor</h1>
@@ -107,18 +107,18 @@ export default function ChatAdvisorPage() {
             >
               {/* Avatar */}
               <div className={`w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center
-                ${msg.role === 'assistant' ? 'bg-gradient-brand shadow-glow-primary/30' : 'bg-dark-100 border border-slate-700'}`}>
+                ${msg.role === 'assistant' ? 'bg-gradient-brand shadow-glow-primary/30' : 'bg-white dark:bg-dark-100 border border-slate-300 dark:border-slate-700'}`}>
                 {msg.role === 'assistant'
-                  ? <Bot size={14} className="text-white" />
-                  : <User size={14} className="text-slate-400" />
+                  ? <Bot size={14} className="text-slate-900 dark:text-white" />
+                  : <User size={14} className="text-slate-500 dark:text-slate-400" />
                 }
               </div>
 
               {/* Bubble */}
               <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed
                 ${msg.role === 'assistant'
-                  ? 'glass text-slate-200'
-                  : 'bg-primary-500/20 border border-primary-500/30 text-white'
+                  ? 'glass text-slate-700 dark:text-slate-200'
+                  : 'bg-primary-500/20 border border-primary-500/30 text-slate-900 dark:text-white'
                 }`}>
                 {msg.content}
                 <p className="text-[10px] text-slate-600 mt-1.5">
@@ -133,7 +133,7 @@ export default function ChatAdvisorPage() {
         {isTyping && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
             <div className="w-8 h-8 rounded-xl bg-gradient-brand flex items-center justify-center flex-shrink-0">
-              <Bot size={14} className="text-white" />
+              <Bot size={14} className="text-slate-900 dark:text-white" />
             </div>
             <div className="glass rounded-2xl px-4 py-3 flex items-center gap-1.5">
               {[0, 1, 2].map((i) => (
@@ -151,7 +151,7 @@ export default function ChatAdvisorPage() {
         <div className="flex flex-wrap gap-2 mb-3">
           {STARTERS.map((s) => (
             <button key={s} onClick={() => sendMessage(s)}
-              className="text-xs bg-dark-100 border border-slate-700 text-slate-400 px-3 py-1.5 rounded-xl
+              className="text-xs bg-white dark:bg-dark-100 border border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 px-3 py-1.5 rounded-xl
                          hover:border-primary-500/50 hover:text-primary-400 transition-all">
               {s}
             </button>

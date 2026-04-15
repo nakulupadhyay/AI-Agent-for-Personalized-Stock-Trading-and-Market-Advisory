@@ -53,11 +53,11 @@ export default function SettingsPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 p-1 bg-dark-100 rounded-xl border border-slate-800/60">
+      <div className="flex gap-1 p-1 bg-white dark:bg-dark-100 rounded-xl border border-slate-200 dark:border-slate-800/60">
         {TABS.map(({ id, icon: Icon, label }) => (
           <button key={id} onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all
-              ${activeTab === id ? 'bg-dark-200 text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}>
+              ${activeTab === id ? 'bg-slate-50 dark:bg-dark-200 text-slate-900 dark:text-white shadow' : 'text-slate-500 hover:text-slate-600 dark:text-slate-300'}`}>
             <Icon size={15} /> <span className="hidden sm:inline">{label}</span>
           </button>
         ))}
@@ -68,11 +68,11 @@ export default function SettingsPage() {
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} className="card space-y-5">
           {/* Avatar */}
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center text-2xl font-black text-white shadow-glow-primary">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center text-2xl font-black text-slate-900 dark:text-white shadow-glow-primary">
               {user?.name?.[0]?.toUpperCase() ?? 'U'}
             </div>
             <div>
-              <p className="font-bold text-white">{user?.name}</p>
+              <p className="font-bold text-slate-900 dark:text-white">{user?.name}</p>
               <p className="text-sm text-slate-500">{user?.email}</p>
               <span className="text-[10px] text-primary-400 font-semibold bg-primary-500/10 px-2 py-0.5 rounded-full">
                 {user?.role ?? 'user'}
@@ -81,11 +81,11 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-slate-300 block mb-1.5">Display Name</label>
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Display Name</label>
             <input value={name} onChange={(e) => setName(e.target.value)} className="form-input" placeholder="Your full name" maxLength={50} />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-300 block mb-1.5">Email Address</label>
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Email Address</label>
             <input value={user?.email ?? ''} disabled className="form-input opacity-50 cursor-not-allowed" />
             <p className="text-xs text-slate-600 mt-1">Email cannot be changed.</p>
           </div>
@@ -117,7 +117,7 @@ export default function SettingsPage() {
       {activeTab === 'security' && (
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} className="card space-y-5">
           <div>
-            <h3 className="font-semibold text-white mb-1">Change Password</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">Change Password</h3>
             <p className="text-xs text-slate-500 mb-4">Use a strong password with uppercase letters and numbers.</p>
             <div className="space-y-3">
               <input type="password" placeholder="Current password" className="form-input" />
@@ -128,8 +128,8 @@ export default function SettingsPage() {
               <Shield size={15} /> Update Password
             </button>
           </div>
-          <div className="border-t border-slate-800 pt-5">
-            <h3 className="font-semibold text-white mb-1">Session Management</h3>
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-5">
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">Session Management</h3>
             <p className="text-xs text-slate-500 mb-3">Sign out from all devices and sessions.</p>
             <button onClick={handleLogout} className="flex items-center gap-2 text-bear text-sm font-medium bg-bear/10 border border-bear/30
                                                        px-4 py-2.5 rounded-xl hover:bg-bear/20 transition-all">
@@ -143,7 +143,7 @@ export default function SettingsPage() {
       {activeTab === 'appearance' && (
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} className="card space-y-5">
           <div>
-            <h3 className="font-semibold text-white mb-1">Theme</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white mb-1">Theme</h3>
             <p className="text-xs text-slate-500 mb-4">Switch between dark and light mode.</p>
             <div className="grid grid-cols-2 gap-3">
               {[
@@ -152,7 +152,7 @@ export default function SettingsPage() {
               ].map(({ label, icon: Icon, value }) => (
                 <button key={value} onClick={toggleTheme}
                   className={`p-4 rounded-xl border flex items-center gap-3 transition-all
-                    ${theme === value ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-slate-700 text-slate-500 hover:border-slate-600'}`}>
+                    ${theme === value ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-slate-300 dark:border-slate-700 text-slate-500 hover:border-slate-600'}`}>
                   <Icon size={18} /> <span className="font-medium">{label}</span>
                 </button>
               ))}
@@ -169,11 +169,11 @@ function NotifToggle({ label, sub, defaultOn }: { label: string; sub: string; de
   return (
     <div className="flex items-center justify-between py-1">
       <div>
-        <p className="text-sm font-medium text-slate-200">{label}</p>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{label}</p>
         <p className="text-xs text-slate-500">{sub}</p>
       </div>
       <button onClick={() => setOn(v => !v)}
-        className={`relative w-11 h-6 rounded-full transition-all duration-300 ${on ? 'bg-primary-500' : 'bg-dark-100 border border-slate-700'}`}>
+        className={`relative w-11 h-6 rounded-full transition-all duration-300 ${on ? 'bg-primary-500' : 'bg-white dark:bg-dark-100 border border-slate-300 dark:border-slate-700'}`}>
         <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${on ? 'left-[calc(100%-22px)]' : 'left-0.5'}`} />
       </button>
     </div>

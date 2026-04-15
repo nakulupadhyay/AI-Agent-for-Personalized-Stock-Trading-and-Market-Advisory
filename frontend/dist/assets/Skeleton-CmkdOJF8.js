@@ -1,0 +1,1 @@
+import{j as s}from"./motion-D2blt_dw.js";function e({className:a=""}){return s.jsx("div",{className:`skeleton ${a}`})}function r(){return s.jsxs("div",{className:"card space-y-4",children:[s.jsx(e,{className:"h-4 w-1/3"}),s.jsx(e,{className:"h-8 w-1/2"}),s.jsx(e,{className:"h-3 w-2/3"})]})}export{r as C};

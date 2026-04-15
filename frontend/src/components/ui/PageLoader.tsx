@@ -1,7 +1,7 @@
 // Full-page loading spinner shown during Suspense fallback
 export default function PageLoader() {
   return (
-    <div className="fixed inset-0 bg-surface-950 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-slate-50 dark:bg-surface-950 flex items-center justify-center z-50">
       <div className="flex flex-col items-center gap-4">
         {/* Spinning ring */}
         <div className="relative w-14 h-14">

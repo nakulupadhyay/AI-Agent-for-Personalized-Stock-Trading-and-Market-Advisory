@@ -37,7 +37,7 @@ const variantMap: Record<string, string> = {
   danger:  'bg-bear/20 text-bear border-bear/30',
   warning: 'bg-hold/20 text-hold border-hold/30',
   info:    'bg-primary-500/20 text-primary-300 border-primary-500/30',
-  neutral: 'bg-slate-700/40 text-slate-400 border-slate-600/30',
+  neutral: 'bg-slate-700/40 text-slate-500 dark:text-slate-400 border-slate-600/30',
 };
 
 export function StatusBadge({ value, variant = 'neutral' }: StatusBadgeProps) {

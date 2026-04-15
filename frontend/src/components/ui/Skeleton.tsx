@@ -19,7 +19,7 @@ export function CardSkeleton() {
 
 export function TableRowSkeleton({ cols = 4 }: { cols?: number }) {
   return (
-    <tr className="border-b border-slate-800">
+    <tr className="border-b border-slate-200 dark:border-slate-800">
       {Array.from({ length: cols }).map((_, i) => (
         <td key={i} className="px-4 py-3">
           <Skeleton className="h-4 w-full max-w-[120px]" />

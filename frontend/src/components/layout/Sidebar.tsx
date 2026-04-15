@@ -34,12 +34,12 @@ export default function Sidebar() {
       initial={false}
       animate={{ width: sidebarOpen ? 240 : 68 }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
-      className="relative flex flex-col h-screen bg-dark-200 border-r border-slate-800/60 overflow-hidden flex-shrink-0 z-30"
+      className="relative flex flex-col h-screen bg-slate-50 dark:bg-dark-200 border-r border-slate-200 dark:border-slate-800/60 overflow-hidden flex-shrink-0 z-30"
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-800/60 min-h-[64px]">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-200 dark:border-slate-800/60 min-h-[64px]">
         <div className="w-9 h-9 rounded-xl bg-gradient-brand flex items-center justify-center flex-shrink-0 shadow-glow-primary">
-          <Zap size={18} className="text-white" />
+          <Zap size={18} className="text-slate-900 dark:text-white" />
         </div>
         <AnimatePresence>
           {sidebarOpen && (
@@ -48,7 +48,7 @@ export default function Sidebar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="font-bold text-white text-base whitespace-nowrap tracking-tight"
+              className="font-bold text-slate-900 dark:text-white text-base whitespace-nowrap tracking-tight"
             >
               CapitalWave<span className="text-primary-400"> AI</span>
             </motion.span>
@@ -59,8 +59,8 @@ export default function Sidebar() {
       {/* Toggle button */}
       <button
         onClick={toggleSidebar}
-        className="absolute top-[72px] -right-3 w-6 h-6 rounded-full bg-dark-100 border border-slate-700
-                   flex items-center justify-center text-slate-400 hover:text-primary-400
+        className="absolute top-[72px] -right-3 w-6 h-6 rounded-full bg-white dark:bg-dark-100 border border-slate-300 dark:border-slate-700
+                   flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-primary-400
                    hover:border-primary-500 transition-all duration-200 z-50"
       >
         {sidebarOpen ? <ChevronLeft size={12} /> : <ChevronRight size={12} />}
@@ -96,10 +96,10 @@ export default function Sidebar() {
       </nav>
 
       {/* User + Logout */}
-      <div className="border-t border-slate-800/60 p-3 space-y-1">
+      <div className="border-t border-slate-200 dark:border-slate-800/60 p-3 space-y-1">
         {sidebarOpen && user && (
           <div className="px-2 py-2 mb-1">
-            <p className="text-xs font-semibold text-white truncate">{user.name}</p>
+            <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{user.name}</p>
             <p className="text-[10px] text-slate-500 truncate">{user.email}</p>
           </div>
         )}

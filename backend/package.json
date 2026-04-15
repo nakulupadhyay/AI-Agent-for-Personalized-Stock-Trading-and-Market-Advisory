@@ -39,6 +39,7 @@
     "xss": "^1.0.15"
   },
   "devDependencies": {
+    "@gradio/client": "^2.2.0",
     "nodemon": "^3.0.1"
   }
 }

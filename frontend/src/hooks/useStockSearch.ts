@@ -29,16 +29,19 @@ export function useStockSearch(): UseStockSearchReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const { data } = await api.get(`/stocks/${symbol}`);
+      const { data } = await api.post('/stock-decision/advice', { symbol, action: 'buy' });
       // Map backend response to StockPrediction shape
+      const info = data.data || data;
+      const currentPrice = info.marketData?.currentPrice || info.currentPrice || 0;
+      
       setResult({
-        symbol: data.symbol || symbol,
-        price: data.price ?? data.currentPrice ?? 0,
-        recommendation: data.recommendation ?? data.signal ?? 'HOLD',
-        confidence: data.confidence ?? 0.5,
-        reasoning: data.reasoning ?? data.analysis,
-        targetPrice: data.targetPrice,
-        stopLoss: data.stopLoss,
+        symbol: info.symbol || symbol,
+        price: currentPrice,
+        recommendation: info.decision || info.recommendation || 'HOLD',
+        confidence: typeof info.confidence === 'number' ? (info.confidence > 1 ? info.confidence / 100 : info.confidence) : 0.5,
+        reasoning: info.reasoning || (info.steps && info.steps.recommendation) || 'Trend analysis generated.',
+        targetPrice: currentPrice ? currentPrice * (info.decision === 'SELL' ? 0.95 : 1.05) : undefined,
+        stopLoss: currentPrice ? currentPrice * (info.decision === 'SELL' ? 1.05 : 0.95) : undefined,
       });
     } catch (err: unknown) {
       const msg =

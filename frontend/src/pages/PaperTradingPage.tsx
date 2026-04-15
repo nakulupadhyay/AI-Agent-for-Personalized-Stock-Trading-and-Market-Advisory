@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Activity, TrendingUp, TrendingDown, DollarSign, RefreshCw } from 'lucide-react';
 import api from '@/services/api';
@@ -16,7 +17,11 @@ const DEMO_TRADES: PaperTrade[] = [
 ];
 
 export default function PaperTradingPage() {
-  const [form, setForm] = useState<TradeFormState>({ symbol: '', action: 'BUY', quantity: 1 });
+  const [searchParams] = useSearchParams();
+  const initialSymbol = searchParams.get('symbol') || '';
+  const initialAction = (searchParams.get('action') as 'BUY' | 'SELL') || 'BUY';
+
+  const [form, setForm] = useState<TradeFormState>({ symbol: initialSymbol, action: initialAction, quantity: 1 });
   const [trades, setTrades] = useState<PaperTrade[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -83,7 +88,7 @@ export default function PaperTradingPage() {
         <div className="card">
           <div className="flex items-center gap-2 mb-5">
             <Activity size={18} className="text-primary-400" />
-            <h2 className="font-semibold text-white">Place Order</h2>
+            <h2 className="font-semibold text-slate-900 dark:text-white">Place Order</h2>
           </div>
 
           {error   && <div className="bg-bear/10 border border-bear/30 text-bear text-sm px-3 py-2.5 rounded-xl mb-4">{error}</div>}
@@ -91,12 +96,12 @@ export default function PaperTradingPage() {
 
           <form onSubmit={handleTrade} className="space-y-4">
             <div>
-              <label className="text-sm text-slate-400 font-medium block mb-1.5">Stock Symbol</label>
+              <label className="text-sm text-slate-500 dark:text-slate-400 font-medium block mb-1.5">Stock Symbol</label>
               <input value={form.symbol} onChange={(e) => setForm(f => ({ ...f, symbol: e.target.value.toUpperCase() }))}
                 placeholder="e.g. RELIANCE" className="form-input" maxLength={10} />
             </div>
             <div>
-              <label className="text-sm text-slate-400 font-medium block mb-1.5">Action</label>
+              <label className="text-sm text-slate-500 dark:text-slate-400 font-medium block mb-1.5">Action</label>
               <div className="grid grid-cols-2 gap-2">
                 {(['BUY', 'SELL'] as const).map((a) => (
                   <button key={a} type="button"
@@ -104,21 +109,21 @@ export default function PaperTradingPage() {
                     className={`py-2.5 rounded-xl text-sm font-bold transition-all border
                       ${form.action === a
                         ? a === 'BUY' ? 'bg-bull/20 border-bull/50 text-bull' : 'bg-bear/20 border-bear/50 text-bear'
-                        : 'bg-dark-100 border-slate-700 text-slate-500 hover:border-slate-600'}`}>
+                        : 'bg-white dark:bg-dark-100 border-slate-300 dark:border-slate-700 text-slate-500 hover:border-slate-600'}`}>
                     {a === 'BUY' ? '↑' : '↓'} {a}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="text-sm text-slate-400 font-medium block mb-1.5">Quantity</label>
+              <label className="text-sm text-slate-500 dark:text-slate-400 font-medium block mb-1.5">Quantity</label>
               <input type="number" min="1" max="99999"
                 value={form.quantity} onChange={(e) => setForm(f => ({ ...f, quantity: parseInt(e.target.value) || 1 }))}
                 className="form-input" />
             </div>
             <button type="submit" disabled={submitting} className={`w-full py-3 rounded-xl font-bold transition-all
               ${form.action === 'BUY' ? 'bg-gradient-bull hover:shadow-glow-bull' : 'bg-gradient-bear hover:shadow-glow-bear'}
-              text-white disabled:opacity-50`}>
+              text-slate-900 dark:text-white disabled:opacity-50`}>
               {submitting ? 'Placing…' : `${form.action === 'BUY' ? '↑' : '↓'} ${form.action} Paper Order`}
             </button>
           </form>
@@ -126,8 +131,8 @@ export default function PaperTradingPage() {
 
         {/* Trade history */}
         <div className="lg:col-span-2 card overflow-hidden p-0">
-          <div className="p-5 border-b border-slate-800/60 flex items-center justify-between">
-            <h2 className="font-semibold text-white">Trade History</h2>
+          <div className="p-5 border-b border-slate-200 dark:border-slate-800/60 flex items-center justify-between">
+            <h2 className="font-semibold text-slate-900 dark:text-white">Trade History</h2>
             <span className={`text-sm font-bold ${totalPnL >= 0 ? 'text-bull' : 'text-bear'}`}>
               P&L: {totalPnL >= 0 ? '+' : ''}{formatCurrency(Math.abs(totalPnL))}
             </span>
@@ -138,7 +143,7 @@ export default function PaperTradingPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-800/60">
+                  <tr className="border-b border-slate-200 dark:border-slate-800/60">
                     {['Symbol', 'Action', 'Qty', 'Price', 'Total', 'P&L', 'Date'].map((h) => (
                       <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                     ))}
@@ -148,12 +153,12 @@ export default function PaperTradingPage() {
                   {trades.map((t, i) => (
                     <motion.tr key={t._id}
                       initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay: i*0.05 }}
-                      className="border-b border-slate-800/30 hover:bg-dark-100/40 transition-colors">
-                      <td className="px-4 py-3 font-bold text-white">{t.symbol}</td>
+                      className="border-b border-slate-200 dark:border-slate-800/30 hover:bg-white dark:bg-dark-100/40 transition-colors">
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">{t.symbol}</td>
                       <td className="px-4 py-3"><RecommendationBadge value={t.action as 'BUY'|'SELL'} size="sm" /></td>
-                      <td className="px-4 py-3 text-slate-300">{t.quantity}</td>
-                      <td className="px-4 py-3 text-slate-300">{formatCurrency(t.price)}</td>
-                      <td className="px-4 py-3 text-white font-medium">{formatCurrency(t.total)}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{t.quantity}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{formatCurrency(t.price)}</td>
+                      <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">{formatCurrency(t.total)}</td>
                       <td className="px-4 py-3">
                         {t.pnl != null ? (
                           <span className={t.pnl >= 0 ? 'text-bull' : 'text-bear'}>

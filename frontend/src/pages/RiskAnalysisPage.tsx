@@ -64,7 +64,7 @@ interface BackendRiskData {
 const levelColor = (level: string) =>
   level === 'Low' ? 'text-emerald-400'
   : level === 'High' ? 'text-red-400'
-  : level === 'N/A' ? 'text-slate-400'
+  : level === 'N/A' ? 'text-slate-500 dark:text-slate-400'
   : 'text-amber-400';
 
 const levelBg = (level: string) =>
@@ -84,8 +84,8 @@ function EmptyState() {
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       className="card flex flex-col items-center justify-center py-20 text-center">
       <ShieldCheck size={52} className="text-primary-400 mb-4 opacity-60" />
-      <h2 className="text-xl font-bold text-white mb-2">No Portfolio Data</h2>
-      <p className="text-slate-400 text-sm max-w-xs">
+      <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No Portfolio Data</h2>
+      <p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs">
         Start paper trading to unlock AI-powered risk analysis, stress tests, and sector breakdowns.
       </p>
     </motion.div>
@@ -93,7 +93,7 @@ function EmptyState() {
 }
 
 // ── Metric Card ────────────────────────────────────────────────
-function MetricCard({ label, value, sub, color = 'text-white' }: {
+function MetricCard({ label, value, sub, color = 'text-slate-900 dark:text-white' }: {
   label: string; value: string; sub?: string; color?: string;
 }) {
   return (
@@ -176,7 +176,7 @@ export default function RiskAnalysisPage() {
           className="card border border-red-500/30 bg-red-500/10 text-center py-12">
           <AlertTriangle size={36} className="text-red-400 mx-auto mb-3" />
           <p className="text-red-300 font-semibold">Something went wrong</p>
-          <p className="text-slate-400 text-sm mt-1">{error}</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{error}</p>
           <button onClick={load} className="btn-primary mt-4 text-sm px-4 py-2">Try Again</button>
         </motion.div>
       )}
@@ -208,7 +208,7 @@ export default function RiskAnalysisPage() {
             <div className="flex-1">
               <p className="text-sm text-slate-500 mb-1">Overall Risk Level</p>
               <p className={`text-3xl font-black ${levelColor(level)}`}>{level} Risk</p>
-              <p className="text-sm text-slate-400 mt-2">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                 Your portfolio carries a{' '}
                 <span className={`font-semibold ${levelColor(level)}`}>{level.toLowerCase()}</span>{' '}
                 risk profile. Review the breakdown below.
@@ -217,17 +217,17 @@ export default function RiskAnalysisPage() {
             {/* Quick stats */}
             {data.portfolioSummary && (
               <div className="grid grid-cols-2 gap-3 text-center min-w-[180px]">
-                <div className="bg-dark-100 rounded-xl p-3 border border-slate-700/40">
+                <div className="bg-white dark:bg-dark-100 rounded-xl p-3 border border-slate-300 dark:border-slate-700/40">
                   <p className="text-xs text-slate-500">Holdings</p>
-                  <p className="text-lg font-bold text-white">{data.portfolioSummary.holdingCount}</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">{data.portfolioSummary.holdingCount}</p>
                 </div>
-                <div className="bg-dark-100 rounded-xl p-3 border border-slate-700/40">
+                <div className="bg-white dark:bg-dark-100 rounded-xl p-3 border border-slate-300 dark:border-slate-700/40">
                   <p className="text-xs text-slate-500">Sectors</p>
-                  <p className="text-lg font-bold text-white">{data.portfolioSummary.sectorCount}</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">{data.portfolioSummary.sectorCount}</p>
                 </div>
-                <div className="bg-dark-100 rounded-xl p-3 border border-slate-700/40 col-span-2">
+                <div className="bg-white dark:bg-dark-100 rounded-xl p-3 border border-slate-300 dark:border-slate-700/40 col-span-2">
                   <p className="text-xs text-slate-500">Current Value</p>
-                  <p className="text-lg font-bold text-white">₹{fmt(data.portfolioSummary.currentValue)}</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">₹{fmt(data.portfolioSummary.currentValue)}</p>
                 </div>
               </div>
             )}
@@ -266,7 +266,7 @@ export default function RiskAnalysisPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <Activity size={16} className="text-primary-400" />
-                <h2 className="font-semibold text-white">Risk Dimensions</h2>
+                <h2 className="font-semibold text-slate-900 dark:text-white">Risk Dimensions</h2>
               </div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
@@ -283,7 +283,7 @@ export default function RiskAnalysisPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart2 size={16} className="text-primary-400" />
-                <h2 className="font-semibold text-white">Risk Score Breakdown</h2>
+                <h2 className="font-semibold text-slate-900 dark:text-white">Risk Score Breakdown</h2>
               </div>
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
@@ -306,7 +306,7 @@ export default function RiskAnalysisPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingDown size={16} className="text-primary-400" />
-                <h2 className="font-semibold text-white">Simulated Portfolio History (90 days)</h2>
+                <h2 className="font-semibold text-slate-900 dark:text-white">Simulated Portfolio History (90 days)</h2>
               </div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
@@ -330,13 +330,13 @@ export default function RiskAnalysisPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <PieChart size={16} className="text-primary-400" />
-                <h2 className="font-semibold text-white">Sector Allocation</h2>
+                <h2 className="font-semibold text-slate-900 dark:text-white">Sector Allocation</h2>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {data.sectorBreakdown.map((s) => (
-                  <div key={s.sector} className="bg-dark-100 rounded-xl p-3 border border-slate-700/30">
+                  <div key={s.sector} className="bg-white dark:bg-dark-100 rounded-xl p-3 border border-slate-300 dark:border-slate-700/30">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-slate-300">{s.sector}</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">{s.sector}</span>
                       <span className="text-xs text-slate-500">{s.percent}%</span>
                     </div>
                     <div className="w-full bg-slate-800 rounded-full h-1.5">
@@ -355,15 +355,15 @@ export default function RiskAnalysisPage() {
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
                 <Zap size={16} className="text-primary-400" />
-                <h2 className="font-semibold text-white">Stress Test Scenarios</h2>
+                <h2 className="font-semibold text-slate-900 dark:text-white">Stress Test Scenarios</h2>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {data.stressTest.map((s) => (
-                  <div key={s.scenario} className="bg-dark-100 rounded-xl p-4 border border-slate-700/30">
+                  <div key={s.scenario} className="bg-white dark:bg-dark-100 rounded-xl p-4 border border-slate-300 dark:border-slate-700/30">
                     <p className="text-xs text-slate-500 mb-1">{s.description}</p>
-                    <p className="font-bold text-white text-sm">{s.scenario}</p>
+                    <p className="font-bold text-slate-900 dark:text-white text-sm">{s.scenario}</p>
                     <p className="text-red-400 font-black text-lg mt-2">{s.portfolioDropPercent}%</p>
-                    <p className="text-xs text-slate-400">Loss: ₹{fmt(Math.abs(s.portfolioLoss))}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Loss: ₹{fmt(Math.abs(s.portfolioLoss))}</p>
                     <p className="text-xs text-slate-500 mt-1">
                       ₹{fmt(s.portfolioCurrentValue)} → ₹{fmt(s.portfolioProjectedValue)}
                     </p>
@@ -377,15 +377,15 @@ export default function RiskAnalysisPage() {
           <div className="card">
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck size={18} className="text-primary-400" />
-              <h2 className="font-semibold text-white">AI Risk Insights & Recommendations</h2>
+              <h2 className="font-semibold text-slate-900 dark:text-white">AI Risk Insights & Recommendations</h2>
             </div>
             <div className="space-y-3">
               {(data.explanations ?? []).map((s, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="flex items-start gap-3 bg-dark-100 rounded-xl px-4 py-3 border border-slate-700/40">
+                  className="flex items-start gap-3 bg-white dark:bg-dark-100 rounded-xl px-4 py-3 border border-slate-300 dark:border-slate-700/40">
                   <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-300">{s}</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-300">{s}</span>
                 </motion.div>
               ))}
             </div>

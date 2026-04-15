@@ -4,7 +4,7 @@ import { Home, AlertTriangle } from 'lucide-react';
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen bg-surface-950 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-950 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -14,8 +14,8 @@ export default function NotFoundPage() {
           <AlertTriangle size={36} className="text-bear" />
         </div>
         <h1 className="text-8xl font-black text-slate-800 mb-2">404</h1>
-        <h2 className="text-xl font-bold text-white mb-2">Page Not Found</h2>
-        <p className="text-slate-400 text-sm mb-8">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Page Not Found</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mb-8">
           The page you're looking for doesn't exist or has been moved.
         </p>
         <Link to="/dashboard" className="btn-primary inline-flex items-center gap-2">

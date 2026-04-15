@@ -87,7 +87,7 @@ export default function EducationPage() {
           {LEVELS.map((l) => (
             <button key={l} onClick={() => setFilter(l)}
               className={`text-xs font-semibold px-3 py-2 rounded-xl border transition-all
-                ${filter === l ? 'bg-primary-500/20 border-primary-500/40 text-primary-400' : 'bg-dark-100 border-slate-700 text-slate-500 hover:border-slate-600'}`}>
+                ${filter === l ? 'bg-primary-500/20 border-primary-500/40 text-primary-400' : 'bg-white dark:bg-dark-100 border-slate-300 dark:border-slate-700 text-slate-500 hover:border-slate-600'}`}>
               {l}
             </button>
           ))}
@@ -104,7 +104,7 @@ export default function EducationPage() {
           <div key={s.label} className="stat-card flex-row items-center justify-between">
             <div>
               <p className="text-xs text-slate-500 mb-1">{s.label}</p>
-              <p className="text-2xl font-bold text-white">{s.value}</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{s.value}</p>
             </div>
             <s.icon size={20} className="text-primary-400 opacity-60" />
           </div>
@@ -130,11 +130,11 @@ export default function EducationPage() {
                   {course.level}
                 </span>
               </div>
-              <h3 className="font-semibold text-white mb-1.5 group-hover:text-primary-300 transition-colors leading-snug">
+              <h3 className="font-semibold text-slate-900 dark:text-white mb-1.5 group-hover:text-primary-300 transition-colors leading-snug">
                 {course.title}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed mb-4">{course.description}</p>
-              <div className="flex items-center justify-between text-xs text-slate-600 border-t border-slate-800/60 pt-3">
+              <div className="flex items-center justify-between text-xs text-slate-600 border-t border-slate-200 dark:border-slate-800/60 pt-3">
                 <span className="flex items-center gap-1"><Clock size={11} /> {course.duration}</span>
                 <span className="flex items-center gap-1"><Play size={11} /> {course.lessons} lessons</span>
                 <span className="text-primary-500 font-semibold flex items-center gap-0.5">

@@ -24,15 +24,15 @@ const BENEFITS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-surface-950 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-950 overflow-x-hidden">
       {/* ─── Navbar ───────────────────────────────────────────────────────── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4
-                      bg-surface-950/80 backdrop-blur-md border-b border-slate-800/60">
+                      bg-slate-50 dark:bg-surface-950/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/60">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-brand flex items-center justify-center">
-            <Zap size={16} className="text-white" />
+            <Zap size={16} className="text-slate-900 dark:text-white" />
           </div>
-          <span className="font-bold text-white">CapitalWave<span className="text-primary-400"> AI</span></span>
+          <span className="font-bold text-slate-900 dark:text-white">CapitalWave<span className="text-primary-400"> AI</span></span>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login"  className="btn-ghost text-sm py-2 px-4">Login</Link>
@@ -67,7 +67,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-[1.08] tracking-tight"
+            className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white mb-6 leading-[1.08] tracking-tight"
           >
             Trade Smarter with{' '}
             <span className="bg-gradient-brand bg-clip-text text-transparent">
@@ -79,7 +79,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
-            className="text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             CapitalWave AI analyses thousands of market signals in real-time to deliver
             precise BUY/SELL/HOLD recommendations. Your edge in an uncertain market.
@@ -116,7 +116,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Stats ────────────────────────────────────────────────────────── */}
-      <section className="py-16 px-6 border-y border-slate-800/60 bg-dark-200/40">
+      <section className="py-16 px-6 border-y border-slate-200 dark:border-slate-800/60 bg-slate-50 dark:bg-dark-200/40">
         <div className="max-w-5xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
           {STATS.map((s, i) => (
             <motion.div
@@ -126,7 +126,7 @@ export default function LandingPage() {
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="text-3xl font-black text-white mb-1">{s.value}</div>
+              <div className="text-3xl font-black text-slate-900 dark:text-white mb-1">{s.value}</div>
               <div className="text-sm text-slate-500">{s.label}</div>
             </motion.div>
           ))}
@@ -137,8 +137,8 @@ export default function LandingPage() {
       <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-3">Everything you need to win the market</h2>
-            <p className="text-slate-400">Professional-grade tools powered by artificial intelligence.</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Everything you need to win the market</h2>
+            <p className="text-slate-500 dark:text-slate-400">Professional-grade tools powered by artificial intelligence.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {FEATURES.map(({ icon: Icon, title, desc }, i) => (
@@ -153,8 +153,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center mb-4">
                   <Icon size={20} className="text-primary-400" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">{title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{desc}</p>
+                <h3 className="font-semibold text-slate-900 dark:text-white mb-2">{title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{desc}</p>
               </motion.div>
             ))}
           </div>
@@ -165,8 +165,8 @@ export default function LandingPage() {
       <section className="py-24 px-6">
         <div className="max-w-2xl mx-auto text-center">
           <div className="card border-primary-500/20 shadow-glow-primary/20">
-            <h2 className="text-3xl font-bold text-white mb-3">Ready to transform your trading?</h2>
-            <p className="text-slate-400 mb-8">Join thousands of traders already using CapitalWave AI.</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Ready to transform your trading?</h2>
+            <p className="text-slate-500 dark:text-slate-400 mb-8">Join thousands of traders already using CapitalWave AI.</p>
             <Link to="/signup" className="btn-primary px-10 py-3.5 text-base inline-flex items-center gap-2">
               Create Free Account <ArrowRight size={18} />
             </Link>
@@ -175,7 +175,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer ───────────────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-800/60 px-8 py-6 text-center text-xs text-slate-600">
+      <footer className="border-t border-slate-200 dark:border-slate-800/60 px-8 py-6 text-center text-xs text-slate-600">
         © {new Date().getFullYear()} CapitalWave AI. Not financial advice. All trading involves risk.
       </footer>
     </div>

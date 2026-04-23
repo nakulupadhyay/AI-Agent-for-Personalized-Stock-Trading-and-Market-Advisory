@@ -5,7 +5,7 @@ import { useUIStore } from '@/app/store';
 import {
   LayoutDashboard, TrendingUp, Briefcase, BarChart2,
   MessageSquare, BookOpen, Settings, LogOut,
-  ChevronLeft, ChevronRight, Activity, Zap,
+  ChevronLeft, ChevronRight, Activity, Zap, Sparkles,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { to: '/paper-trading', icon: Activity,        label: 'Paper Trading' },
   { to: '/risk-analysis', icon: BarChart2,       label: 'Risk Analysis' },
   { to: '/chat-advisor',  icon: MessageSquare,   label: 'AI Advisor' },
+  { to: '/stock-assistant', icon: Sparkles,      label: 'Stock Assistant' },
   { to: '/education',     icon: BookOpen,        label: 'Education' },
   { to: '/settings',      icon: Settings,        label: 'Settings' },
 ];

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Info, Target, ShieldAlert } from 'lucide-react';
 import { RecommendationBadge } from '@/components/ui/Badge';
+import { StockSymbolInput } from '@/components/ui/StockSymbolInput';
 import { useStockSearch } from '@/hooks/useStockSearch';
 import { formatCurrency, formatPercent } from '@/utils/formatters';
 
@@ -17,21 +18,21 @@ export default function StocksPage() {
       </div>
 
       {/* Search bar */}
-      <div className="relative">
-        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          type="text"
+      <div className="relative flex items-center">
+        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none z-10" />
+        <StockSymbolInput
           id="stock-search-input"
+          value={query}
+          onChange={setQuery}
           placeholder="Enter stock symbol — e.g. RELIANCE, AAPL, TSLA"
-          className="form-input pl-11 pr-10 text-base py-4 rounded-2xl"
-          maxLength={10}
+          className="pl-11 pr-10 text-base py-4 rounded-2xl w-full"
+          wrapperClass="w-full"
           autoFocus
+          maxLength={12}
         />
         {query && (
           <button onClick={reset}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:text-slate-300 text-xl leading-none">
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:text-slate-300 text-xl leading-none z-10">
             ×
           </button>
         )}

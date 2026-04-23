@@ -34,7 +34,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-950 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background orbs */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary-500/8 rounded-full blur-3xl" />
@@ -51,10 +51,10 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-brand
                           shadow-glow-primary mb-4">
-            <Zap size={26} className="text-white" />
+            <Zap size={26} className="text-slate-900 dark:text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-          <p className="text-slate-400 text-sm mt-1">Sign in to your CapitalWave account</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sign in to your CapitalWave account</p>
         </div>
 
         <div className="card">
@@ -74,7 +74,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Email Address</label>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5">Email Address</label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
@@ -95,7 +95,7 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1.5">Password</label>
               <div className="relative">
                 <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input

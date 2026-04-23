@@ -12,16 +12,6 @@
 
 const axios = require('axios');
 
-// ── Gemini AI Client ────────────────────────────────────────
-const { GoogleGenAI } = require('@google/genai');
-
-const gemini1 = process.env.GEMINI_API_KEY_1
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 })
-    : null;
-const gemini2 = process.env.GEMINI_API_KEY_2
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 })
-    : null;
-
 // ── Yahoo Finance ───────────────────────────────────────────
 const YAHOO_BASE = 'https://query1.finance.yahoo.com';
 const YAHOO_HEADERS = { 'User-Agent': 'Mozilla/5.0' };
@@ -170,26 +160,7 @@ const buildTopPicksVoice = (picks) => {
     return `Aaj ke liye top stocks hain ${names}. Inmein buying opportunity hai because ${reasons}.`;
 };
 
-// ── Try Gemini for AI-enhanced reasoning ────────────────────
-const tryGeminiForAnalysis = async (prompt) => {
-    const clients = [gemini1, gemini2].filter(Boolean);
-    for (const client of clients) {
-        try {
-            const response = await client.models.generateContent({
-                model: 'gemini-2.0-flash',
-                contents: prompt,
-            });
-            let text = typeof response.text === 'function' ? response.text() : response.text;
-            if (!text && response.candidates?.[0]?.content?.parts?.[0]?.text) {
-                text = response.candidates[0].content.parts[0].text;
-            }
-            if (text && text.length > 10) return text;
-        } catch (e) {
-            console.warn('Gemini failed for stock assistant:', e.message);
-        }
-    }
-    return null;
-};
+
 
 /* ════════════════════════════════════════════════════════════
    ENDPOINT 1: GET TOP PICKS TODAY
@@ -300,17 +271,7 @@ const analyzeStock = async (req, res) => {
         // Build short reason
         const shortReason = scoreResult.signals.slice(0, 2).join('. ');
 
-        // Try Gemini for enhanced reasoning
         let aiReasoning = null;
-        if (quote) {
-            const prompt = `You are an Indian stock market expert. Analyze ${symbol} (NSE).
-Current Price: ₹${quote.currentPrice}, Change: ${quote.changePercent}%, 5-day trend: ${quote.trend5d}, Volume: ${quote.volume}.
-Signal: ${signal}, Confidence: ${confidence}%.
-
-Give a 2-sentence analysis covering trend & risk. Keep it simple. No disclaimers. No JSON.`;
-
-            aiReasoning = await tryGeminiForAnalysis(prompt);
-        }
 
         const result = {
             type: 'stock_analysis',
@@ -399,19 +360,8 @@ const smartChat = async (req, res) => {
             return analyzeStock(req, res);
         }
 
-        // ── Fallback: General financial chat via Gemini ──
-        const chatPrompt = `You are CapitalWave AI, an expert Indian stock market advisor.
-User asks: "${message}"
-
-Respond concisely (under 200 words). Use emojis (📊📈💡⚠️).
-Focus: Indian stocks, Nifty/Sensex, investing concepts.
-End with: "⚠️ Not financial advice. Consult a SEBI-registered advisor."`;
-
-        let reply = await tryGeminiForAnalysis(chatPrompt);
-
-        if (!reply) {
-            reply = `📊 I understand you're asking: "${message}"\n\nFor specific stock advice, try:\n• "Which stock should I buy today?"\n• "Should I buy TCS?"\n• "Analyze RELIANCE"\n\n⚠️ Not financial advice. Consult a SEBI-registered advisor.`;
-        }
+        // ── Fallback: General financial chat ──
+        let reply = `📊 I understand you're asking: "${message}"\n\nFor specific stock advice, try:\n• "Which stock should I buy today?"\n• "Should I buy TCS?"\n• "Analyze RELIANCE"\n\n⚠️ Not financial advice. Consult a SEBI-registered advisor.`;
 
         return res.status(200).json({
             success: true,

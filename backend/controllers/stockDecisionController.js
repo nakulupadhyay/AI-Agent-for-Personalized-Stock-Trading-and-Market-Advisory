@@ -8,20 +8,12 @@
  *  4. Step-by-step reasoning: trend → sentiment → recommendation
  *
  * Multi-Model Priority:
- *   Gemini 2.0 Flash (key1) → Gemini 2.0 Flash (key2) → HuggingFace Mistral → Built-in Engine
+ *   HuggingFace Mistral → Built-in Engine
  */
 
 const axios = require('axios');
 
 // ── API Clients ─────────────────────────────────────────────
-const { GoogleGenAI } = require('@google/genai');
-
-const gemini1 = process.env.GEMINI_API_KEY_1
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 })
-    : null;
-const gemini2 = process.env.GEMINI_API_KEY_2
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_2 })
-    : null;
 const HF_API_KEY = process.env.HF_API_KEY;
 // HuggingFace router base — replaces deprecated api-inference.huggingface.co
 const HF_ROUTER_URL = 'https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.3/v1/chat/completions';
@@ -218,26 +210,7 @@ RESPONSE FORMAT (use exactly this JSON structure):
 Respond ONLY with valid JSON. No extra text.`;
 };
 
-// ── Try Gemini ───────────────────────────────────────────────
-const tryGemini = async (prompt, keyIndex = 1) => {
-    const client = keyIndex === 1 ? gemini1 : gemini2;
-    if (!client) return null;
-    try {
-        const response = await client.models.generateContent({
-            model: 'gemini-2.0-flash',
-            contents: prompt,
-        });
-        let text = typeof response.text === 'function' ? response.text() : response.text;
-        if (!text && response.candidates?.[0]?.content?.parts?.[0]?.text) {
-            text = response.candidates[0].content.parts[0].text;
-        }
-        if (text && text.length > 10) return { text, source: `gemini_key${keyIndex}` };
-        return null;
-    } catch (e) {
-        console.warn(`Gemini key ${keyIndex} failed:`, e.message);
-        return null;
-    }
-};
+
 
 // ── Try HuggingFace Mistral (via router.huggingface.co) ─────
 const tryHuggingFace = async (prompt) => {
@@ -368,18 +341,6 @@ const getStockAdvice = async (req, res) => {
         let aiResult = null;
         let aiSource = 'built_in_engine';
 
-        // Try Gemini key 1
-        if (!aiResult) {
-            const r = await tryGemini(prompt, 1);
-            if (r) { aiResult = parseAIJson(r.text); aiSource = r.source; }
-        }
-
-        // Try Gemini key 2
-        if (!aiResult) {
-            const r = await tryGemini(prompt, 2);
-            if (r) { aiResult = parseAIJson(r.text); aiSource = r.source; }
-        }
-
         // Try HuggingFace Mistral
         if (!aiResult) {
             const r = await tryHuggingFace(prompt);
@@ -464,7 +425,7 @@ const advisorChat = async (req, res) => {
             return getStockAdvice(req, res);
         }
 
-        // Otherwise, use Gemini for general financial chat
+        // Otherwise, use HuggingFace or fallback for general financial chat
         const chatPrompt = `You are CapitalWave AI Advisor, an expert on Indian stock markets (NSE/BSE).
 User asks: "${message}"
 
@@ -476,18 +437,8 @@ End with: "⚠️ Not financial advice. Consult a SEBI-registered advisor."`;
         let reply = null;
         let source = 'built_in';
 
-        const r1 = await tryGemini(chatPrompt, 1);
-        if (r1) { reply = r1.text; source = r1.source; }
-
-        if (!reply) {
-            const r2 = await tryGemini(chatPrompt, 2);
-            if (r2) { reply = r2.text; source = r2.source; }
-        }
-
-        if (!reply) {
-            const rh = await tryHuggingFace(chatPrompt);
-            if (rh) { reply = rh.text; source = rh.source; }
-        }
+        const rh = await tryHuggingFace(chatPrompt);
+        if (rh) { reply = rh.text; source = rh.source; }
 
         if (!reply) {
             reply = `📊 I understand you're asking about "${message}". Let me help!\n\nFor specific stock advice, try:\n• "Should I buy TCS?"\n• "Analyze RELIANCE"\n• "Should I sell INFY?"\n\nFor general concepts:\n• "What is Nifty 50?"\n• "How does SIP work?"\n\n⚠️ Not financial advice. Consult a SEBI-registered advisor.`;

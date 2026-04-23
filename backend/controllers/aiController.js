@@ -1,21 +1,13 @@
 /**
- * AI Controller - Multi-Model with Triple Fallback
- * Priority: Google Gemini → HuggingFace Mistral → Built-in Knowledge Engine
+ * AI Controller - Multi-Model with Fallback
+ * Priority: Local RAG → Gradio → HuggingFace Mistral → Built-in Knowledge Engine
  * HuggingFace: uses router.huggingface.co (replaces deprecated api-inference endpoint)
  */
 const axios = require('axios');
-const { GoogleGenAI } = require('@google/genai');
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 const HF_API_KEY = process.env.HF_API_KEY;
 const HF_ROUTER_URL = 'https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.3/v1/chat/completions';
-
-// ── Gemini Setup — try key_1 first, fall back to key_2 ────
-const gemini = process.env.GEMINI_API_KEY_1
-    ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_1 })
-    : process.env.GEMINI_API_KEY
-        ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-        : null;
 
 const SYSTEM_PROMPT_TEXT = `You are "CapitalWave AI Advisor", a smart AI assistant for Indian stock market guidance and financial advisory.
 
@@ -169,39 +161,7 @@ const isMLServiceAvailable = async () => {
     }
 };
 
-/**
- * Try Google Gemini API
- */
-const tryGemini = async (message, history) => {
-    if (!gemini) return null;
 
-    try {
-        const conversationContext = history.length > 0
-            ? '\n\nConversation so far:\n' + history.map(m => `${m.role}: ${m.content}`).join('\n')
-            : '';
-
-        const prompt = `${SYSTEM_PROMPT_TEXT}${conversationContext}\n\nUser: ${message}\n\nAssistant:`;
-
-        const response = await gemini.models.generateContent({
-            model: 'gemini-2.0-flash',
-            contents: prompt,
-        });
-
-        // Handle both SDK versions: .text (property) and .text() (method)
-        let text = typeof response.text === 'function' ? response.text() : response.text;
-        if (!text && response.candidates?.[0]?.content?.parts?.[0]?.text) {
-            text = response.candidates[0].content.parts[0].text;
-        }
-        console.log('Gemini response received, length:', text?.length || 0);
-        if (text && text.trim().length > 10) {
-            return { reply: text.trim(), source: 'google_gemini' };
-        }
-        return null;
-    } catch (error) {
-        console.warn('Gemini API failed:', error.message);
-        return null;
-    }
-};
 
 /**
  * Try HuggingFace Mistral-7B via router.huggingface.co
@@ -288,41 +248,7 @@ const tryGradioModel = async (message, history) => {
                 const botReply = updatedHistory[updatedHistory.length - 1].content;
                 if (botReply) {
                     
-                    let finalReply = botReply;
-                    
-                    // Intercept and format raw unreadable data if gemini is available
-                    if (gemini && botReply.length > 50) {
-                        try {
-                            const formattingPrompt = `You are a financial formatting assistant. The following text contains stock market data from a raw AI source.
-Please reformat this data into a highly readable and understandable markdown format.
-Provide exactly two distinct sections:
-1. "🟢 **For Beginners:**" (Explain the data in extremely simple, easy-to-understand terms, assuming no financial background at all.)
-2. "🔵 **For Advanced Investors:**" (Provide the technical metrics, numbers, and facts clearly formatted using bullet points for quick scanning.)
-
-Make the response clean, well-structured, and use emojis. Do NOT make up any numbers; use only the facts provided in the raw text.
-
-Raw Text:
-${botReply}`;
-
-                            const fpResponse = await gemini.models.generateContent({
-                                model: 'gemini-2.0-flash',
-                                contents: formattingPrompt,
-                            });
-                            
-                            let cleanText = typeof fpResponse.text === 'function' ? fpResponse.text() : fpResponse.text;
-                            if (!cleanText && fpResponse.candidates?.[0]?.content?.parts?.[0]?.text) {
-                                cleanText = fpResponse.candidates[0].content.parts[0].text;
-                            }
-                            
-                            if (cleanText && cleanText.trim().length > 10) {
-                                finalReply = cleanText.trim();
-                            }
-                        } catch (fmtErr) {
-                            console.warn("Gradio output formatting failed:", fmtErr.message);
-                        }
-                    }
-
-                    return { reply: finalReply, source: 'gradio_custom_model' };
+                    return { reply: botReply, source: 'gradio_custom_model' };
                 }
             }
         }
@@ -335,7 +261,7 @@ ${botReply}`;
 
 /**
  * @route   POST /api/ai/chat
- * @desc    AI Chat Advisor — Triple Fallback: Gemini → HuggingFace → Built-in Knowledge
+ * @desc    AI Chat Advisor — Fallback: Local RAG → Gradio → HuggingFace → Built-in Knowledge
  * @access  Private
  */
 const chatAdvisor = async (req, res) => {
@@ -375,16 +301,7 @@ const chatAdvisor = async (req, res) => {
             }
         }
 
-        // ── Attempt 3: Google Gemini (fastest, most reliable) ──
-        if (!aiReply) {
-            const geminiResult = await tryGemini(message, history);
-            if (geminiResult) {
-                aiReply = geminiResult.reply;
-                source = geminiResult.source;
-            }
-        }
-
-        // ── Attempt 4: HuggingFace Mistral-7B ──
+        // ── Attempt 3: HuggingFace Mistral-7B ──
         if (!aiReply) {
             const hfResult = await tryHuggingFace(message, history);
             if (hfResult) {

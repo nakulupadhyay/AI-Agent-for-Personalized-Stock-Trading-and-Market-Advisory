@@ -17,6 +17,7 @@ const ChatAdvisorPage = lazy(() => import('@/pages/ChatAdvisorPage'));
 const EducationPage   = lazy(() => import('@/pages/EducationPage'));
 const SettingsPage    = lazy(() => import('@/pages/SettingsPage'));
 const NotFoundPage    = lazy(() => import('@/pages/NotFoundPage'));
+const StockAssistantPage = lazy(() => import('@/pages/StockAssistantPage'));
 
 // ─── Protected dashboard routes ───────────────────────────────────────────────
 const dashboardRoutes = [
@@ -26,6 +27,7 @@ const dashboardRoutes = [
   { path: '/paper-trading', Component: PaperTradingPage },
   { path: '/risk-analysis', Component: RiskAnalysisPage },
   { path: '/chat-advisor',  Component: ChatAdvisorPage },
+  { path: '/stock-assistant', Component: StockAssistantPage },
   { path: '/education',     Component: EducationPage },
   { path: '/settings',      Component: SettingsPage },
 ];

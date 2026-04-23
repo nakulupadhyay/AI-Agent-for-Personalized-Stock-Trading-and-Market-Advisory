@@ -126,19 +126,7 @@ export default function PortfolioPage() {
       <div className="space-y-6 animate-fade-in max-w-7xl mx-auto pb-10">
         
         {/* Header */}
-        {/* i want to add profolio add button */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
-          <div>
-            <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-              My Portfolio
-            </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-slate-500 dark:text-slate-400 mt-2 text-sm font-medium">
-              Track your open positions, asset allocation, and AI insights.
-
-            </motion.p>
-          </div>
-          <button>+ADD</button>
-        </div>
+        {/* i want to add profolio add button  and browse buttons */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
             <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -148,6 +136,10 @@ export default function PortfolioPage() {
               Track your open positions, asset allocation, and AI insights.
             </motion.p>
           </div>
+          <button onClick={() => navigate('/add-portfolio')} className="btn-ghost text-sm py-2 px-4 flex items-center gap-2 hover:bg-primary-500/10 shadow-lg"
+            >
+            Add Portfolio
+          </button>
           <button 
             onClick={() => loadData(false)} 
             disabled={isSyncing}

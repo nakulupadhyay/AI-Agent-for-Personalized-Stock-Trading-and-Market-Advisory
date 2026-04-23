@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Activity, TrendingUp, TrendingDown, DollarSign, RefreshCw } from 'lucide-react';
 import api from '@/services/api';
 import { RecommendationBadge } from '@/components/ui/Badge';
+import { StockSymbolInput } from '@/components/ui/StockSymbolInput';
 import { formatCurrency } from '@/utils/formatters';
 import { CardSkeleton } from '@/components/ui/Skeleton';
 import type { PaperTrade } from '@/types/portfolio.types';
@@ -97,8 +98,13 @@ export default function PaperTradingPage() {
           <form onSubmit={handleTrade} className="space-y-4">
             <div>
               <label className="text-sm text-slate-500 dark:text-slate-400 font-medium block mb-1.5">Stock Symbol</label>
-              <input value={form.symbol} onChange={(e) => setForm(f => ({ ...f, symbol: e.target.value.toUpperCase() }))}
-                placeholder="e.g. RELIANCE" className="form-input" maxLength={10} />
+              <StockSymbolInput
+                id="paper-trade-symbol-input"
+                value={form.symbol}
+                onChange={(val) => setForm(f => ({ ...f, symbol: val }))}
+                placeholder="e.g. RELIANCE"
+                maxLength={12}
+              />
             </div>
             <div>
               <label className="text-sm text-slate-500 dark:text-slate-400 font-medium block mb-1.5">Action</label>

@@ -67,6 +67,66 @@ const KNOWLEDGE_BASE = {
     'high volatility negative sharpe': `📊 **High Volatility + Negative Sharpe Ratio = RED FLAG** 🚩\n\n**What this means:**\n- High volatility = the stock swings wildly\n- Negative Sharpe ratio = you're earning LESS than a risk-free investment (like FD) for MORE risk\n\n**Should you buy?** Probably NOT. Here's the reasoning:\n\n🔴 **Against buying:**\n1. Negative Sharpe means risk isn't being rewarded\n2. High volatility can wipe out capital quickly\n3. Better risk-adjusted options likely exist\n\n🟡 **Exception cases:**\n1. If this is a turnaround candidate with improving fundamentals\n2. If the negative Sharpe is temporary (e.g., sector-wide dip)\n3. If you have a very long time horizon (5+ years)\n\n**What to do instead:**\n1. Look for stocks with Sharpe > 1.0 and moderate volatility\n2. Compare with index funds (Nifty 50 has Sharpe ~1.2)\n3. If you still like the company, wait for better entry point\n\n⚠️ This is not financial advice. Consult a SEBI-registered advisor before investing.`,
 
     'invest reliance': `📊 **Analyzing RELIANCE Industries**\n\n**Sector:** Conglomerate (Oil & Gas, Telecom, Retail, Digital)\n\n**Bull Case (Reasons to consider):**\n📈 Jio platform - India's largest telecom & digital ecosystem\n📈 Retail expansion - JioMart & Reliance Retail growth\n📈 Green energy transition - ₹75,000 crore investment planned\n📈 Strong balance sheet & management\n\n**Bear Case (Risks):**\n📉 High valuations compared to sector peers\n📉 Oil & gas segment facing energy transition risks\n📉 Execution risk on new ventures\n📉 Regulatory uncertainties in telecom\n\n**Key Metrics to Watch:**\n- P/E Ratio vs industry average\n- Jio subscriber growth & ARPU\n- Debt-to-equity ratio\n- Free cash flow trend\n\n💡 **Suggestion:** Don't put all eggs in one basket. Even for strong companies like Reliance, limit to 5-10% of your portfolio.\n\n⚠️ This is not financial advice. Consult a SEBI-registered advisor before investing.`,
+
+    'tcs vs reliance': `### Stock Comparison: TCS vs. Reliance Industries
+
+**Disclaimer:** This analysis is for educational purposes only and is not personalized financial advice. Stock markets are volatile, and past performance does not guarantee future results. Always consult a qualified financial advisor, conduct your own research, and consider your risk tolerance, investment goals, and market conditions before making any decisions. The information provided here is based on general knowledge and publicly available data as of April 2026; actual figures may vary.
+
+You're considering TCS (Tata Consultancy Services) and Reliance Industries (Reliance) as potential investments. Both are prominent Indian companies, but they operate in different sectors with distinct risk profiles. TCS is a pure-play IT services firm, while Reliance is a diversified conglomerate. Below, I'll provide a balanced comparison covering their sectors, bull/bear cases, key metrics, and a neutral suggestion to help you decide. This corrects the oversight in the original response, which focused solely on Reliance.
+
+#### TCS (Tata Consultancy Services) Analysis
+**Sector:** Information Technology (IT) and Software Services. TCS is one of India's largest IT outsourcing and consulting companies, providing digital transformation, cloud computing, cybersecurity, and AI solutions to global clients.
+
+**Bull Case (Reasons to Consider Buying):**
+- 📈 Strong demand for IT services driven by digital transformation, cloud adoption, and AI integration across industries.
+- 📈 Robust track record of revenue growth, with a focus on high-margin services like consulting and software development.
+- 📈 Diversified client base (including Fortune 500 companies) reduces dependency on any single market or sector.
+- 📈 Positive sentiment from India's growing tech ecosystem and government initiatives like Digital India.
+
+**Bear Case (Reasons to Be Cautious):**
+- 📉 Intense competition from global players (e.g., Accenture, IBM) and domestic rivals (e.g., Infosys, Wipro) could pressure margins.
+- 📉 Economic slowdowns or recessions often hit IT spending first, leading to delayed projects or contract cancellations.
+- 📉 Regulatory changes, such as data privacy laws (e.g., GDPR equivalents in India) or geopolitical tensions, could increase compliance costs.
+- 📉 Over-reliance on exports; currency fluctuations (e.g., USD/INR) can impact profitability.
+
+**Key Metrics (Approximate as of April 2026, based on recent trends):**
+- **Market Cap:** ~₹14-15 lakh crore (around $170-180 billion).
+- **P/E Ratio:** 25-30 (indicating moderate valuation; lower is generally better for growth stocks).
+- **ROE (Return on Equity):** 35-40% (strong efficiency in generating profits from equity).
+- **Revenue Growth (YoY):** 8-12% (steady but not explosive).
+- **Debt-to-Equity:** Low (around 0.1-0.2), showing financial stability.
+- **Dividend Yield:** 2-3% (attractive for income-focused investors).
+
+#### Reliance Industries Analysis
+**Sector:** Diversified Conglomerate (Energy, Telecom, Retail, and more). Reliance is India's largest private-sector company, with major operations in oil refining, petrochemicals, telecommunications (Jio), retail (Reliance Retail), and emerging areas like digital services.
+
+**Bull Case (Reasons to Consider Buying):**
+- 📈 Diversification across high-growth sectors like telecom and retail provides resilience against sector-specific downturns.
+- 📈 Reliance Jio has revolutionized India's telecom market with affordable data plans, driving subscriber growth and revenue.
+- 📈 Strong balance sheet and cash flows from energy operations support expansion into new areas like renewables and e-commerce.
+- 📈 Leadership under Mukesh Ambani and strategic acquisitions (e.g., in retail) position it for long-term growth in India's consumption story.
+
+**Bear Case (Reasons to Be Cautious):**
+- 📉 Exposure to volatile oil and gas prices; geopolitical events (e.g., Middle East tensions) can spike input costs and squeeze margins.
+- 📉 Regulatory scrutiny in telecom (e.g., spectrum auctions, competition from rivals like Airtel) and retail could lead to higher expenses.
+- 📉 Conglomerate structure means performance is tied to multiple sectors, amplifying risks if one underperforms (e.g., energy downturns).
+- 📉 High debt levels in some subsidiaries (though overall manageable) and competition in retail/e-commerce from global players.
+
+**Key Metrics (Approximate as of April 2026, based on recent trends):**
+- **Market Cap:** ~₹18-20 lakh crore (around $220-240 billion), making it India's most valuable company.
+- **P/E Ratio:** 20-25 (relatively attractive for a large-cap stock).
+- **ROE (Return on Equity):** 10-15% (solid but lower than TCS due to diversification).
+- **Revenue Growth (YoY):** 10-15% (driven by telecom and retail segments).
+- **Debt-to-Equity:** Moderate (around 0.4-0.6), higher than TCS but backed by strong cash flows.
+- **Dividend Yield:** 0.5-1% (lower, as profits are reinvested for growth).
+
+#### Comparison and Choice Guidance
+- **Sector and Risk Profile:** TCS is a focused IT play, ideal for investors bullish on technology trends but sensitive to economic cycles. Reliance offers broader diversification, making it more stable during downturns but exposed to commodity and regulatory risks. TCS might appeal to growth-oriented investors, while Reliance suits those seeking exposure to India's consumption and energy sectors.
+- **Performance Potential:** TCS has higher ROE and growth in IT services, but Reliance's scale and market leadership could yield better long-term returns if diversification pays off. Historically, IT stocks like TCS have outperformed during tech booms, while Reliance has benefited from India's GDP growth.
+- **Valuation and Suitability:** TCS trades at a premium (higher P/E) due to its growth narrative, while Reliance is more reasonably valued. If you're risk-averse and prefer stability, Reliance might edge out; if you believe in IT's future, TCS could be preferable.
+- 💡 **Suggestion:** Don't put all eggs in one basket. Even for strong companies like TCS or Reliance, limit to 5-10% of your portfolio. If confused, consider your time horizon: short-term (1-3 years) might favor TCS for tech momentum, while long-term (5+ years) could lean toward Reliance for diversification. Allocate based on risk (e.g., 50/50 if unsure) and monitor trends. As an alternative, explore peers like Infosys for TCS or Adani Enterprises for Reliance. Always backtest with tools like technical analysis or sentiment indicators before investing. If possible, review their latest quarterly reports for the most current data.
+
+⚠️ This is not financial advice. Consult a SEBI-registered advisor before investing.`,
 };
 
 /**
@@ -82,6 +142,7 @@ const searchKnowledgeBase = (message) => {
     }
 
     // Fuzzy intent matches
+    if (lower.includes('tcs') && lower.includes('reliance')) return KNOWLEDGE_BASE['tcs vs reliance'];
     if (lower.includes('buy') && lower.includes('reliance')) return KNOWLEDGE_BASE['invest reliance'];
     if (lower.includes('invest') && lower.includes('reliance')) return KNOWLEDGE_BASE['invest reliance'];
     if (lower.includes('should i buy')) return KNOWLEDGE_BASE['invest reliance'];
@@ -183,6 +244,96 @@ const tryHuggingFace = async (message, history) => {
 };
 
 /**
+ * Try Local RAG Engine (FastAPI)
+ */
+const tryLocalRAG = async (message) => {
+    try {
+        const { data } = await axios.post('http://127.0.0.1:8000/api/query', {
+            question: message
+        }, { timeout: 8000 });
+        
+        if (data && data.status === 'success' && data.answer) {
+            return { reply: data.answer, source: 'rag_local_engine' };
+        }
+        return null;
+    } catch (error) {
+        console.warn('Local RAG API failed or is not running:', error.message);
+        return null;
+    }
+};
+
+/**
+ * Try user's custom Gradio Model
+ */
+const tryGradioModel = async (message, history) => {
+    try {
+        const { Client } = require("@gradio/client");
+        const client = await Client.connect("https://f896084feffc452d95.gradio.live/");
+        
+        const formattedHistory = history.map(h => ({
+            role: h.role,
+            metadata: null,
+            content: h.content,
+            options: null
+        }));
+
+        const result = await client.predict("/respond", { 		
+            question: message, 		
+            history: formattedHistory, 
+        });
+
+        if (result && result.data && Array.isArray(result.data[1])) {
+            const updatedHistory = result.data[1];
+            if (updatedHistory.length > 0) {
+                const botReply = updatedHistory[updatedHistory.length - 1].content;
+                if (botReply) {
+                    
+                    let finalReply = botReply;
+                    
+                    // Intercept and format raw unreadable data if gemini is available
+                    if (gemini && botReply.length > 50) {
+                        try {
+                            const formattingPrompt = `You are a financial formatting assistant. The following text contains stock market data from a raw AI source.
+Please reformat this data into a highly readable and understandable markdown format.
+Provide exactly two distinct sections:
+1. "🟢 **For Beginners:**" (Explain the data in extremely simple, easy-to-understand terms, assuming no financial background at all.)
+2. "🔵 **For Advanced Investors:**" (Provide the technical metrics, numbers, and facts clearly formatted using bullet points for quick scanning.)
+
+Make the response clean, well-structured, and use emojis. Do NOT make up any numbers; use only the facts provided in the raw text.
+
+Raw Text:
+${botReply}`;
+
+                            const fpResponse = await gemini.models.generateContent({
+                                model: 'gemini-2.0-flash',
+                                contents: formattingPrompt,
+                            });
+                            
+                            let cleanText = typeof fpResponse.text === 'function' ? fpResponse.text() : fpResponse.text;
+                            if (!cleanText && fpResponse.candidates?.[0]?.content?.parts?.[0]?.text) {
+                                cleanText = fpResponse.candidates[0].content.parts[0].text;
+                            }
+                            
+                            if (cleanText && cleanText.trim().length > 10) {
+                                finalReply = cleanText.trim();
+                            }
+                        } catch (fmtErr) {
+                            console.warn("Gradio output formatting failed:", fmtErr.message);
+                        }
+                    }
+
+                    return { reply: finalReply, source: 'gradio_custom_model' };
+                }
+            }
+        }
+        return null;
+    } catch (error) {
+        console.warn('Gradio Model API failed:', error.message);
+        return null;
+    }
+};
+
+/**
  * @route   POST /api/ai/chat
  * @desc    AI Chat Advisor — Triple Fallback: Gemini → HuggingFace → Built-in Knowledge
  * @access  Private
@@ -208,14 +359,32 @@ const chatAdvisor = async (req, res) => {
         let aiReply = null;
         let source = 'built_in';
 
-        // ── Attempt 1: Google Gemini (fastest, most reliable) ──
-        const geminiResult = await tryGemini(message, history);
-        if (geminiResult) {
-            aiReply = geminiResult.reply;
-            source = geminiResult.source;
+        // ── Attempt 1: Local RAG API (Primary Engine) ──
+        const ragResult = await tryLocalRAG(message);
+        if (ragResult) {
+            aiReply = ragResult.reply;
+            source = ragResult.source;
         }
 
-        // ── Attempt 2: HuggingFace Mistral-7B ──
+        // ── Attempt 2: Custom Gradio Model ──
+        if (!aiReply) {
+            const gradioResult = await tryGradioModel(message, history);
+            if (gradioResult) {
+                aiReply = gradioResult.reply;
+                source = gradioResult.source;
+            }
+        }
+
+        // ── Attempt 3: Google Gemini (fastest, most reliable) ──
+        if (!aiReply) {
+            const geminiResult = await tryGemini(message, history);
+            if (geminiResult) {
+                aiReply = geminiResult.reply;
+                source = geminiResult.source;
+            }
+        }
+
+        // ── Attempt 4: HuggingFace Mistral-7B ──
         if (!aiReply) {
             const hfResult = await tryHuggingFace(message, history);
             if (hfResult) {
@@ -224,7 +393,7 @@ const chatAdvisor = async (req, res) => {
             }
         }
 
-        // ── Attempt 3: Built-in Financial Knowledge Engine ──
+        // ── Attempt 4: Built-in Financial Knowledge Engine ──
         if (!aiReply) {
             const kbResult = searchKnowledgeBase(message);
             if (kbResult) {

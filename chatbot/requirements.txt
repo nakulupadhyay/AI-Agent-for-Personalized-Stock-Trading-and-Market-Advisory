@@ -1,0 +1,15 @@
+# ─── FastAPI & Server ────────────────────────────────
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# ─── HuggingFace ─────────────────────────────────────
+transformers==4.36.0
+# torch installed separately via CPU-only index (see install command below)
+sentencepiece==0.1.99
+
+# ─── Validation ──────────────────────────────────────
+pydantic==2.5.0
+
+# ─── Utilities ───────────────────────────────────────
+requests==2.31.0

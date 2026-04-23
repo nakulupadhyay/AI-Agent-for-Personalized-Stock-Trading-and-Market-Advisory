@@ -6,3 +6,5 @@ logs/
 dist/
 coverage/
 .nyc_output/
+venv/*
+.venv/*

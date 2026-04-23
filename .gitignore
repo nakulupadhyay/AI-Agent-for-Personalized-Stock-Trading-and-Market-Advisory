@@ -1,0 +1,15 @@
+backend/venv/Lib/site-packages/aiohttp/_http_parser.cp311-win_amd64.pyd
+backend/venv/Lib/site-packages/81d243bd2c585b0f4821__mypyc.cp311-win_amd64.pyd
+backend/venv/Lib/site-packages/aiohttp/_http_parser.cp311-win_amd64.pyd
+backend/venv/*
+chatbot/venv/Lib/site-packages/__pycache__/isympy.cpython-311.pyc
+chatbot/venv/*
+chatbot/venv/Lib/site-packages/distutils-precedence.pth
+chatbot/venv/Lib/site-packages/aiohttp/_http_parser.cp311-win_amd64.pyd
+chatbot/venv/Lib/site-packages/*
+chatbot/venv/Lib/site-packages/aiohttp/_http_parser.cp311-win_amd64.pyd
+chatbot/start.bat
+ml-service/models/finbert-cache/models--ProsusAI--finbert/snapshots/7db323f79b751944bcfa66298ec06977e4518306/model.safetensors
+ml-service/models/finbert-cache/models--ProsusAI--finbert/snapshots/4556d13015211d73dccd3fdd39d39232506f3e43/pytorch_model.bin
+gemini_test.txt
+gemini_test2.txt

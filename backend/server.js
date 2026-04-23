@@ -131,6 +131,7 @@ app.use('/api/education',    require('./routes/education'));
 app.use('/api/portfolio',    require('./routes/portfolio'));
 app.use('/api/sentiment',    require('./routes/sentiment'));
 app.use('/api/stock-decision', require('./routes/stockDecision'));
+app.use('/api/stock-assistant', require('./routes/stockAssistant'));
 
 // ── 13. Health Check ──────────────────────────────────────────
 app.get('/health', (req, res) => {

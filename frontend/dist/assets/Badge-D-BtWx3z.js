@@ -1,1 +1,0 @@
-import{j as n}from"./motion-D2blt_dw.js";const a={BUY:"badge-buy",SELL:"badge-sell",HOLD:"badge-hold"},p={BUY:"↑",SELL:"↓",HOLD:"→"};function c({value:s,size:e="md"}){const t=e==="lg"?"text-sm px-4 py-1.5":e==="sm"?"text-[10px] px-2 py-0.5":"";return n.jsxs("span",{className:`${a[s]} ${t} inline-flex items-center gap-1`,children:[n.jsx("span",{children:p[s]}),s]})}export{c as R};

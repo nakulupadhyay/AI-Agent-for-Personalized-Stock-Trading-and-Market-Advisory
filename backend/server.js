@@ -51,8 +51,8 @@ const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow non-browser requests (Postman, health checks) in dev
-        if (!origin && process.env.NODE_ENV !== 'production') {
+        // Allow non-browser requests (health checks, server-to-server)
+        if (!origin) {
             return callback(null, true);
         }
         if (allowedOrigins.includes(origin)) {

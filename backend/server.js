@@ -19,32 +19,12 @@ validateEnv();
 const app = express();
 app.disable('x-powered-by'); // Suppress Express fingerprinting header
 
-// ── 3. Connect to MongoDB ─────────────────────────────────────
-connectDB();
+// ── 3. Connect to MongoDB (non-blocking — don't crash the server) ─────
+connectDB().catch(err => {
+    logger.error('MongoDB failed to connect, server running without DB:', err.message);
+});
 
-// ── 4. Security Headers (Helmet) ──────────────────────────────
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc:     ["'self'"],
-            scriptSrc:      ["'self'"],
-            styleSrc:       ["'self'", "'unsafe-inline'"],
-            imgSrc:         ["'self'", 'data:', 'https:'],
-            connectSrc:     ["'self'"],
-            fontSrc:        ["'self'"],
-            objectSrc:      ["'none'"],
-            upgradeInsecureRequests: [],
-        },
-    },
-    crossOriginEmbedderPolicy: false, // Allow embedding if needed
-    hsts: {
-        maxAge: 31536000,       // 1 year
-        includeSubDomains: true,
-        preload: true,
-    },
-}));
-
-// ── 5. CORS Configuration ─────────────────────────────────────
+// ── 4. CORS Configuration (MUST be before Helmet & everything else) ───
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
     .split(',')
     .map(o => o.trim());
@@ -58,13 +38,29 @@ app.use(cors({
         if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
-        callback(new Error(`CORS: Origin '${origin}' not allowed`));
+        // Don't throw — just deny silently (browser will block)
+        logger.warn(`CORS blocked origin: ${origin}`);
+        callback(null, false);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
     maxAge: 86400, // 24 hours preflight cache
+}));
+
+// ── 4b. Explicit preflight handler ────────────────────────────
+app.options('*', cors());
+
+// ── 5. Security Headers (Helmet) ──────────────────────────────
+app.use(helmet({
+    contentSecurityPolicy: false, // Disable CSP — this is an API, not serving HTML
+    crossOriginEmbedderPolicy: false,
+    hsts: {
+        maxAge: 31536000,       // 1 year
+        includeSubDomains: true,
+        preload: true,
+    },
 }));
 
 // ── 6. Body Parsing (strict limits) ───────────────────────────
@@ -174,7 +170,17 @@ app.use((req, res, next) => {
     });
 });
 
-// ── 16. Centralized Error Handler (always last) ───────────────
+// ── 16. Ensure CORS headers on error responses ───────────────
+app.use((err, req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+    next(err);
+});
+
+// ── 17. Centralized Error Handler (always last) ───────────────
 app.use(errorHandler);
 
 // ── 17. Start Server ──────────────────────────────────────────

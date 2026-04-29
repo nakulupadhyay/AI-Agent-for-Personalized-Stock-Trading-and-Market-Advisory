@@ -1,4 +1,4 @@
-import{c as xt}from"./index-Di47o2w5.js";import{R as W}from"./vendor-B2CfOrKk.js";/**
+import{c as xt}from"./index-VGZbUP3q.js";import{R as W}from"./vendor-B2CfOrKk.js";/**
  * @license lucide-react v0.344.0 - ISC
  *
  * This source code is licensed under the ISC license.

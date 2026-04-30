@@ -18,6 +18,7 @@ const EducationPage   = lazy(() => import('@/pages/EducationPage'));
 const SettingsPage    = lazy(() => import('@/pages/SettingsPage'));
 const NotFoundPage    = lazy(() => import('@/pages/NotFoundPage'));
 const StockAssistantPage = lazy(() => import('@/pages/StockAssistantPage'));
+const AddPortfolioPage = lazy(() => import('@/pages/AddPortfolioPage'));
 
 // ─── Protected dashboard routes ───────────────────────────────────────────────
 const dashboardRoutes = [
@@ -30,6 +31,7 @@ const dashboardRoutes = [
   { path: '/stock-assistant', Component: StockAssistantPage },
   { path: '/education',     Component: EducationPage },
   { path: '/settings',      Component: SettingsPage },
+  { path: '/add-portfolio',  Component: AddPortfolioPage },
 ];
 
 export default function AppRoutes() {

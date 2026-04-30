@@ -7,6 +7,9 @@ const {
     getSnapshots,
     getRebalanceSuggestion,
     takeSnapshot,
+    addHolding,
+    removeHolding,
+    getHoldings,
 } = require('../controllers/portfolioController');
 
 // ── Portfolio data controller (lives in tradingController) ─
@@ -32,11 +35,25 @@ router.get('/', protect, getPortfolio);
 router.get('/analysis', protect, getPortfolioAnalysis);
 
 /**
+ * @route   GET /api/portfolio/holdings
+ * @desc    Get all holdings (lightweight)
+ * @access  Private
+ */
+router.get('/holdings', protect, getHoldings);
+
+/**
  * @route   GET /api/portfolio/snapshots
  * @desc    Historical portfolio value snapshots
  * @access  Private
  */
 router.get('/snapshots', protect, getSnapshots);
+
+/**
+ * @route   POST /api/portfolio/add-holding
+ * @desc    Manually add a stock holding
+ * @access  Private
+ */
+router.post('/add-holding', protect, addHolding);
 
 /**
  * @route   POST /api/portfolio/rebalance
@@ -52,4 +69,12 @@ router.post('/rebalance', protect, getRebalanceSuggestion);
  */
 router.post('/snapshot', protect, takeSnapshot);
 
+/**
+ * @route   DELETE /api/portfolio/holding/:symbol
+ * @desc    Remove a stock holding
+ * @access  Private
+ */
+router.delete('/holding/:symbol', protect, removeHolding);
+
 module.exports = router;
+

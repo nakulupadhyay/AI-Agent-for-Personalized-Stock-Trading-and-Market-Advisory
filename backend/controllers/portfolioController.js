@@ -225,4 +225,160 @@ const takeSnapshot = async (req, res) => {
     }
 };
 
-module.exports = { getSnapshots, getRebalanceSuggestion, takeSnapshot };
+/**
+ * @route   POST /api/portfolio/add-holding
+ * @desc    Manually add a stock holding to the portfolio
+ */
+const addHolding = async (req, res) => {
+    try {
+        const { symbol, companyName, sector, quantity, buyPrice, currentPrice } = req.body;
+        const userId = req.user.id;
+
+        // Validation
+        if (!symbol || !quantity || !buyPrice) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide symbol, quantity, and buyPrice',
+            });
+        }
+
+        if (quantity <= 0 || buyPrice <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Quantity and buyPrice must be positive numbers',
+            });
+        }
+
+        // Find or create portfolio
+        let portfolio = await Portfolio.findOne({ userId });
+        if (!portfolio) {
+            portfolio = await Portfolio.create({ userId, holdings: [] });
+        }
+
+        // Check if stock already exists
+        const existingHolding = portfolio.holdings.find(h => h.symbol === symbol.toUpperCase());
+
+        if (existingHolding) {
+            // Average the buy price
+            const totalQty = existingHolding.quantity + quantity;
+            const totalCost = (existingHolding.averagePrice * existingHolding.quantity) + (buyPrice * quantity);
+            existingHolding.quantity = totalQty;
+            existingHolding.averagePrice = totalCost / totalQty;
+            existingHolding.currentPrice = currentPrice || buyPrice;
+            if (sector) existingHolding.sector = sector;
+        } else {
+            portfolio.holdings.push({
+                symbol: symbol.toUpperCase(),
+                companyName: companyName || symbol.toUpperCase(),
+                sector: sector || SECTOR_MAP[symbol.toUpperCase()] || 'Other',
+                quantity,
+                averagePrice: buyPrice,
+                currentPrice: currentPrice || buyPrice,
+            });
+        }
+
+        // Recalculate totals
+        portfolio.totalInvested = portfolio.holdings.reduce((sum, h) =>
+            sum + (h.quantity * h.averagePrice), 0
+        );
+        portfolio.currentValue = portfolio.holdings.reduce((sum, h) =>
+            sum + (h.quantity * h.currentPrice), 0
+        );
+        portfolio.profitLoss = portfolio.currentValue - portfolio.totalInvested;
+        portfolio.updatedAt = Date.now();
+
+        await portfolio.save();
+
+        res.status(200).json({
+            success: true,
+            message: `${symbol.toUpperCase()} added to portfolio`,
+            data: portfolio,
+        });
+    } catch (error) {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to add holding' : error.message,
+        });
+    }
+};
+
+/**
+ * @route   DELETE /api/portfolio/holding/:symbol
+ * @desc    Remove a stock holding from the portfolio
+ */
+const removeHolding = async (req, res) => {
+    try {
+        const { symbol } = req.params;
+        const userId = req.user.id;
+
+        const portfolio = await Portfolio.findOne({ userId });
+        if (!portfolio) {
+            return res.status(404).json({ success: false, message: 'No portfolio found' });
+        }
+
+        const holdingIndex = portfolio.holdings.findIndex(
+            h => h.symbol === symbol.toUpperCase()
+        );
+
+        if (holdingIndex === -1) {
+            return res.status(404).json({ success: false, message: 'Stock not found in portfolio' });
+        }
+
+        portfolio.holdings.splice(holdingIndex, 1);
+
+        // Recalculate totals
+        portfolio.totalInvested = portfolio.holdings.reduce((sum, h) =>
+            sum + (h.quantity * h.averagePrice), 0
+        );
+        portfolio.currentValue = portfolio.holdings.reduce((sum, h) =>
+            sum + (h.quantity * h.currentPrice), 0
+        );
+        portfolio.profitLoss = portfolio.currentValue - portfolio.totalInvested;
+        portfolio.updatedAt = Date.now();
+
+        await portfolio.save();
+
+        res.status(200).json({
+            success: true,
+            message: `${symbol.toUpperCase()} removed from portfolio`,
+            data: portfolio,
+        });
+    } catch (error) {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to remove holding' : error.message,
+        });
+    }
+};
+
+/**
+ * @route   GET /api/portfolio/holdings
+ * @desc    Get all holdings for the current user (lightweight)
+ */
+const getHoldings = async (req, res) => {
+    try {
+        const portfolio = await Portfolio.findOne({ userId: req.user.id });
+        if (!portfolio) {
+            return res.status(200).json({
+                success: true,
+                data: { holdings: [], totalInvested: 0, currentValue: 0, profitLoss: 0 },
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: portfolio,
+        });
+    } catch (error) {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.status(500).json({
+            success: false,
+            message: isProd ? 'Failed to fetch holdings' : error.message,
+        });
+    }
+};
+
+module.exports = { getSnapshots, getRebalanceSuggestion, takeSnapshot, addHolding, removeHolding, getHoldings };
+

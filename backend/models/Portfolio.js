@@ -19,6 +19,10 @@ const portfolioSchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
+            sector: {
+                type: String,
+                default: 'Other',
+            },
             quantity: {
                 type: Number,
                 required: true,
